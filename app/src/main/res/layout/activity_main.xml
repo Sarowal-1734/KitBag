@@ -20,6 +20,11 @@
 
             <include layout="@layout/custom_app_bar" />
 
+            <ListView
+                android:id="@+id/listview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/activity_row_post_items" />
         </LinearLayout>
 
         <com.google.android.material.navigation.NavigationView
