@@ -1,18 +1,22 @@
 package com.example.kitbag;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private ImageView imageViewProfile;
     private EditText EditTextContact, EditTextPassword;
 
     @Override
@@ -22,15 +26,25 @@ public class LoginActivity extends AppCompatActivity {
 
         EditTextContact = findViewById(R.id.EditTextContact);
         EditTextPassword = findViewById(R.id.EditTextPassword);
+
+        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        imageViewProfile = findViewById(R.id.imageViewProfile);
+
+        imageViewProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.openDrawer(Gravity.RIGHT);
+            }
+        });
     }
 
     public void onLoginButtonClick(View view) {
-        if (TextUtils.isEmpty(EditTextContact.getText().toString())){
-            EditTextContact.setError("Recuired");
+        if (TextUtils.isEmpty(EditTextContact.getText().toString())) {
+            EditTextContact.setError("Required");
             return;
         }
-        if (TextUtils.isEmpty(EditTextPassword.getText().toString())){
-            EditTextPassword.setError("Recuired");
+        if (TextUtils.isEmpty(EditTextPassword.getText().toString())) {
+            EditTextPassword.setError("Required");
             return;
         }
         startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -39,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     public void onSignupButtonClick(View view) {
-        startActivity(new Intent(LoginActivity.this,SignUpActivity.class));
+        startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
         finish();
     }
 }
