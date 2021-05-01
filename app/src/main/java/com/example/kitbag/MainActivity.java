@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                             upazilas = getResources().getStringArray(R.array.Chittagong);
                         } else if (district.equals("Chuadanga")) {
                             upazilas = getResources().getStringArray(R.array.Chuadanga);
-                        } else if (district.equals("Cox\\'s Bazar")) {   //dfsgdfgdfgdfgdfgdfgdfgdfgdfgdfg
+                        } else if (district.equals("Cox's Bazar")) {
                             upazilas = getResources().getStringArray(R.array.CoxBazar);
                         } else if (district.equals("Comilla")) {
                             upazilas = getResources().getStringArray(R.array.Comilla);
@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
                             upazilas = getResources().getStringArray(R.array.Chittagong);
                         } else if (district.equals("Chuadanga")) {
                             upazilas = getResources().getStringArray(R.array.Chuadanga);
-                        } else if (district.equals("Cox\\'s Bazar")) {   //dfsgdfgdfgdfgdfgdfgdfgdfgdfgdfg
+                        } else if (district.equals("Cox's Bazar")) {
                             upazilas = getResources().getStringArray(R.array.CoxBazar);
                         } else if (district.equals("Comilla")) {
                             upazilas = getResources().getStringArray(R.array.Comilla);
