@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Layout;
 import android.view.Gravity;
@@ -47,6 +48,14 @@ public class MainActivity extends AppCompatActivity {
         fab = findViewById(R.id.fab);
         imageViewProfile = findViewById(R.id.imageViewProfile);
         imageViewSearch = findViewById(R.id.imageViewSearch);
+
+        //open post Activity
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,PostActivity.class));
+            }
+        });
 
         // Checking ListView Items
         ArrayAdapter adapterCheck = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mobileArray);
