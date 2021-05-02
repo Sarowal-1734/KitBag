@@ -10,7 +10,11 @@
     <string name="district">District</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="already_have_an_account_login">Already have an account? <font color='#FFFF0000'>Login</font></string>
-    
+    <string name="welcome_post_activity">Welcome User,<font color='#FFFF0000'> Post Your item here</font> </string>
+    <string name="post_title">Enter Post Title</string>
+    <string name="post_description">Enter Post Description</string>
+    <string name="ButtonPostItem">Post Item</string>
+
     <string-array name="Districts">
         <item>Bagerhat</item>
         <item>Bandarban</item>
@@ -436,7 +440,7 @@
         <item>Kaliganj</item>
         <item>Lalmonirhat Sadar</item>
         <item>Patgram</item>
-   </string-array>
+    </string-array>
 
     <string-array name="Madaripur">
         <item>Rajoir</item>
@@ -763,5 +767,5 @@
         <item>Thakurgaon Sadar</item>
     </string-array>
 
-    
+
 </resources>
