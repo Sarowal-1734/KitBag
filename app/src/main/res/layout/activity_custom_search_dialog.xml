@@ -117,6 +117,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="*All fields are required"
+        android:text="@string/all_fields_are_required"
         android:textColor="@color/red"/>
 </LinearLayout>

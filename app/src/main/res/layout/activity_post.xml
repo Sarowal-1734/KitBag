@@ -27,36 +27,32 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="8dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/textViewWelcomePostActivity"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_horizontal">
-
-                    <TextView
-                        android:id="@+id/textViewWelcomePostActivity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="10dp"
-                        android:text="@string/welcome_post_activity"
-                        android:textColor="@color/black"
-                        android:textSize="20sp" />
-                </LinearLayout>
+                    android:text="@string/create_post"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="20sp"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginTop="8dp"/>
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:padding="8dp"
                     app:cardCornerRadius="5dp"
                     app:cardMaxElevation="@dimen/cardview_compat_inset_shadow"
                     app:cardUseCompatPadding="true">
 
                     <ImageView
-                        android:layout_width="400dp"
-                        android:layout_height="200dp"
+                        android:id="@+id/imageViewAddPhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_add_photo" />
                 </androidx.cardview.widget.CardView>
@@ -65,21 +61,51 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
                     app:endIconMode="clear_text">
 
                     <EditText
                         android:id="@+id/EditTextPostTitle"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
+                        android:layout_height="wrap_content"
                         android:ellipsize="end"
-                        android:hint="@string/post_title" />
+                        android:hint="@string/post_title"
+                        android:maxLength="40"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:endIconMode="clear_text">
+
+                    <EditText
+                        android:id="@+id/EditTextPostWeight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:hint="@string/weight"
+                        android:inputType="text" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:endIconMode="clear_text">
+
+                    <EditText
+                        android:id="@+id/EditTextPostDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:gravity="start"
+                        android:hint="@string/post_description" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
+                    android:layout_marginTop="8dp"
                     android:text="From:"
                     android:textColor="@color/black"
                     android:textStyle="bold" />
@@ -94,13 +120,12 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="12dp"
                         android:layout_marginRight="2dp"
                         android:layout_weight="1"
                         app:endIconMode="dropdown_menu">
 
                         <AutoCompleteTextView
-                            android:id="@+id/EditTextFromDistrictPost"
+                            android:id="@+id/EditTextFromDistrict"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:completionThreshold="1"
@@ -113,12 +138,11 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="12dp"
                         android:layout_weight="1"
                         app:endIconMode="dropdown_menu">
 
                         <AutoCompleteTextView
-                            android:id="@+id/EditTextFromUpazilaPost"
+                            android:id="@+id/EditTextFromUpazila"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:completionThreshold="1"
@@ -131,8 +155,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="8dp"
                     android:text="To:"
                     android:textColor="@color/black"
                     android:textStyle="bold" />
@@ -147,13 +170,12 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="12dp"
-                        android:layout_marginRight="2dp"
+                        android:layout_marginEnd="2dp"
                         android:layout_weight="1"
                         app:endIconMode="dropdown_menu">
 
                         <AutoCompleteTextView
-                            android:id="@+id/EditTextToDistrictPost"
+                            android:id="@+id/EditTextToDistrict"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:completionThreshold="1"
@@ -166,12 +188,11 @@
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="12dp"
                         android:layout_weight="1"
                         app:endIconMode="dropdown_menu">
 
                         <AutoCompleteTextView
-                            android:id="@+id/EditTextToUpazilaPost"
+                            android:id="@+id/EditTextToUpazila"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:completionThreshold="1"
@@ -181,27 +202,29 @@
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
-                    app:endIconMode="clear_text">
-
-                    <EditText
-                        android:id="@+id/EditTextPostDescription"
-                        android:layout_width="match_parent"
-                        android:layout_height="150dp"
-                        android:layout_gravity="start"
-                        android:hint="@string/post_description" />
-                </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_marginTop="8dp"
+                    android:text="@string/all_fields_are_required"
+                    android:textColor="@color/red"/>
 
                 <Button
                     android:id="@+id/buttonPostItem"
                     android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/ButtonPostItem"
+                    android:textAllCaps="false"
+                    android:onClick="onPostButtonClick"/>
+
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="12dp"
-                    android:text="@string/ButtonPostItem" />
+                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/by_posting_this_ad_you_agree_to_our_terms_and_conditions"/>
             </LinearLayout>
 
         </ScrollView>
