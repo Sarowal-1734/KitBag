@@ -40,4 +40,6 @@ dependencies {
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     // Phone Code and Country Flag
     implementation 'com.hbb20:ccp:2.3.1'
+    // Zooming PhotoView
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
 }

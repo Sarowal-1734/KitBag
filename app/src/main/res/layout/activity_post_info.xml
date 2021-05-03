@@ -54,7 +54,7 @@
                     app:cardMaxElevation="@dimen/cardview_compat_inset_shadow"
                     app:cardUseCompatPadding="true">
 
-                    <ImageView
+                    <com.github.chrisbanes.photoview.PhotoView
                         android:id="@+id/imageViewPhoto"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"

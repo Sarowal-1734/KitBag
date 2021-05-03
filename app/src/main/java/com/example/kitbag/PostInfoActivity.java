@@ -7,19 +7,21 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.chrisbanes.photoview.PhotoView;
+
 public class PostInfoActivity extends AppCompatActivity {
 
     private TextView textViewTitle, textViewUserTime, TextViewDescription,
             TextViewWeight, TextViewStatus, TextViewSource, TextViewDestination,
             TextViewUserId, TextViewUserType, TextViewChat, TextViewCall, TextViewMail;
-    private ImageView imageViewPhoto;
+    private PhotoView imageViewPhoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_info);
 
-        // Init TextViews and ImageButton
+        // Init TextViews and ImageView
         textViewTitle = findViewById(R.id.textViewTitle);
         textViewUserTime = findViewById(R.id.textViewUserTime);
         TextViewDescription = findViewById(R.id.TextViewDescription);
@@ -32,7 +34,8 @@ public class PostInfoActivity extends AppCompatActivity {
         TextViewChat = findViewById(R.id.TextViewChat);
         TextViewCall = findViewById(R.id.TextViewCall);
         TextViewMail = findViewById(R.id.TextViewMail);
-        imageViewPhoto = findViewById(R.id.imageViewPhoto);
+
+        imageViewPhoto = (PhotoView) findViewById(R.id.imageViewPhoto);
 
     }
 
