@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
             EditTextPassword.setError("Required");
             return;
         }
-        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        startActivity(new Intent(LoginActivity.this, PostInfoActivity.class));
         finish();
     }
 

@@ -24,7 +24,7 @@
                 android:id="@+id/recyclerViewPostLists"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/activity_row_post_items" />
+                tools:listitem="@layout/row_post_items_recycler_view" />
         </LinearLayout>
 
         <com.google.android.material.navigation.NavigationView

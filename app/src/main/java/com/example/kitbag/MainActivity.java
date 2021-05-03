@@ -8,17 +8,13 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Layout;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -64,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Inflate Custom layout for searching
                 LayoutInflater inflater = MainActivity.this.getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.activity_custom_search_dialog, null);
+                View dialogView = inflater.inflate(R.layout.custom_search_dialog, null);
 
                 // Create Dialog Builder
                 AlertDialog.Builder ab = new AlertDialog.Builder(MainActivity.this);
