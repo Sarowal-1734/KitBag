@@ -1,8 +1,10 @@
 package com.example.kitbag;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -15,11 +17,15 @@ public class PostInfoActivity extends AppCompatActivity {
             TextViewWeight, TextViewStatus, TextViewSource, TextViewDestination,
             TextViewUserId, TextViewUserType, TextViewChat, TextViewCall, TextViewMail;
     private PhotoView imageViewPhoto;
+    private ImageView imageViewProfile;
+    private ImageView imageViewSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_info);
+
+        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
 
         // Init TextViews and ImageView
         textViewTitle = findViewById(R.id.textViewTitle);
@@ -35,7 +41,17 @@ public class PostInfoActivity extends AppCompatActivity {
         TextViewCall = findViewById(R.id.TextViewCall);
         TextViewMail = findViewById(R.id.TextViewMail);
 
+        imageViewProfile = findViewById(R.id.imageViewProfile);
+        imageViewSearch = findViewById(R.id.imageViewSearch);
         imageViewPhoto = (PhotoView) findViewById(R.id.imageViewPhoto);
+
+        // Click profile to open drawer
+        imageViewProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.openDrawer(Gravity.RIGHT);
+            }
+        });
 
     }
 
