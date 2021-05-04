@@ -15,8 +15,6 @@ import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class LoginActivity extends AppCompatActivity {
-
-    private ImageView imageViewProfile;
     private EditText EditTextContact, EditTextPassword;
 
     @Override
@@ -26,16 +24,6 @@ public class LoginActivity extends AppCompatActivity {
 
         EditTextContact = findViewById(R.id.EditTextContact);
         EditTextPassword = findViewById(R.id.EditTextPassword);
-
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        imageViewProfile = findViewById(R.id.imageViewProfile);
-
-        imageViewProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawer.openDrawer(Gravity.RIGHT);
-            }
-        });
     }
 
     public void onLoginButtonClick(View view) {
@@ -47,7 +35,7 @@ public class LoginActivity extends AppCompatActivity {
             EditTextPassword.setError("Required");
             return;
         }
-        startActivity(new Intent(LoginActivity.this, PostInfoActivity.class));
+        startActivity(new Intent(LoginActivity.this,MainActivity.class));
         finish();
     }
 

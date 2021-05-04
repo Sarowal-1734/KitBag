@@ -17,7 +17,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class SignUpActivity extends AppCompatActivity {
 
-    private ImageView imageViewProfile;
     private EditText editTextUsername, editTextContact, editTextEmail, editTextPassword, editTextConfirmPassword;
 
     @Override
@@ -31,15 +30,6 @@ public class SignUpActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         editTextConfirmPassword = findViewById(R.id.editTextConfirmPassword);
 
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        imageViewProfile = findViewById(R.id.imageViewProfile);
-
-        imageViewProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawer.openDrawer(Gravity.RIGHT);
-            }
-        });
     }
 
     public void onLoginButtonClick(View view) {
