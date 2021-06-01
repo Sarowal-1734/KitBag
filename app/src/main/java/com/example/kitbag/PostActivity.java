@@ -1,6 +1,8 @@
 package com.example.kitbag;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.Intent;
@@ -13,10 +15,12 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class PostActivity extends AppCompatActivity {
 
-    private ImageView imageViewProfile, imageViewAddPhoto;
+    private TextView appbar_title;
+    private ImageView appbar_imageview_profile, appbar_logo, imageViewAddPhoto;
     private EditText EditTextPostTitle, EditTextPostWeight, EditTextPostDescription;
     private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
 
@@ -24,6 +28,27 @@ public class PostActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
+
+        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        appbar_imageview_profile = findViewById(R.id.appbar_imageview_profile);
+
+        // remove search icon and notification icon from appBar
+        findViewById(R.id.appbar_imageview_search).setVisibility(View.GONE);
+        findViewById(R.id.appbar_notification_icon).setVisibility(View.GONE);
+
+        // Adding back arrow in the appBar
+        appbar_logo = findViewById(R.id.appbar_logo);
+        appbar_logo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
+        appbar_logo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(PostActivity.this, MainActivity.class));
+            }
+        });
+
+        // Change the title of the appBar
+        appbar_title = findViewById(R.id.appbar_title);
+        appbar_title.setText("Create Post");
 
         imageViewAddPhoto = findViewById(R.id.imageViewAddPhoto);
         EditTextPostTitle = findViewById(R.id.EditTextPostTitle);
@@ -39,15 +64,11 @@ public class PostActivity extends AppCompatActivity {
         //setAdapter on District and Upazila
         setDistrictUpazilaOnEditText();
 
-        // Init AppBar widgets
-        imageViewProfile = findViewById(R.id.imageViewProfile);
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
-
         // Open Drawer Layout
-        imageViewProfile.setOnClickListener(new View.OnClickListener() {
+        appbar_imageview_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawer.openDrawer(Gravity.RIGHT);
+                drawer.openDrawer(GravityCompat.END);
             }
         });
 

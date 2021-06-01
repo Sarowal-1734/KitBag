@@ -3,7 +3,7 @@
     <style name="Theme.KitBag" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/title_bar</item>
-        <item name="colorPrimaryVariant">#2C70DF</item>
+        <item name="colorPrimaryVariant">@color/app_bar</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>

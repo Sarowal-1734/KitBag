@@ -3,6 +3,7 @@ package com.example.kitbag;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.content.DialogInterface;
@@ -20,7 +21,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageView imageViewProfile, imageViewSearch;
+    private ImageView appbar_imageview_profile, appbar_imageview_search;
     private FloatingActionButton fab;
     private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
 
@@ -34,10 +35,10 @@ public class MainActivity extends AppCompatActivity {
 
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         fab = findViewById(R.id.fab);
-        imageViewProfile = findViewById(R.id.imageViewProfile);
-        imageViewSearch = findViewById(R.id.imageViewSearch);
+        appbar_imageview_profile = findViewById(R.id.appbar_imageview_profile);
+        appbar_imageview_search = findViewById(R.id.appbar_imageview_search);
 
-        //open post Activity
+        // Open post Activity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,16 +46,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Click profile to open drawer
-        imageViewProfile.setOnClickListener(new View.OnClickListener() {
+        // Open notifications Activity
+        findViewById(R.id.appbar_notification_icon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawer.openDrawer(Gravity.RIGHT);
+                startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
+            }
+        });
+
+        // Click profile to open drawer
+        appbar_imageview_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.openDrawer(GravityCompat.END);
             }
         });
 
         // On search button click
-        imageViewSearch.setOnClickListener(new View.OnClickListener() {
+        appbar_imageview_search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 

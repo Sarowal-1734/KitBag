@@ -108,7 +108,7 @@
                     android:layout_marginBottom="8dp"
                     android:gravity="center_horizontal"
                     android:text="@string/forgotten_password"
-                    android:textColor="@color/app_bar" />
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:layout_width="match_parent"
@@ -124,7 +124,7 @@
                     android:gravity="center_horizontal"
                     android:onClick="onSignupButtonClick"
                     android:text="@string/don_t_have_an_account_signup"
-                    android:textColor="@color/app_bar" />
+                    android:textColor="@color/black" />
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

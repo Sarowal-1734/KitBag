@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include layout="@layout/custom_app_bar_with_search" />
+            <include layout="@layout/custom_app_bar" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewPostLists"
@@ -42,7 +42,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:backgroundTint="@color/app_bar"
-        android:src="@drawable/ic_add_post"
+        app:srcCompat="@drawable/ic_add_post"
         app:fabCustomSize="50dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
