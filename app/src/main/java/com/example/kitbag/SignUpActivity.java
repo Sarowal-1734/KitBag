@@ -41,7 +41,7 @@ public class SignUpActivity extends AppCompatActivity {
         appbar_logo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+                onBackPressed();
             }
         });
 

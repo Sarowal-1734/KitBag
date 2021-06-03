@@ -34,7 +34,7 @@ public class NotificationsActivity extends AppCompatActivity {
         appbar_logo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(NotificationsActivity.this, MainActivity.class));
+                onBackPressed();
             }
         });
 

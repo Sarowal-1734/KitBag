@@ -37,7 +37,7 @@ public class PostInfoActivity extends AppCompatActivity {
         appbar_logo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(PostInfoActivity.this, MainActivity.class));
+                onBackPressed();
             }
         });
 

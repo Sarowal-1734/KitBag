@@ -9,11 +9,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KitBag">
-        <activity android:name=".NotificationsActivity"></activity>
-        <activity android:name=".PostInfoActivity" />
-        <activity android:name=".PostActivity" />
-        <activity android:name=".SignUpActivity" />
-        <activity android:name=".LoginActivity" />
+        <activity
+            android:name=".NotificationsActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".PostInfoActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".PostActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".SignUpActivity"
+            android:parentActivityName=".LoginActivity" />
+        <activity
+            android:name=".LoginActivity"
+            android:parentActivityName=".MainActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
