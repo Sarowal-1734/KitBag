@@ -18,7 +18,9 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include layout="@layout/custom_app_bar" />
+            <include
+                android:id="@+id/custom_app_bar"
+                layout="@layout/custom_app_bar" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewPostLists"
@@ -28,6 +30,7 @@
         </LinearLayout>
 
         <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navigation_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
@@ -41,7 +44,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:backgroundTint="@color/app_bar"
         app:srcCompat="@drawable/ic_add_post"
         app:fabCustomSize="50dp" />
 

@@ -14,39 +14,35 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.kitbag.databinding.ActivityLoginBinding;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private TextView appbar_title;
-    private ImageView appbar_logo, appbar_imageview_profile;
-    private EditText EditTextContact, EditTextPassword;
+    private ActivityLoginBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        appbar_imageview_profile = findViewById(R.id.appbar_imageview_profile);
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // remove search icon and notification icon from appBar
-        findViewById(R.id.appbar_imageview_search).setVisibility(View.GONE);
-        findViewById(R.id.appbar_notification_icon).setVisibility(View.GONE);
+        binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
         // Open Drawer Layout
-        appbar_imageview_profile.setOnClickListener(new View.OnClickListener() {
+        binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawer.openDrawer(GravityCompat.END);
+                binding.drawerLayout.openDrawer(GravityCompat.END);
             }
         });
 
         // Adding back arrow in the appBar
-        appbar_logo = findViewById(R.id.appbar_logo);
-        appbar_logo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
-        appbar_logo.setOnClickListener(new View.OnClickListener() {
+        binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
+        binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -54,20 +50,16 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         // Change the title of the appBar
-        appbar_title = findViewById(R.id.appbar_title);
-        appbar_title.setText("Login");
-
-        EditTextContact = findViewById(R.id.EditTextContact);
-        EditTextPassword = findViewById(R.id.EditTextPassword);
+        binding.customAppBar.appbarTitle.setText("Login");
     }
 
     public void onLoginButtonClick(View view) {
-        if (TextUtils.isEmpty(EditTextContact.getText().toString())) {
-            EditTextContact.setError("Required");
+        if (TextUtils.isEmpty(binding.EditTextContact.getText().toString())) {
+            binding.EditTextContact.setError("Required");
             return;
         }
-        if (TextUtils.isEmpty(EditTextPassword.getText().toString())) {
-            EditTextPassword.setError("Required");
+        if (TextUtils.isEmpty(binding.EditTextPassword.getText().toString())) {
+            binding.EditTextPassword.setError("Required");
             return;
         }
         startActivity(new Intent(LoginActivity.this,MainActivity.class));

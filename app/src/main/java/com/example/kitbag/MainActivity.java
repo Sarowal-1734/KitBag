@@ -1,45 +1,56 @@
 package com.example.kitbag;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuItemCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.example.kitbag.databinding.ActivityMainBinding;
+import com.google.android.material.navigation.NavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ImageView appbar_imageview_profile, appbar_imageview_search;
-    private FloatingActionButton fab;
+    private ActivityMainBinding binding;
     private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
-
-    private String fromDistrict, fromUpazila, toDistrict, toUpazila;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        fab = findViewById(R.id.fab);
-        appbar_imageview_profile = findViewById(R.id.appbar_imageview_profile);
-        appbar_imageview_search = findViewById(R.id.appbar_imageview_search);
+        // Initial view of dark mode button in drawer menu
+        SwitchCompat switchDarkMode = MenuItemCompat.getActionView(binding.navigationView.getMenu().findItem(R.id.nav_dark_mode)).findViewById(R.id.switch_dark_mode);
+        switchDarkMode.setChecked(true);
+        // Toggle dark mode button in drawer menu
+        switchDarkMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (switchDarkMode.isChecked()) {
+                    Toast.makeText(MainActivity.this, "Dark Mode Enabled!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "Dark Mode Disabled!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         // Open post Activity
-        fab.setOnClickListener(new View.OnClickListener() {
+        binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, PostActivity.class));
@@ -55,15 +66,31 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Click profile to open drawer
-        appbar_imageview_profile.setOnClickListener(new View.OnClickListener() {
+        binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawer.openDrawer(GravityCompat.END);
+                binding.drawerLayout.openDrawer(GravityCompat.END);
+            }
+        });
+
+        // On drawer menu item clicked
+        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_logout:
+                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        break;
+                    case R.id.nav_about:
+                        Toast.makeText(MainActivity.this, "About", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                return false;
             }
         });
 
         // On search button click
-        appbar_imageview_search.setOnClickListener(new View.OnClickListener() {
+        binding.customAppBar.appbarImageviewSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -103,19 +130,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Show or Hide Floating Action Button
-        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
             }
 
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
-                fab.hide();
+                binding.fab.hide();
             }
 
             @Override
             public void onDrawerClosed(@NonNull View drawerView) {
-                fab.show();
+                binding.fab.show();
             }
 
             @Override

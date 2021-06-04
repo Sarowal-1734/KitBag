@@ -11,27 +11,25 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.kitbag.databinding.ActivityNotificationsBinding;
+
 public class NotificationsActivity extends AppCompatActivity {
 
-    private TextView appbar_title;
-    private ImageView appbar_logo, appbar_imageview_profile;
+    private ActivityNotificationsBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_notifications);
-
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        appbar_imageview_profile = findViewById(R.id.appbar_imageview_profile);
+        binding = ActivityNotificationsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // remove search icon and notification icon from appBar
-        findViewById(R.id.appbar_imageview_search).setVisibility(View.GONE);
-        findViewById(R.id.appbar_notification_icon).setVisibility(View.GONE);
+        binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
         // Adding back arrow in the appBar
-        appbar_logo = findViewById(R.id.appbar_logo);
-        appbar_logo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
-        appbar_logo.setOnClickListener(new View.OnClickListener() {
+        binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
+        binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -39,14 +37,13 @@ public class NotificationsActivity extends AppCompatActivity {
         });
 
         // Change the title of the appBar
-        appbar_title = findViewById(R.id.appbar_title);
-        appbar_title.setText("Notifications");
+        binding.customAppBar.appbarTitle.setText("Notifications");
 
         // Open Drawer Layout
-        appbar_imageview_profile.setOnClickListener(new View.OnClickListener() {
+        binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawer.openDrawer(GravityCompat.END);
+                binding.drawerLayout.openDrawer(GravityCompat.END);
             }
         });
 

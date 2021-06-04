@@ -13,7 +13,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include layout="@layout/custom_app_bar" />
+        <include
+            android:id="@+id/custom_app_bar"
+            layout="@layout/custom_app_bar" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewPostLists"

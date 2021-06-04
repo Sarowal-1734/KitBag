@@ -18,7 +18,9 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <include layout="@layout/custom_app_bar" />
+            <include
+                android:id="@+id/custom_app_bar"
+                layout="@layout/custom_app_bar" />
         </LinearLayout>
 
         <ScrollView
@@ -43,7 +45,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_add_photo" />
+                        app:srcCompat="@drawable/ic_add_photo" />
                 </androidx.cardview.widget.CardView>
 
                 <com.google.android.material.textfield.TextInputLayout

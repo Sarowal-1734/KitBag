@@ -1,45 +1,34 @@
 package com.example.kitbag;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+
+import com.example.kitbag.databinding.ActivityPostBinding;
 
 public class PostActivity extends AppCompatActivity {
 
-    private TextView appbar_title;
-    private ImageView appbar_imageview_profile, appbar_logo, imageViewAddPhoto;
-    private EditText EditTextPostTitle, EditTextPostWeight, EditTextPostDescription;
-    private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
+    private ActivityPostBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_post);
-
-        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        appbar_imageview_profile = findViewById(R.id.appbar_imageview_profile);
+        binding = ActivityPostBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // remove search icon and notification icon from appBar
-        findViewById(R.id.appbar_imageview_search).setVisibility(View.GONE);
-        findViewById(R.id.appbar_notification_icon).setVisibility(View.GONE);
+        binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
         // Adding back arrow in the appBar
-        appbar_logo = findViewById(R.id.appbar_logo);
-        appbar_logo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
-        appbar_logo.setOnClickListener(new View.OnClickListener() {
+        binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
+        binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onBackPressed();
@@ -47,28 +36,16 @@ public class PostActivity extends AppCompatActivity {
         });
 
         // Change the title of the appBar
-        appbar_title = findViewById(R.id.appbar_title);
-        appbar_title.setText("Create Post");
-
-        imageViewAddPhoto = findViewById(R.id.imageViewAddPhoto);
-        EditTextPostTitle = findViewById(R.id.EditTextPostTitle);
-        EditTextPostWeight = findViewById(R.id.EditTextPostWeight);
-        EditTextPostDescription = findViewById(R.id.EditTextPostDescription);
-
-        //Init District and Upazilas
-        editTextFromDistrict = findViewById(R.id.EditTextFromDistrict);
-        editTextFromUpazila = findViewById(R.id.EditTextFromUpazila);
-        editTextToDistrict = findViewById(R.id.EditTextToDistrict);
-        editTextToUpazila = findViewById(R.id.EditTextToUpazila);
+        binding.customAppBar.appbarTitle.setText("Create Post");
 
         //setAdapter on District and Upazila
         setDistrictUpazilaOnEditText();
 
         // Open Drawer Layout
-        appbar_imageview_profile.setOnClickListener(new View.OnClickListener() {
+        binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawer.openDrawer(GravityCompat.END);
+                binding.drawerLayout.openDrawer(GravityCompat.END);
             }
         });
 
@@ -79,11 +56,11 @@ public class PostActivity extends AppCompatActivity {
         // District Recommendation
         String[] districts = getResources().getStringArray(R.array.Districts);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(PostActivity.this, android.R.layout.simple_list_item_1, districts);
-        editTextFromDistrict.setAdapter(adapter);  // District
-        editTextToDistrict.setAdapter(adapter);    // District
+        binding.EditTextFromDistrict.setAdapter(adapter);  // District
+        binding.EditTextToDistrict.setAdapter(adapter);    // District
 
         // UpazilaFrom Recommendation
-        editTextFromDistrict.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        binding.EditTextFromDistrict.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String district = adapter.getItem(position);
@@ -219,13 +196,13 @@ public class PostActivity extends AppCompatActivity {
                 }
                 if (upazilas != null) {
                     ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(PostActivity.this, android.R.layout.simple_list_item_1, upazilas);
-                    editTextFromUpazila.setAdapter(adapterUpazila);  // Define Upazilas
+                    binding.EditTextFromUpazila.setAdapter(adapterUpazila);  // Define Upazilas
                 }
             }
         });
 
         // UpazilaTo Recommendation
-        editTextToDistrict.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        binding.EditTextToDistrict.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String district = adapter.getItem(position);
@@ -361,7 +338,7 @@ public class PostActivity extends AppCompatActivity {
                 }
                 if (upazilas != null) {
                     ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(PostActivity.this, android.R.layout.simple_list_item_1, upazilas);
-                    editTextToUpazila.setAdapter(adapterUpazila);  // Define Upazilas
+                    binding.EditTextToUpazila.setAdapter(adapterUpazila);  // Define Upazilas
                 }
             }
         });
@@ -369,36 +346,32 @@ public class PostActivity extends AppCompatActivity {
 
     // On Post Button Click
     public void onPostButtonClick(View view) {
-//        if (TextUtils.isEmpty(EditTextPassword.getText().toString())) {
-//            EditTextPassword.setError("Required");
-//            return;
-//        }
-        if (TextUtils.isEmpty(EditTextPostTitle.getText().toString())) {
-            EditTextPostTitle.setError("Required");
+        if (TextUtils.isEmpty(binding.EditTextPostTitle.getText().toString())) {
+            binding.EditTextPostTitle.setError("Required");
             return;
         }
-        if (TextUtils.isEmpty(EditTextPostWeight.getText().toString())) {
-            EditTextPostWeight.setError("Required");
+        if (TextUtils.isEmpty(binding.EditTextPostWeight.getText().toString())) {
+            binding.EditTextPostWeight.setError("Required");
             return;
         }
-        if (TextUtils.isEmpty(EditTextPostDescription.getText().toString())) {
-            EditTextPostDescription.setError("Required");
+        if (TextUtils.isEmpty(binding.EditTextPostDescription.getText().toString())) {
+            binding.EditTextPostDescription.setError("Required");
             return;
         }
-        if (TextUtils.isEmpty(editTextFromDistrict.getText().toString())) {
-            editTextFromDistrict.setError("Required");
+        if (TextUtils.isEmpty(binding.EditTextFromDistrict.getText().toString())) {
+            binding.EditTextFromDistrict.setError("Required");
             return;
         }
-        if (TextUtils.isEmpty(editTextFromUpazila.getText().toString())) {
-            editTextFromUpazila.setError("Required");
+        if (TextUtils.isEmpty(binding.EditTextFromUpazila.getText().toString())) {
+            binding.EditTextFromUpazila.setError("Required");
             return;
         }
-        if (TextUtils.isEmpty(editTextToDistrict.getText().toString())) {
-            editTextToDistrict.setError("Required");
+        if (TextUtils.isEmpty(binding.EditTextToDistrict.getText().toString())) {
+            binding.EditTextToDistrict.setError("Required");
             return;
         }
-        if (TextUtils.isEmpty(editTextToUpazila.getText().toString())) {
-            editTextToUpazila.setError("Required");
+        if (TextUtils.isEmpty(binding.EditTextToUpazila.getText().toString())) {
+            binding.EditTextToUpazila.setError("Required");
             return;
         }
         startActivity(new Intent(PostActivity.this, MainActivity.class));
