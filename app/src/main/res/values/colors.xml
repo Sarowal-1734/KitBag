@@ -9,7 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#555353</color>
     <color name="darker_gray">#474040</color>
-    <color name="app_bar">#2973ef</color>
-    <color name="title_bar">#2973ef</color>
+    <color name="app_bar">#0849B6</color>
+    <color name="title_bar">#0849B6</color>
     <color name="red">#FF0000</color>
 </resources>

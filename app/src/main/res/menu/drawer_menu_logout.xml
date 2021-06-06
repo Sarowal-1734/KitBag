@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <item
+        android:id="@+id/nav_login"
+        android:icon="@drawable/ic_profile"
+        android:title="Login" />
+
+    <item
+        android:id="@+id/nav_language"
+        android:icon="@drawable/ic_language"
+        android:title="Language" />
+
+    <item
+        android:id="@+id/nav_dark_mode"
+        android:icon="@drawable/ic_dark_mode"
+        android:title="Dark Mode"
+        app:actionLayout="@layout/switch_menu_dark_mode" />
+
+    <item
+        android:id="@+id/nav_discover_kitbag"
+        android:icon="@drawable/ic_language"
+        android:title="Discover KitBag" />
+
+    <item
+        android:id="@+id/nav_terms_conditions"
+        android:icon="@drawable/ic_password"
+        android:title="Terms &amp; Conditions" />
+
+    <item
+        android:id="@+id/nav_contact"
+        android:icon="@drawable/ic_contact"
+        android:title="Contact Us" />
+
+    <item
+        android:id="@+id/nav_about"
+        android:icon="@drawable/ic_info"
+        android:title="About Us" />
+
+</menu>

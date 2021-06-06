@@ -10,18 +10,13 @@
         android:title="Chat" />
 
     <item
-        android:id="@+id/nav_edit_profile"
-        android:icon="@drawable/ic_profile"
-        android:title="Edit Profile" />
-
-    <item
         android:id="@+id/nav_my_post"
         android:icon="@drawable/ic_my_post_list"
         android:title="My Posts" />
 
     <item
         android:id="@+id/nav_my_cart"
-        android:icon="@drawable/ic_chat"
+        android:icon="@drawable/ic_cart"
         android:title="My Cart" />
 
     <item
@@ -37,28 +32,27 @@
 
     <item
         android:id="@+id/nav_discover_kitbag"
-        android:icon="@drawable/ic_chat"
+        android:icon="@drawable/ic_language"
         android:title="Discover KitBag" />
 
     <item
-        android:id="@+id/nav_about"
-        android:icon="@drawable/ic_chat"
-        android:title="About Us" />
+        android:id="@+id/nav_terms_conditions"
+        android:icon="@drawable/ic_password"
+        android:title="Terms &amp; Conditions" />
 
     <item
         android:id="@+id/nav_contact"
-        android:icon="@drawable/ic_chat"
+        android:icon="@drawable/ic_contact"
         android:title="Contact Us" />
 
     <item
-        android:id="@+id/nav_terms_conditions"
-        android:icon="@drawable/ic_dark_mode"
-        android:title="Terms &amp; Conditions" />
+        android:id="@+id/nav_about"
+        android:icon="@drawable/ic_info"
+        android:title="About Us" />
 
     <item
         android:id="@+id/nav_logout"
         android:icon="@drawable/ic_logout"
         android:title="Log out" />
-
 
 </menu>
