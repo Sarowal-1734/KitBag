@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_login:
                     case R.id.nav_logout:
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
                         break;
@@ -155,6 +156,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    // Back to home on back pressed
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        moveTaskToBack(true);
     }
 
     // District and Upazila Recommendation
