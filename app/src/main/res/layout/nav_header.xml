@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="150dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#083787">
+    android:background="#13479E">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -15,7 +15,6 @@
             android:id="@+id/nav_user_photo"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_centerInParent="true"
             android:layout_marginBottom="5dp"
             android:src="@drawable/logo"
             app:civ_border_color="#F44336"
