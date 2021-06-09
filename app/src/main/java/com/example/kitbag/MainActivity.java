@@ -161,8 +161,12 @@ public class MainActivity extends AppCompatActivity {
     // Back to home on back pressed
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        moveTaskToBack(true);
+        //super.onBackPressed();
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
+        } else {
+            moveTaskToBack(true);
+        }
     }
 
     // District and Upazila Recommendation
