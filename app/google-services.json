@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "274507309559",
+    "project_id": "kitbag-ca2b0",
+    "storage_bucket": "kitbag-ca2b0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:274507309559:android:db0807fc259af3eaa60ef2",
+        "android_client_info": {
+          "package_name": "com.example.kitbag"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "274507309559-mmlsif10glf5na6pfvh5msm3n7ah1grv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYSAniU_biC6EUHGMcxBYyb-fTX1xSzMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "274507309559-mmlsif10glf5na6pfvh5msm3n7ah1grv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

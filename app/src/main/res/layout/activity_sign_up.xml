@@ -70,6 +70,7 @@
                     android:weightSum="6">
 
                     <com.hbb20.CountryCodePicker
+                        android:id="@+id/cpp"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginTop="5dp"
@@ -148,8 +149,8 @@
                     android:layout_height="60dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="32dp"
-                    android:onClick="onSignUpButtonClick"
-                    android:text="Sign Up"
+                    android:onClick="GetOTP"
+                    android:text="Get OTP"
                     android:textAllCaps="false" />
 
                 <TextView
