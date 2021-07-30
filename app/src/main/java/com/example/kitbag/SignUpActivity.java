@@ -2,18 +2,26 @@ package com.example.kitbag;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 
 import com.example.kitbag.databinding.ActivitySignUpBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private ActivitySignUpBinding binding;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +53,8 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
+        binding.cpp.registerCarrierNumberEditText(binding.editTextContact);
+
 
     }
 
@@ -52,11 +62,16 @@ public class SignUpActivity extends AppCompatActivity {
         onBackPressed();
     }
 
-    public void onSignUpButtonClick(View view) {
+    public void GetOTP(View view) {
         boolean valid = validation();
         if (valid){
-            startActivity(new Intent(SignUpActivity.this, MainActivity.class));
-            finish();
+            Intent intent = new Intent(SignUpActivity.this,OTP_Verification.class);
+
+            intent.putExtra("username", binding.editTextUsername.getText().toString());
+            intent.putExtra("mobile",binding.cpp.getFullNumberWithPlus().trim());
+            intent.putExtra("email", binding.editTextEmail.getText().toString());
+            intent.putExtra("password",binding.editTextPassword.getText().toString());
+            startActivity(intent);
         }
     }
 
