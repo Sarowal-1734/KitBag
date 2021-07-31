@@ -1,25 +1,18 @@
 package com.example.kitbag;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 
 import com.example.kitbag.databinding.ActivityLoginBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -35,6 +28,9 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Attach full number from edittext with cpp
+        binding.cpp.registerCarrierNumberEditText(binding.EditTextContact);
 
         // Initialize FirebaseAuth
         mAuth = FirebaseAuth.getInstance();
@@ -67,14 +63,17 @@ public class LoginActivity extends AppCompatActivity {
     public void onLoginButtonClick(View view) {
         if (TextUtils.isEmpty(binding.EditTextContact.getText().toString())) {
             binding.EditTextContact.setError("Required");
+            binding.EditTextContact.requestFocus();
             return;
         }
         if (TextUtils.isEmpty(binding.EditTextPassword.getText().toString())) {
             binding.EditTextPassword.setError("Required");
+            binding.EditTextPassword.requestFocus();
             return;
         }
         // Get user input data
-        String fakeEmail = binding.EditTextContact.getText().toString()+"@gmail.com";
+        String phone = binding.cpp.getFullNumber().trim();
+        String fakeEmail = phone + "@gmail.com";
         String password = binding.EditTextPassword.getText().toString();
         // Sign in with email and password
         mAuth.signInWithEmailAndPassword(fakeEmail, password)
