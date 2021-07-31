@@ -208,7 +208,8 @@
                     android:gravity="center"
                     android:layout_gravity="center"
                     android:layout_marginTop="8dp"
-                    android:text="@string/by_posting_this_ad_you_agree_to_our_terms_and_conditions"/>
+                    android:text="@string/by_posting_this_ad_you_agree_to_our_terms_and_conditions"
+                    android:layout_marginBottom="16dp"/>
             </LinearLayout>
 
         </ScrollView>

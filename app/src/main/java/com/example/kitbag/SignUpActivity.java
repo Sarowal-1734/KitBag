@@ -2,21 +2,14 @@ package com.example.kitbag;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 
 import com.example.kitbag.databinding.ActivitySignUpBinding;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -53,8 +46,8 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
+        // Attach full number from edittext with cpp
         binding.cpp.registerCarrierNumberEditText(binding.editTextContact);
-
 
     }
 
@@ -62,15 +55,15 @@ public class SignUpActivity extends AppCompatActivity {
         onBackPressed();
     }
 
-    public void GetOTP(View view) {
+    // On get OTP button clicked
+    public void onGetOTPButtonClicked(View view) {
         boolean valid = validation();
-        if (valid){
-            Intent intent = new Intent(SignUpActivity.this,OTP_Verification.class);
-
+        if (valid) {
+            Intent intent = new Intent(SignUpActivity.this, OTP_Verification.class);
             intent.putExtra("username", binding.editTextUsername.getText().toString());
-            intent.putExtra("mobile",binding.cpp.getFullNumberWithPlus().trim());
+            intent.putExtra("mobile", binding.cpp.getFullNumberWithPlus().trim());
             intent.putExtra("email", binding.editTextEmail.getText().toString());
-            intent.putExtra("password",binding.editTextPassword.getText().toString());
+            intent.putExtra("password", binding.editTextPassword.getText().toString());
             startActivity(intent);
         }
     }
@@ -78,10 +71,12 @@ public class SignUpActivity extends AppCompatActivity {
     private boolean validation() {
         if (TextUtils.isEmpty(binding.editTextUsername.getText().toString())) {
             binding.editTextUsername.setError("Required");
+            binding.editTextUsername.requestFocus();
             return false;
         }
         if (TextUtils.isEmpty(binding.editTextContact.getText().toString())) {
             binding.editTextContact.setError("Required");
+            binding.editTextContact.requestFocus();
             return false;
         }
         if (TextUtils.isEmpty(binding.editTextPassword.getText().toString())) {
@@ -89,13 +84,16 @@ public class SignUpActivity extends AppCompatActivity {
             return false;
         } else if (binding.editTextPassword.getText().toString().length() < 8) {
             binding.editTextPassword.setError("Minimum 8 characters");
+            binding.editTextPassword.requestFocus();
             return false;
         }
         if (TextUtils.isEmpty(binding.editTextConfirmPassword.getText().toString())) {
             binding.editTextConfirmPassword.setError("Required");
+            binding.editTextConfirmPassword.requestFocus();
             return false;
         } else if (binding.editTextConfirmPassword.getText().toString().length() < 8) {
             binding.editTextConfirmPassword.setError("Minimum 8 characters");
+            binding.editTextConfirmPassword.requestFocus();
             return false;
         }
         if (!binding.editTextPassword.getText().toString().equals(binding.editTextConfirmPassword.getText().toString())){

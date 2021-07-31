@@ -149,7 +149,7 @@
                     android:layout_height="60dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="32dp"
-                    android:onClick="GetOTP"
+                    android:onClick="onGetOTPButtonClicked"
                     android:text="Get OTP"
                     android:textAllCaps="false" />
 
@@ -159,7 +159,8 @@
                     android:gravity="center_horizontal"
                     android:onClick="onLoginButtonClick"
                     android:text="@string/already_have_an_account_login"
-                    android:textColor="@color/app_bar" />
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="16dp"/>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>

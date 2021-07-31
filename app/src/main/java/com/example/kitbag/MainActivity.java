@@ -21,6 +21,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityMainBinding;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,10 +36,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // Set drawer menu based on Login/Logout
-        binding.navigationView.getMenu().clear();
-        binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
-        binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
-        binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            // User is signed in
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+        } else {
+            // No user is signed in
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+        }
 
         // Initial view of dark mode button in drawer menu
         SwitchCompat switchDarkMode = MenuItemCompat.getActionView(binding.navigationView.getMenu().findItem(R.id.nav_dark_mode)).findViewById(R.id.switch_dark_mode);
@@ -84,11 +96,16 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav_login:
-                    case R.id.nav_logout:
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
                         break;
-                    case R.id.nav_about:
-                        Toast.makeText(MainActivity.this, "About", Toast.LENGTH_SHORT).show();
+                    case R.id.nav_logout:
+                        FirebaseAuth.getInstance().signOut();
+                        Toast.makeText(MainActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        // smoothly reload activity
+                        finish();
+                        overridePendingTransition(0,0);
+                        startActivity(getIntent());
+                        overridePendingTransition(0,0);
                         break;
                 }
                 return false;

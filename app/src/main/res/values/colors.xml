@@ -12,4 +12,5 @@
     <color name="app_bar">#1754B6</color>
     <color name="title_bar">#1754B6</color>
     <color name="red">#FF0000</color>
+    <color name="transparent_grey">#323E3D3D</color>
 </resources>
