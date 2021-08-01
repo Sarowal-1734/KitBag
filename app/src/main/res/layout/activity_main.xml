@@ -35,7 +35,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="end"
             app:headerLayout="@layout/nav_header"
-            app:menu="@menu/drawer_menu_login" />
+            app:menu="@menu/drawer_menu_logout"  />
     </androidx.drawerlayout.widget.DrawerLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
