@@ -29,15 +29,22 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
 
+    // For Authentication
+    FirebaseAuth mAuth;
+    FirebaseUser currentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // For Authentication
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
         // Set drawer menu based on Login/Logout
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
+        if (currentUser != null) {
             // User is signed in
             binding.navigationView.getMenu().clear();
             binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
@@ -45,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
         } else {
             // No user is signed in
+            binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
             binding.navigationView.getMenu().clear();
             binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);

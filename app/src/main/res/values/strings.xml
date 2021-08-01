@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">KitBag</string>
     <string name="forgotten_password">Forgotten Password?</string>
-    <string name="don_t_have_an_account_signup">Don\'t have an account? <font color='#1754B6'>Sign Up</font></string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
     <string name="login">Login</string>
     <string name="password">Password</string>
     <string name="contact">Contact</string>
@@ -9,7 +9,7 @@
     <string name="username">Username</string>
     <string name="district">District</string>
     <string name="confirm_password">Confirm Password</string>
-    <string name="already_have_an_account_login">Already have an account? <font color='#1754B6'>Login</font></string>
+    <string name="already_have_an_account">Already have an account?</string>
     <string name="create_post">Create post</string>
     <string name="post_title">Title</string>
     <string name="post_description">Description</string>

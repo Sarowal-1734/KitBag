@@ -12,16 +12,41 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.kitbag.databinding.ActivityNotificationsBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class NotificationsActivity extends AppCompatActivity {
 
     private ActivityNotificationsBinding binding;
+
+    // For Authentication
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityNotificationsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // For Authentication
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
+        // Set drawer menu based on Login/Logout
+        if (currentUser != null) {
+            // User is signed in
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+        } else {
+            // No user is signed in
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+        }
 
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);

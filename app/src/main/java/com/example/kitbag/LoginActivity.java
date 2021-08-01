@@ -15,6 +15,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.SignInMethodQueryResult;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -22,6 +24,7 @@ public class LoginActivity extends AppCompatActivity {
 
     // For Authentication
     private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +32,27 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // For Authentication
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
+        // Set drawer menu based on Login/Logout
+        if (currentUser != null) {
+            // User is signed in
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+        } else {
+            // No user is signed in
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+        }
+
         // Attach full number from edittext with cpp
         binding.cpp.registerCarrierNumberEditText(binding.EditTextContact);
-
-        // Initialize FirebaseAuth
-        mAuth = FirebaseAuth.getInstance();
 
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
@@ -75,7 +94,27 @@ public class LoginActivity extends AppCompatActivity {
         String phone = binding.cpp.getFullNumber().trim();
         String fakeEmail = phone + "@gmail.com";
         String password = binding.EditTextPassword.getText().toString();
-        // Sign in with email and password
+
+        // Check user already registered or not
+        mAuth.fetchSignInMethodsForEmail(fakeEmail)
+                .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+                        boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
+                        if (isNewUser) {
+                            binding.EditTextContact.setError("User Not Found!");
+                            binding.EditTextContact.requestFocus();
+                        } else {
+                            // Sign in with email and password
+                            SignIn(fakeEmail, password);
+                        }
+
+                    }
+                });
+    }
+
+    // Sign in with email and password
+    private void SignIn(String fakeEmail, String password) {
         mAuth.signInWithEmailAndPassword(fakeEmail, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -85,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
                         } else {
-                            Toast.makeText(LoginActivity.this, "Authentication failed!", Toast.LENGTH_SHORT).show();
+                            binding.EditTextPassword.setError("Password Didn't Match!");
                             binding.EditTextPassword.requestFocus();
                         }
                     }
@@ -93,7 +132,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
-    public void onSignupButtonClick(View view) {
+    // on Signup Button Clicked
+    public void onSignupButtonClicked(View view) {
         startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
+    }
+
+    // on Forgot Password Button Clicked
+    public void onForgotPassButtonClicked(View view) {
+        startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
     }
 }

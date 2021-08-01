@@ -19,6 +19,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -29,12 +30,13 @@ public class OTP_Verification extends AppCompatActivity {
 
     private ActivityOtpVerificationBinding binding;
 
-    private String otpId, phoneNumber, userName, email, password, pinViewOTP;
+    private String otpId, phoneNumber, userName, email, password, pinViewOTP, whatToDo;
 
     PhoneAuthProvider.ForceResendingToken mResendToken;
 
     // For Authentication
     private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
 
     @Override
@@ -43,8 +45,40 @@ public class OTP_Verification extends AppCompatActivity {
         binding = ActivityOtpVerificationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Initialize FirebaseAuth
+        // Picking value which send from signUp activity
+        whatToDo = getIntent().getStringExtra("whatToDo");
+        phoneNumber = getIntent().getStringExtra("mobile");
+        userName = getIntent().getStringExtra("username");
+        email = getIntent().getStringExtra("email");
+        password = getIntent().getStringExtra("password");
+
+        if (whatToDo.equals("resetPassword")) {
+            // Change the title of the appBar
+            binding.customAppBar.appbarTitle.setText("Forgot Password");
+            binding.buttonVerify.setText("Verify");
+        } else {
+            // Change the title of the appBar
+            binding.customAppBar.appbarTitle.setText("Sign Up");
+        }
+
+        // For Authentication
         mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+
+        // Set drawer menu based on Login/Logout
+        if (currentUser != null) {
+            // User is signed in
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+        } else {
+            // No user is signed in
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+        }
 
         // Open Drawer Layout
         binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
@@ -58,11 +92,14 @@ public class OTP_Verification extends AppCompatActivity {
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
-        // Picking value which send from signUp activity
-        phoneNumber = getIntent().getStringExtra("mobile");
-        userName = getIntent().getStringExtra("username");
-        email = getIntent().getStringExtra("email");
-        password = getIntent().getStringExtra("password");
+        // Adding back arrow in the appBar
+        binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
+        binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         // Set the phone number in UI
         binding.textViewPhoneNumber.setText("" + phoneNumber);
@@ -145,14 +182,21 @@ public class OTP_Verification extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            //FirebaseUser user = task.getResult().getUser();
-                            // Link phone number as fake email for login
-                            String subPhone = phoneNumber.substring(1, 14);
-                            AuthCredential authCredential = EmailAuthProvider.getCredential(subPhone + "@gmail.com", password);
-                            mAuth.getCurrentUser().linkWithCredential(authCredential);
-                            Toast.makeText(OTP_Verification.this, "Registration Success!", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(OTP_Verification.this, MainActivity.class));
-                            finish();
+                            if (whatToDo.equals("resetPassword")) {
+                                // send to Reset password activity
+                                startActivity(new Intent(OTP_Verification.this, ResetPasswordActivity.class));
+                                finish();
+                            } else {
+                                // Register user
+                                //FirebaseUser user = task.getResult().getUser();
+                                // Link phone number as fake email for login
+                                String subPhone = phoneNumber.substring(1, 14);
+                                AuthCredential authCredential = EmailAuthProvider.getCredential(subPhone + "@gmail.com", password);
+                                mAuth.getCurrentUser().linkWithCredential(authCredential);
+                                Toast.makeText(OTP_Verification.this, "Registration Success!", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(OTP_Verification.this, MainActivity.class));
+                                finish();
+                            }
                         } else {
                             Toast.makeText(OTP_Verification.this, "Wrong OTP!", Toast.LENGTH_SHORT).show();
                         }
