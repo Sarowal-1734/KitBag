@@ -29,9 +29,12 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
 
+    // Exit app on back pressed again
+    private long backPressedTime;
+
     // For Authentication
-    FirebaseAuth mAuth;
-    FirebaseUser currentUser;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,17 @@ public class MainActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        // Status to check that the password successfully resetted or not
+        if (!SharedPreference.getPasswordResettedValue(this)) {
+            // smoothly signout activity
+            SharedPreference.setPasswordResettedValue(MainActivity.this, true);
+            mAuth.signOut();
+            finish();
+            overridePendingTransition(0,0);
+            startActivity(getIntent());
+            overridePendingTransition(0,0);
+        }
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -107,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
                         break;
                     case R.id.nav_logout:
-                        FirebaseAuth.getInstance().signOut();
+                        mAuth.signOut();
                         Toast.makeText(MainActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
                         // smoothly reload activity
                         finish();
@@ -183,14 +197,20 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    // Back to home on back pressed
+    // Exit app on back pressed
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
         } else {
-            moveTaskToBack(true);
+            if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                moveTaskToBack(true);
+            }
+            else {
+                Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+            }
+            backPressedTime = System.currentTimeMillis();
         }
     }
 

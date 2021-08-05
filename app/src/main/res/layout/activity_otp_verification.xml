@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".OTP_Verification"
-    tools:openDrawer="start">
+    tools:context=".OTP_Verification">
 
-    <LinearLayout
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        tools:openDrawer="start">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
             <include
                 android:id="@+id/custom_app_bar"
@@ -78,7 +82,7 @@
                     app:pinBackground="@color/transparent_grey"
                     app:pinWidth="40dp"
                     app:textSize="12sp"
-                    android:layout_marginBottom="16dp"/>
+                    android:layout_marginBottom="8dp"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -94,30 +98,47 @@
                         android:id="@+id/textViewResendOTP"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="2dp"
+                        android:padding="8dp"
                         android:text="@string/resend_otp"
+                        android:clickable="true"
+                        android:background="?attr/selectableItemBackground"
                         android:textColor="@color/app_bar"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:focusable="true" />
                 </LinearLayout>
 
                 <Button
                     android:id="@+id/buttonVerify"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:layout_marginTop="8dp"
                     android:layout_marginBottom="16dp"
                     android:onClick="onSignInButtonClicked"
                     android:text="Verify and Signin"
                     android:textAllCaps="true" />
             </LinearLayout>
         </ScrollView>
-    </LinearLayout>
+        </LinearLayout>
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/navigation_view"
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navigation_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            app:headerLayout="@layout/nav_header"
+            app:menu="@menu/drawer_menu_logout" />
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="end"
-        app:headerLayout="@layout/nav_header"
-        app:menu="@menu/drawer_menu_logout"  />
-</androidx.drawerlayout.widget.DrawerLayout>
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/snackBarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="45dp" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

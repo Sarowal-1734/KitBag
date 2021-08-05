@@ -1,21 +1,25 @@
 package com.example.kitbag;
 
-import androidx.activity.result.contract.ActivityResultContracts;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.Toast;
-
 import com.example.kitbag.databinding.ActivityResetPasswordBinding;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -24,7 +28,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
     private ActivityResetPasswordBinding binding;
 
     // For Authentication
-    FirebaseAuth mAuth;
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +39,18 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
         // Initialize FirebaseAuth
         mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
 
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+
+        // Set drawer menu based on Login/Logout
+        // Set as no user is signed in
+        binding.navigationView.getMenu().clear();
+        binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
+        binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
+        binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
         // Adding back arrow in the appBar
@@ -44,6 +58,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
         binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
+                mAuth.signOut();
                 onBackPressed();
             }
         });
@@ -59,26 +75,52 @@ public class ResetPasswordActivity extends AppCompatActivity {
             }
         });
 
+        // On drawer menu item clicked
+        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_login:
+                        Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
+                        mAuth.signOut();
+                        startActivity(new Intent(ResetPasswordActivity.this, LoginActivity.class));
+                        finish();
+                        break;
+                }
+                return false;
+            }
+        });
+
     }
 
     public void onResetPasswordButtonClicked(View view) {
         boolean valid = validation();
         if (valid) {
-            FirebaseUser currentUser = mAuth.getCurrentUser();
-            String newPassword = binding.editTextPassword.getText().toString();
-            currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void unused) {
-                    Toast.makeText(ResetPasswordActivity.this, "Password Reset Successfully.", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(ResetPasswordActivity.this, MainActivity.class));
-                    finish();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
-                }
-            });
+            if (isConnected()) {
+                binding.progressBar.setVisibility(View.VISIBLE);
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+                String newPassword = binding.editTextPassword.getText().toString();
+                currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        binding.progressBar.setVisibility(View.GONE);
+                        // Status to check that the password successfully resetted or not
+                        SharedPreference.setPasswordResettedValue(ResetPasswordActivity.this, true);
+                        Toast.makeText(ResetPasswordActivity.this, "Password Reset Successfully.", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(ResetPasswordActivity.this, MainActivity.class));
+                        finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        binding.progressBar.setVisibility(View.GONE);
+                        Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                binding.progressBar.setVisibility(View.GONE);
+                showMessageNoConnection();
+            }
         }
     }
 
@@ -100,11 +142,36 @@ public class ResetPasswordActivity extends AppCompatActivity {
             binding.editTextConfirmPassword.requestFocus();
             return false;
         }
-        if (!binding.editTextPassword.getText().toString().equals(binding.editTextConfirmPassword.getText().toString())){
+        if (!binding.editTextPassword.getText().toString().equals(binding.editTextConfirmPassword.getText().toString())) {
             binding.editTextConfirmPassword.setError("Password doesn't match");
             binding.editTextConfirmPassword.requestFocus();
             return false;
         }
         return true;
+    }
+
+    // Check the internet connection
+    public boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    // Message no connection
+    private void showMessageNoConnection() {
+        View parentLayout = findViewById(R.id.snackBarContainer);
+        // create an instance of the snackBar
+        final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+        // inflate the custom_snackBar_view created previously
+        View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
+        // set the background of the default snackBar as transparent
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        // now change the layout of the snackBar
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        // set padding of the all corners as 0
+        snackbarLayout.setPadding(0, 0, 0, 0);
+        // add the custom snack bar layout to snackbar layout
+        snackbarLayout.addView(customSnackView, 0);
+        snackbar.show();
     }
 }
