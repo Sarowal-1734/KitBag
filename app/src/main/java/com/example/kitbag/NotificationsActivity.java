@@ -1,15 +1,10 @@
 package com.example.kitbag;
 
+import android.os.Bundle;
+import android.view.View;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.example.kitbag.databinding.ActivityNotificationsBinding;
 import com.google.firebase.auth.FirebaseAuth;

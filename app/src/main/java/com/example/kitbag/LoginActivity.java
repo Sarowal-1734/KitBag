@@ -1,18 +1,27 @@
 package com.example.kitbag;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityLoginBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -95,22 +104,47 @@ public class LoginActivity extends AppCompatActivity {
         String fakeEmail = phone + "@gmail.com";
         String password = binding.EditTextPassword.getText().toString();
 
-        // Check user already registered or not
-        mAuth.fetchSignInMethodsForEmail(fakeEmail)
-                .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
-                        boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
-                        if (isNewUser) {
-                            binding.EditTextContact.setError("User Not Found!");
-                            binding.EditTextContact.requestFocus();
-                        } else {
-                            // Sign in with email and password
-                            SignIn(fakeEmail, password);
-                        }
+        // Check the internet connection then do the background tasks
+        if (isConnected()) {
+            // Connected
 
-                    }
-                });
+            // Show progressBar
+            binding.progressBar.setVisibility(View.VISIBLE);
+
+            // Check user already registered or not
+            mAuth.fetchSignInMethodsForEmail(fakeEmail)
+                    .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+                            boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
+                            if (isNewUser) {
+                                // Hide progressBar
+                                binding.progressBar.setVisibility(View.GONE);
+
+                                binding.EditTextContact.setError("User Not Found!");
+                                binding.EditTextContact.requestFocus();
+                            } else {
+                                // Sign in with email and password
+                                SignIn(fakeEmail, password);
+                            }
+                        }
+                    });
+        } else {
+            View parentLayout = findViewById(R.id.snackBarContainer);
+            // create an instance of the snackBar
+            final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+            // inflate the custom_snackBar_view created previously
+            View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
+            // set the background of the default snackBar as transparent
+            snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+            // now change the layout of the snackBar
+            Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+            // set padding of the all corners as 0
+            snackbarLayout.setPadding(0, 0, 0, 0);
+            // add the custom snack bar layout to snackbar layout
+            snackbarLayout.addView(customSnackView, 0);
+            snackbar.show();
+        }
     }
 
     // Sign in with email and password
@@ -120,10 +154,14 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            // Hide progressBar
+                            binding.progressBar.setVisibility(View.GONE);
                             Toast.makeText(LoginActivity.this, "Login Success!", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
                         } else {
+                            // Hide progressBar
+                            binding.progressBar.setVisibility(View.GONE);
                             binding.EditTextPassword.setError("Password Didn't Match!");
                             binding.EditTextPassword.requestFocus();
                         }
@@ -131,6 +169,13 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
+
+    // Check the internet connection
+    public boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
     // on Signup Button Clicked
     public void onSignupButtonClicked(View view) {

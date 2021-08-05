@@ -1,7 +1,10 @@
 package com.example.kitbag;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -14,6 +17,7 @@ import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
 import com.goodiebag.pinview.Pinview;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -148,31 +152,66 @@ public class OTP_Verification extends AppCompatActivity {
 
     // Initialize phone number verification
     public void manageOTP() {
-        PhoneAuthOptions options = PhoneAuthOptions.newBuilder(mAuth)
-                .setPhoneNumber(phoneNumber)       // Phone number to verify
-                .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                .setActivity(this)                 // Activity (for callback binding)
-                .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
-                .build();
-        PhoneAuthProvider.verifyPhoneNumber(options);
+        if (isConnected()) {
+            PhoneAuthOptions options = PhoneAuthOptions.newBuilder(mAuth)
+                    .setPhoneNumber(phoneNumber)       // Phone number to verify
+                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                    .setActivity(this)                 // Activity (for callback binding)
+                    .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
+                    .build();
+            PhoneAuthProvider.verifyPhoneNumber(options);
+        } else {
+            showMessageNoConnection();
+        }
     }
 
     // On resend OTP button clicked
     private void resendVerificationCode() {
-        PhoneAuthOptions options = PhoneAuthOptions.newBuilder(mAuth)
-                .setPhoneNumber(phoneNumber)       // Phone number to verify
-                .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                .setActivity(this)                 // Activity (for callback binding)
-                .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
-                .setForceResendingToken(mResendToken)     // ForceResendingToken from callbacks
-                .build();
-        PhoneAuthProvider.verifyPhoneNumber(options);
+        if (isConnected()) {
+            PhoneAuthOptions options = PhoneAuthOptions.newBuilder(mAuth)
+                    .setPhoneNumber(phoneNumber)       // Phone number to verify
+                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                    .setActivity(this)                 // Activity (for callback binding)
+                    .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
+                    .setForceResendingToken(mResendToken)     // ForceResendingToken from callbacks
+                    .build();
+            PhoneAuthProvider.verifyPhoneNumber(options);
+        } else {
+            showMessageNoConnection();
+        }
     }
 
     // On Sign in button clicked
     public void onSignInButtonClicked(View view) {
-        PhoneAuthCredential credential = PhoneAuthProvider.getCredential(otpId, pinViewOTP);
-        signInWithPhoneAuthCredential(credential);
+        if (isConnected()) {
+            // Show progressBar
+            binding.progressBar.setVisibility(View.VISIBLE);
+            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(otpId, pinViewOTP);
+            signInWithPhoneAuthCredential(credential);
+        } else {
+            // Hide progressBar
+            binding.progressBar.setVisibility(View.GONE);
+            showMessageNoConnection();
+        }
+
+    }
+
+    // Message no connection
+    private void showMessageNoConnection() {
+        View parentLayout = findViewById(R.id.snackBarContainer);
+        // create an instance of the snackBar
+        final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+        // inflate the custom_snackBar_view created previously
+        View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
+        // set the background of the default snackBar as transparent
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        // now change the layout of the snackBar
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        // set padding of the all corners as 0
+        snackbarLayout.setPadding(0, 0, 0, 0);
+        // add the custom snack bar layout to snackbar layout
+        snackbarLayout.addView(customSnackView, 0);
+        snackbar.show();
     }
 
     // sign_in_with_phone
@@ -183,6 +222,10 @@ public class OTP_Verification extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             if (whatToDo.equals("resetPassword")) {
+                                // Hide progressBar
+                                binding.progressBar.setVisibility(View.GONE);
+                                // Status to check that the password successfully resetted or not
+                                SharedPreference.setPasswordResettedValue(OTP_Verification.this, false);
                                 // send to Reset password activity
                                 startActivity(new Intent(OTP_Verification.this, ResetPasswordActivity.class));
                                 finish();
@@ -193,14 +236,26 @@ public class OTP_Verification extends AppCompatActivity {
                                 String subPhone = phoneNumber.substring(1, 14);
                                 AuthCredential authCredential = EmailAuthProvider.getCredential(subPhone + "@gmail.com", password);
                                 mAuth.getCurrentUser().linkWithCredential(authCredential);
+                                // Hide progressBar
+                                binding.progressBar.setVisibility(View.GONE);
                                 Toast.makeText(OTP_Verification.this, "Registration Success!", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(OTP_Verification.this, MainActivity.class));
                                 finish();
                             }
                         } else {
+                            // Hide progressBar
+                            binding.progressBar.setVisibility(View.GONE);
                             Toast.makeText(OTP_Verification.this, "Wrong OTP!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
+
+    // Check the internet connection
+    public boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
 }
