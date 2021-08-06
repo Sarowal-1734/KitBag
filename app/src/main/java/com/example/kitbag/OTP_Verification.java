@@ -16,6 +16,7 @@ import androidx.core.view.GravityCompat;
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
 import com.goodiebag.pinview.Pinview;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseException;
@@ -27,7 +28,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class OTP_Verification extends AppCompatActivity {
@@ -42,6 +47,10 @@ public class OTP_Verification extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
+
+    // FireStore Connection
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final CollectionReference collectionReference = db.collection("Users");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +76,6 @@ public class OTP_Verification extends AppCompatActivity {
 
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -231,16 +239,31 @@ public class OTP_Verification extends AppCompatActivity {
                                 finish();
                             } else {
                                 // Register user
-                                //FirebaseUser user = task.getResult().getUser();
+                                currentUser = task.getResult().getUser();
                                 // Link phone number as fake email for login
                                 String subPhone = phoneNumber.substring(1, 14);
                                 AuthCredential authCredential = EmailAuthProvider.getCredential(subPhone + "@gmail.com", password);
-                                mAuth.getCurrentUser().linkWithCredential(authCredential);
-                                // Hide progressBar
-                                binding.progressBar.setVisibility(View.GONE);
-                                Toast.makeText(OTP_Verification.this, "Registration Success!", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(OTP_Verification.this, MainActivity.class));
-                                finish();
+                                currentUser.linkWithCredential(authCredential);
+
+                                // Store user info in Database
+                                Map<String, String> user = new HashMap<>();
+                                user.put("userId", currentUser.getUid());
+                                user.put("userName", userName);
+                                user.put("phoneNumber", phoneNumber);
+                                user.put("email", email);
+                                user.put("userType", "GENERAL_USER");
+                                user.put("imageUrl", null);
+                                collectionReference.document(currentUser.getUid()).set(user)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void unused) {
+                                                // Hide progressBar
+                                                binding.progressBar.setVisibility(View.GONE);
+                                                Toast.makeText(OTP_Verification.this, "Registration Success!", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(OTP_Verification.this, MainActivity.class));
+                                                finish();
+                                            }
+                                        });
                             }
                         } else {
                             // Hide progressBar
