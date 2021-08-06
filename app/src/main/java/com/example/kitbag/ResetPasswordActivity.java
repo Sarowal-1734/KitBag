@@ -22,6 +22,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.r0adkll.slidr.Slidr;
 
 public class ResetPasswordActivity extends AppCompatActivity {
 
@@ -40,6 +41,9 @@ public class ResetPasswordActivity extends AppCompatActivity {
         // Initialize FirebaseAuth
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        // Swipe to back
+        Slidr.attach(this);
 
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);

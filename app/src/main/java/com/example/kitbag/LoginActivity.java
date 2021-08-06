@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.transition.Slide;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
+import com.r0adkll.slidr.Slidr;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -44,6 +46,9 @@ public class LoginActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        // Swipe to back
+        Slidr.attach(this);
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {

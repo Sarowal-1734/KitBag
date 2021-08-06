@@ -13,6 +13,7 @@ import androidx.core.view.GravityCompat;
 import com.example.kitbag.databinding.ActivityPostBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.r0adkll.slidr.Slidr;
 
 public class PostActivity extends AppCompatActivity {
 
@@ -34,6 +35,9 @@ public class PostActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        // Swipe to back
+        Slidr.attach(this);
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {

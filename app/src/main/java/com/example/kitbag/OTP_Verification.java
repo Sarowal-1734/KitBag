@@ -30,6 +30,7 @@ import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.r0adkll.slidr.Slidr;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,6 +58,9 @@ public class OTP_Verification extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityOtpVerificationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Swipe to back
+        Slidr.attach(this);
 
         // Picking value which send from signUp activity
         whatToDo = getIntent().getStringExtra("whatToDo");

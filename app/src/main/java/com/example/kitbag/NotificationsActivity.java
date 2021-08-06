@@ -9,6 +9,7 @@ import androidx.core.view.GravityCompat;
 import com.example.kitbag.databinding.ActivityNotificationsBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.r0adkll.slidr.Slidr;
 
 public class NotificationsActivity extends AppCompatActivity {
 
@@ -27,6 +28,9 @@ public class NotificationsActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        // Swipe to back
+        Slidr.attach(this);
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {

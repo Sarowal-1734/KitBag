@@ -20,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
+import com.r0adkll.slidr.Slidr;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -38,6 +39,9 @@ public class SignUpActivity extends AppCompatActivity {
         // Initialize FirebaseAuth
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        // Swipe to back
+        Slidr.attach(this);
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {

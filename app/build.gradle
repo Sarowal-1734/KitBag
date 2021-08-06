@@ -41,10 +41,10 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
     
-    //implementation 'com.google.firebase:firebase-auth:21.0.1'
+    // implementation 'com.google.firebase:firebase-auth:21.0.1'
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:28.3.0')
 
@@ -58,13 +58,15 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    //Circular ImageView
+    // Circular ImageView
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     // Phone Code and Country Flag
     implementation 'com.hbb20:ccp:2.4.0'
     // Zooming PhotoView
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation 'com.android.support:multidex:1.0.3'
-    //pinview library dependency
+    // pinView library dependency
     implementation 'com.github.GoodieBag:Pinview:v1.4'
+    // Swipe to back
+    implementation 'com.r0adkll:slidableactivity:2.0.6'
 }
