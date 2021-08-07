@@ -22,7 +22,7 @@
             android:parentActivityName=".LoginActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
-            android:name=".OTP_Verification"
+            android:name=".OtpVerificationActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".NotificationsActivity"

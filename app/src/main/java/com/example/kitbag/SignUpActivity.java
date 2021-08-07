@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivitySignUpBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,10 +22,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrInterface;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private ActivitySignUpBinding binding;
+
+    // Swipe to back
+    private SlidrInterface slidrInterface;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -41,7 +46,7 @@ public class SignUpActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
 
         // Swipe to back
-        Slidr.attach(this);
+        slidrInterface = Slidr.attach(this);
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -83,6 +88,28 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
+        // Active Inactive Slider to back based on drawer
+        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                getCurrentFocus().clearFocus();
+                slidrInterface.lock();
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                slidrInterface.unlock();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+        });
+
         // Attach full number from edittext with cpp
         binding.cpp.registerCarrierNumberEditText(binding.editTextContact);
 
@@ -107,7 +134,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
                                 if (isNewUser) {
                                     binding.progressBar.setVisibility(View.GONE);
-                                    Intent intent = new Intent(SignUpActivity.this, OTP_Verification.class);
+                                    Intent intent = new Intent(SignUpActivity.this, OtpVerificationActivity.class);
                                     intent.putExtra("whatToDo", "registration");
                                     intent.putExtra("username", binding.editTextUsername.getText().toString());
                                     intent.putExtra("mobile", binding.cpp.getFullNumberWithPlus().trim());
@@ -162,6 +189,16 @@ public class SignUpActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    // Close Drawer on back pressed
+    @Override
+    public void onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
+            return;
+        }
+        super.onBackPressed();
     }
 
     // Check the internet connection

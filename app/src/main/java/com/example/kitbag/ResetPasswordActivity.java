@@ -14,6 +14,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityResetPasswordBinding;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -23,10 +24,14 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrInterface;
 
 public class ResetPasswordActivity extends AppCompatActivity {
 
     private ActivityResetPasswordBinding binding;
+
+    // Swipe to back
+    private SlidrInterface slidrInterface;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -43,7 +48,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
 
         // Swipe to back
-        Slidr.attach(this);
+        slidrInterface = Slidr.attach(this);
 
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
@@ -76,6 +81,28 @@ public class ResetPasswordActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 binding.drawerLayout.openDrawer(GravityCompat.END);
+            }
+        });
+
+        // Active Inactive Slider to back based on drawer
+        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                getCurrentFocus().clearFocus();
+                slidrInterface.lock();
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                slidrInterface.unlock();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
             }
         });
 
@@ -152,6 +179,16 @@ public class ResetPasswordActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    // Close Drawer on back pressed
+    @Override
+    public void onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
+            return;
+        }
+        super.onBackPressed();
     }
 
     // Check the internet connection

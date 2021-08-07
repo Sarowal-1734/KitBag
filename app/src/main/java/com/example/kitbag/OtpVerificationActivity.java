@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
 import com.goodiebag.pinview.Pinview;
@@ -31,22 +32,25 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrInterface;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class OTP_Verification extends AppCompatActivity {
+public class OtpVerificationActivity extends AppCompatActivity {
 
     private ActivityOtpVerificationBinding binding;
 
     private String otpId, phoneNumber, userName, email, password, pinViewOTP, whatToDo;
 
-    PhoneAuthProvider.ForceResendingToken mResendToken;
+    // Swipe to back
+    private SlidrInterface slidrInterface;
 
     // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    PhoneAuthProvider.ForceResendingToken mResendToken;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
 
     // FireStore Connection
@@ -60,7 +64,7 @@ public class OTP_Verification extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // Swipe to back
-        Slidr.attach(this);
+        slidrInterface = Slidr.attach(this);
 
         // Picking value which send from signUp activity
         whatToDo = getIntent().getStringExtra("whatToDo");
@@ -104,6 +108,27 @@ public class OTP_Verification extends AppCompatActivity {
             }
         });
 
+        // Active Inactive Slider to back based on drawer
+        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                slidrInterface.lock();
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                slidrInterface.unlock();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+        });
+
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
@@ -124,18 +149,18 @@ public class OTP_Verification extends AppCompatActivity {
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-                Toast.makeText(OTP_Verification.this, "An OTP has been sent", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OtpVerificationActivity.this, "An OTP has been sent", Toast.LENGTH_SHORT).show();
                 signInWithPhoneAuthCredential(phoneAuthCredential);
             }
 
             @Override
             public void onVerificationFailed(@NonNull FirebaseException e) {
-                Toast.makeText(OTP_Verification.this, "Failed to sent OTP!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OtpVerificationActivity.this, "Failed to sent OTP!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                Toast.makeText(OTP_Verification.this, "An OTP has been sent", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OtpVerificationActivity.this, "An OTP has been sent", Toast.LENGTH_SHORT).show();
                 otpId = s;
                 mResendToken = forceResendingToken;
             }
@@ -237,9 +262,9 @@ public class OTP_Verification extends AppCompatActivity {
                                 // Hide progressBar
                                 binding.progressBar.setVisibility(View.GONE);
                                 // Status to check that the password successfully resetted or not
-                                SharedPreference.setPasswordResettedValue(OTP_Verification.this, false);
+                                SharedPreference.setPasswordResettedValue(OtpVerificationActivity.this, false);
                                 // send to Reset password activity
-                                startActivity(new Intent(OTP_Verification.this, ResetPasswordActivity.class));
+                                startActivity(new Intent(OtpVerificationActivity.this, ResetPasswordActivity.class));
                                 finish();
                             } else {
                                 // Register user
@@ -263,8 +288,8 @@ public class OTP_Verification extends AppCompatActivity {
                                             public void onSuccess(Void unused) {
                                                 // Hide progressBar
                                                 binding.progressBar.setVisibility(View.GONE);
-                                                Toast.makeText(OTP_Verification.this, "Registration Success!", Toast.LENGTH_SHORT).show();
-                                                startActivity(new Intent(OTP_Verification.this, MainActivity.class));
+                                                Toast.makeText(OtpVerificationActivity.this, "Registration Success!", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
                                                 finish();
                                             }
                                         });
@@ -272,10 +297,20 @@ public class OTP_Verification extends AppCompatActivity {
                         } else {
                             // Hide progressBar
                             binding.progressBar.setVisibility(View.GONE);
-                            Toast.makeText(OTP_Verification.this, "Wrong OTP!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(OtpVerificationActivity.this, "Wrong OTP!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+    }
+
+    // Close Drawer on back pressed
+    @Override
+    public void onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
+            return;
+        }
+        super.onBackPressed();
     }
 
     // Check the internet connection
