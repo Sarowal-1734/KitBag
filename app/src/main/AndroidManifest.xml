@@ -13,26 +13,37 @@
         android:theme="@style/Theme.KitBag">
         <activity
             android:name=".ResetPasswordActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:parentActivityName=".ForgotPasswordActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".ForgotPasswordActivity"
-            android:exported="true" />
-        <activity android:name=".OTP_Verification" />
+            android:exported="true"
+            android:parentActivityName=".LoginActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
+        <activity
+            android:name=".OtpVerificationActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".NotificationsActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".PostInfoActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".PostActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".SignUpActivity"
-            android:parentActivityName=".LoginActivity" />
+            android:parentActivityName=".LoginActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".LoginActivity"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

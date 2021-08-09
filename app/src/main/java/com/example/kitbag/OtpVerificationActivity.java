@@ -12,10 +12,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
 import com.goodiebag.pinview.Pinview;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseException;
@@ -27,27 +29,42 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrInterface;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class OTP_Verification extends AppCompatActivity {
+public class OtpVerificationActivity extends AppCompatActivity {
 
     private ActivityOtpVerificationBinding binding;
 
     private String otpId, phoneNumber, userName, email, password, pinViewOTP, whatToDo;
 
-    PhoneAuthProvider.ForceResendingToken mResendToken;
+    // Swipe to back
+    private SlidrInterface slidrInterface;
 
     // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    PhoneAuthProvider.ForceResendingToken mResendToken;
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
+
+    // FireStore Connection
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final CollectionReference collectionReference = db.collection("Users");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityOtpVerificationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Swipe to back
+        slidrInterface = Slidr.attach(this);
 
         // Picking value which send from signUp activity
         whatToDo = getIntent().getStringExtra("whatToDo");
@@ -67,7 +84,6 @@ public class OTP_Verification extends AppCompatActivity {
 
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -92,6 +108,27 @@ public class OTP_Verification extends AppCompatActivity {
             }
         });
 
+        // Active Inactive Slider to back based on drawer
+        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                slidrInterface.lock();
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                slidrInterface.unlock();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+        });
+
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
@@ -112,18 +149,18 @@ public class OTP_Verification extends AppCompatActivity {
         mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             @Override
             public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-                Toast.makeText(OTP_Verification.this, "An OTP has been sent", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OtpVerificationActivity.this, "An OTP has been sent", Toast.LENGTH_SHORT).show();
                 signInWithPhoneAuthCredential(phoneAuthCredential);
             }
 
             @Override
             public void onVerificationFailed(@NonNull FirebaseException e) {
-                Toast.makeText(OTP_Verification.this, "Failed to sent OTP!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OtpVerificationActivity.this, "Failed to sent OTP!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                Toast.makeText(OTP_Verification.this, "An OTP has been sent", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OtpVerificationActivity.this, "An OTP has been sent", Toast.LENGTH_SHORT).show();
                 otpId = s;
                 mResendToken = forceResendingToken;
             }
@@ -225,30 +262,55 @@ public class OTP_Verification extends AppCompatActivity {
                                 // Hide progressBar
                                 binding.progressBar.setVisibility(View.GONE);
                                 // Status to check that the password successfully resetted or not
-                                SharedPreference.setPasswordResettedValue(OTP_Verification.this, false);
+                                SharedPreference.setPasswordResettedValue(OtpVerificationActivity.this, false);
                                 // send to Reset password activity
-                                startActivity(new Intent(OTP_Verification.this, ResetPasswordActivity.class));
+                                startActivity(new Intent(OtpVerificationActivity.this, ResetPasswordActivity.class));
                                 finish();
                             } else {
                                 // Register user
-                                //FirebaseUser user = task.getResult().getUser();
+                                currentUser = task.getResult().getUser();
                                 // Link phone number as fake email for login
                                 String subPhone = phoneNumber.substring(1, 14);
                                 AuthCredential authCredential = EmailAuthProvider.getCredential(subPhone + "@gmail.com", password);
-                                mAuth.getCurrentUser().linkWithCredential(authCredential);
-                                // Hide progressBar
-                                binding.progressBar.setVisibility(View.GONE);
-                                Toast.makeText(OTP_Verification.this, "Registration Success!", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(OTP_Verification.this, MainActivity.class));
-                                finish();
+                                currentUser.linkWithCredential(authCredential);
+
+                                // Store user info in Database
+                                Map<String, String> user = new HashMap<>();
+                                user.put("userId", currentUser.getUid());
+                                user.put("userName", userName);
+                                user.put("phoneNumber", phoneNumber);
+                                user.put("email", email);
+                                user.put("userType", "GENERAL_USER");
+                                user.put("imageUrl", null);
+                                collectionReference.document(currentUser.getUid()).set(user)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void unused) {
+                                                // Hide progressBar
+                                                binding.progressBar.setVisibility(View.GONE);
+                                                Toast.makeText(OtpVerificationActivity.this, "Registration Success!", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
+                                                finish();
+                                            }
+                                        });
                             }
                         } else {
                             // Hide progressBar
                             binding.progressBar.setVisibility(View.GONE);
-                            Toast.makeText(OTP_Verification.this, "Wrong OTP!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(OtpVerificationActivity.this, "Wrong OTP!", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
+    }
+
+    // Close Drawer on back pressed
+    @Override
+    public void onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
+            return;
+        }
+        super.onBackPressed();
     }
 
     // Check the internet connection

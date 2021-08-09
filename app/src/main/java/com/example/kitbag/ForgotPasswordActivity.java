@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityForgotPasswordBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -20,10 +21,15 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
+import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrInterface;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
 
     private ActivityForgotPasswordBinding binding;
+
+    // Swipe to back
+    private SlidrInterface slidrInterface;
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -37,6 +43,9 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         // Initialize FirebaseAuth
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        // Swipe to back
+        slidrInterface = Slidr.attach(this);
 
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
@@ -62,6 +71,28 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 binding.drawerLayout.openDrawer(GravityCompat.END);
+            }
+        });
+
+        // Active Inactive Slider to back based on drawer
+        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                getCurrentFocus().clearFocus();
+                slidrInterface.lock();
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                slidrInterface.unlock();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
             }
         });
 
@@ -108,7 +139,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                             } else {
                                 // Hide progressBar
                                 binding.progressBar.setVisibility(View.GONE);
-                                Intent intent = new Intent(ForgotPasswordActivity.this, OTP_Verification.class);
+                                Intent intent = new Intent(ForgotPasswordActivity.this, OtpVerificationActivity.class);
                                 intent.putExtra("whatToDo", "resetPassword");
                                 intent.putExtra("mobile", binding.cpp.getFullNumberWithPlus().trim());
                                 startActivity(intent);
@@ -131,6 +162,16 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             snackbarLayout.addView(customSnackView, 0);
             snackbar.show();
         }
+    }
+
+    // Close Drawer on back pressed
+    @Override
+    public void onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
+            return;
+        }
+        super.onBackPressed();
     }
 
     // Check the internet connection

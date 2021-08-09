@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -20,9 +21,13 @@ import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityMainBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
+    // FireStore Connection
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final CollectionReference collectionReference = db.collection("Users");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Status to check that the password successfully resetted or not
         if (!SharedPreference.getPasswordResettedValue(this)) {
-            // smoothly signout activity
+            // smoothly signOut activity
             SharedPreference.setPasswordResettedValue(MainActivity.this, true);
             mAuth.signOut();
             finish();
@@ -64,6 +73,18 @@ public class MainActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            // Get userName and image from database and set to the drawer
+            collectionReference.document(currentUser.getUid()).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
+                            NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+                            View view = navigationView.getHeaderView(0);
+                            TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
+                            userName.setText(documentSnapshot.getString("userName"));
+                        }
+                    });
         } else {
             // No user is signed in
             binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);

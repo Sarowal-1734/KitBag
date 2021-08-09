@@ -3,16 +3,23 @@ package com.example.kitbag;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrInterface;
 
 public class PostInfoActivity extends AppCompatActivity {
 
     private ActivityPostInfoBinding binding;
+
+    // Swipe to back
+    private SlidrInterface slidrInterface;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -30,6 +37,9 @@ public class PostInfoActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        // Swipe to back
+        slidrInterface = Slidr.attach(this);
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -67,6 +77,37 @@ public class PostInfoActivity extends AppCompatActivity {
             }
         });
 
+        // Active Inactive Slider to back based on drawer
+        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                slidrInterface.lock();
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                slidrInterface.unlock();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+        });
+
+    }
+
+    // Close Drawer on back pressed
+    @Override
+    public void onBackPressed() {
+        if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            binding.drawerLayout.closeDrawer(GravityCompat.END);
+            return;
+        }
+        super.onBackPressed();
     }
 
     // On add to cart button click
