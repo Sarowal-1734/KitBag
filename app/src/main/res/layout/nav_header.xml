@@ -6,9 +6,10 @@
     android:background="#13479E">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:gravity="center"
         android:orientation="vertical">
 
         <de.hdodenhof.circleimageview.CircleImageView
@@ -25,6 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_marginEnd="40dp"
+            android:layout_marginStart="40dp"
             android:text="Mr. KitBag"
             android:textColor="@color/white"
             android:textStyle="bold" />
@@ -37,8 +40,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:padding="8dp"
+        android:background="?attr/selectableItemBackground"
         app:srcCompat="@drawable/ic_edit" />
 
 </RelativeLayout>

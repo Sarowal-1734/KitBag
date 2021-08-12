@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -82,7 +86,13 @@ public class MainActivity extends AppCompatActivity {
                             NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
                             View view = navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
+                            CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
                             userName.setText(documentSnapshot.getString("userName"));
+                            if (documentSnapshot.getString("imageUrl") != null) {
+                                // Picasso library for download & show image
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().into(imageView);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().into(binding.customAppBar.appbarImageviewProfile);
+                            }
                         }
                     });
         } else {
@@ -130,6 +140,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 binding.drawerLayout.openDrawer(GravityCompat.END);
+            }
+        });
+
+        // On Edit profile icon clicked
+        View view = binding.navigationView.getHeaderView(0);
+        ImageView imageView = view.findViewById(R.id.nav_edit_profile);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
             }
         });
 

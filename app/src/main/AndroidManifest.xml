@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KitBag">
         <activity
+            android:name=".EditProfileActivity"
+            android:exported="true" />
+        <activity
             android:name=".ResetPasswordActivity"
             android:exported="true"
             android:parentActivityName=".ForgotPasswordActivity"

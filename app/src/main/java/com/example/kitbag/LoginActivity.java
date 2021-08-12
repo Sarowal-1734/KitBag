@@ -1,17 +1,14 @@
 package com.example.kitbag;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -37,6 +34,9 @@ public class LoginActivity extends AppCompatActivity {
     // Swipe to back
     private SlidrInterface slidrInterface;
 
+    // Show progressBar
+    private ProgressDialog progressDialog;
+
     // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
-        /// Swipe to back
+        // Swipe to back
         slidrInterface = Slidr.attach(this);
 
         // Set drawer menu based on Login/Logout
@@ -138,9 +138,12 @@ public class LoginActivity extends AppCompatActivity {
         // Check the internet connection then do the background tasks
         if (isConnected()) {
             // Connected
-
             // Show progressBar
-            binding.progressBar.setVisibility(View.VISIBLE);
+            progressDialog = new ProgressDialog(LoginActivity.this);
+            progressDialog.show();
+            progressDialog.setContentView(R.layout.progress_dialog);
+            progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            progressDialog.setCancelable(false);
 
             // Check user already registered or not
             mAuth.fetchSignInMethodsForEmail(fakeEmail)
@@ -150,7 +153,8 @@ public class LoginActivity extends AppCompatActivity {
                             boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
                             if (isNewUser) {
                                 // Hide progressBar
-                                binding.progressBar.setVisibility(View.GONE);
+                                progressDialog.dismiss();
+                                //binding.progressBar.setVisibility(View.GONE);
 
                                 binding.EditTextContact.setError("User Not Found!");
                                 binding.EditTextContact.requestFocus();
@@ -186,13 +190,13 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Hide progressBar
-                            binding.progressBar.setVisibility(View.GONE);
+                            progressDialog.dismiss();
                             Toast.makeText(LoginActivity.this, "Login Success!", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                             finish();
                         } else {
                             // Hide progressBar
-                            binding.progressBar.setVisibility(View.GONE);
+                            progressDialog.dismiss();
                             binding.EditTextPassword.setError("Password Didn't Match!");
                             binding.EditTextPassword.requestFocus();
                         }
@@ -203,6 +207,7 @@ public class LoginActivity extends AppCompatActivity {
     // Close Drawer on back pressed
     @Override
     public void onBackPressed() {
+        progressDialog.dismiss();
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
             return;

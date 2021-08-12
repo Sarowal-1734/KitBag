@@ -1,5 +1,6 @@
 package com.example.kitbag;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -32,6 +33,9 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     // Swipe to back
     private SlidrInterface slidrInterface;
+
+    // Show progressBar
+    private ProgressDialog progressDialog;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -128,13 +132,18 @@ public class ResetPasswordActivity extends AppCompatActivity {
         boolean valid = validation();
         if (valid) {
             if (isConnected()) {
-                binding.progressBar.setVisibility(View.VISIBLE);
+                // Show progressBar
+                progressDialog = new ProgressDialog(ResetPasswordActivity.this);
+                progressDialog.show();
+                progressDialog.setContentView(R.layout.progress_dialog);
+                progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                progressDialog.setCancelable(false);
                 FirebaseUser currentUser = mAuth.getCurrentUser();
                 String newPassword = binding.editTextPassword.getText().toString();
                 currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        binding.progressBar.setVisibility(View.GONE);
+                        progressDialog.dismiss();
                         // Status to check that the password successfully resetted or not
                         SharedPreference.setPasswordResettedValue(ResetPasswordActivity.this, true);
                         Toast.makeText(ResetPasswordActivity.this, "Password Reset Successfully.", Toast.LENGTH_SHORT).show();
@@ -144,12 +153,12 @@ public class ResetPasswordActivity extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        binding.progressBar.setVisibility(View.GONE);
+                        progressDialog.dismiss();
                         Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
                     }
                 });
             } else {
-                binding.progressBar.setVisibility(View.GONE);
+                progressDialog.dismiss();
                 showMessageNoConnection();
             }
         }
@@ -184,6 +193,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
     // Close Drawer on back pressed
     @Override
     public void onBackPressed() {
+        progressDialog.dismiss();
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
             return;

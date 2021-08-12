@@ -170,13 +170,6 @@
             app:menu="@menu/drawer_menu_logout" />
     </androidx.drawerlayout.widget.DrawerLayout>
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
-
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/snackBarContainer"
         android:layout_width="match_parent"

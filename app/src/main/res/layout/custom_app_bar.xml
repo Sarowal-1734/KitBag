@@ -30,7 +30,7 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/appbar_imageview_profile"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -38,9 +38,8 @@
             android:layout_centerVertical="true"
             android:clickable="true"
             android:focusable="true"
-            android:padding="5dp"
             android:scaleType="centerCrop"
-            app:srcCompat="@drawable/ic_profile" />
+            android:src="@drawable/ic_profile_appbar" />
 
         <include
             android:id="@+id/appbar_notification_icon"
