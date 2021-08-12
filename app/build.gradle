@@ -43,15 +43,12 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.0'
     implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
-    
     // implementation 'com.google.firebase:firebase-auth:21.0.1'
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:28.3.0')
-
     // Declare the dependency for the Firebase Authentication library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation 'com.google.firebase:firebase-auth'
-
     implementation 'com.google.firebase:firebase-database:20.0.1'
     implementation 'com.google.firebase:firebase-firestore:23.0.3'
     implementation 'com.google.firebase:firebase-storage:20.0.0'
@@ -69,4 +66,8 @@ dependencies {
     implementation 'com.github.GoodieBag:Pinview:v1.4'
     // Swipe to back
     implementation 'com.r0adkll:slidableactivity:2.0.6'
+    // ProgressBar
+    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
+    // Download image from firebase
+    implementation 'com.squareup.picasso:picasso:2.71828'
 }

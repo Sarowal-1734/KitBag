@@ -1,5 +1,6 @@
 package com.example.kitbag;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -30,6 +31,9 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
     // Swipe to back
     private SlidrInterface slidrInterface;
+
+    // Show progressBar
+    private ProgressDialog progressDialog;
 
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -125,7 +129,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         if (isConnected()) {
             // Show progressBar
-            binding.progressBar.setVisibility(View.VISIBLE);
+            progressDialog = new ProgressDialog(ForgotPasswordActivity.this);
+            progressDialog.show();
+            progressDialog.setContentView(R.layout.progress_dialog);
+            progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            progressDialog.setCancelable(false);
             mAuth.fetchSignInMethodsForEmail(email)
                     .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
                         @Override
@@ -133,12 +141,12 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                             boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
                             if (isNewUser) {
                                 // Hide progressBar
-                                binding.progressBar.setVisibility(View.GONE);
+                                progressDialog.dismiss();
                                 binding.EditTextContact.setError("User Not Found!");
                                 binding.EditTextContact.requestFocus();
                             } else {
                                 // Hide progressBar
-                                binding.progressBar.setVisibility(View.GONE);
+                                progressDialog.dismiss();
                                 Intent intent = new Intent(ForgotPasswordActivity.this, OtpVerificationActivity.class);
                                 intent.putExtra("whatToDo", "resetPassword");
                                 intent.putExtra("mobile", binding.cpp.getFullNumberWithPlus().trim());
@@ -167,6 +175,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     // Close Drawer on back pressed
     @Override
     public void onBackPressed() {
+        progressDialog.dismiss();
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
             return;

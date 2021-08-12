@@ -2,6 +2,7 @@ package com.example.kitbag;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,10 +10,18 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityNotificationsBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
+import com.squareup.picasso.Picasso;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class NotificationsActivity extends AppCompatActivity {
 
@@ -24,6 +33,10 @@ public class NotificationsActivity extends AppCompatActivity {
     // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+
+    // FireStore Connection
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final CollectionReference collectionReference = db.collection("Users");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +58,24 @@ public class NotificationsActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            // Get userName and image from database and set to the drawer
+            collectionReference.document(currentUser.getUid()).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
+                            NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+                            View view = navigationView.getHeaderView(0);
+                            TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
+                            CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
+                            userName.setText(documentSnapshot.getString("userName"));
+                            if (documentSnapshot.getString("imageUrl") != null) {
+                                // Picasso library for download & show image
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().into(imageView);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().into(binding.customAppBar.appbarImageviewProfile);
+                            }
+                        }
+                    });
         } else {
             // No user is signed in
             binding.navigationView.getMenu().clear();

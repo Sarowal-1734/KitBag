@@ -1,5 +1,6 @@
 package com.example.kitbag;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -7,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +21,7 @@ import com.goodiebag.pinview.Pinview;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.AuthCredential;
@@ -30,13 +33,17 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class OtpVerificationActivity extends AppCompatActivity {
 
@@ -46,6 +53,9 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
     // Swipe to back
     private SlidrInterface slidrInterface;
+
+    // Show progressBar
+    private ProgressDialog progressDialog;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -92,6 +102,24 @@ public class OtpVerificationActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            // Get userName and image from database and set to the drawer
+            collectionReference.document(currentUser.getUid()).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
+                            NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+                            View view = navigationView.getHeaderView(0);
+                            TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
+                            CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
+                            userName.setText(documentSnapshot.getString("userName"));
+                            if (documentSnapshot.getString("imageUrl") != null) {
+                                // Picasso library for download & show image
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().into(imageView);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().into(binding.customAppBar.appbarImageviewProfile);
+                            }
+                        }
+                    });
         } else {
             // No user is signed in
             binding.navigationView.getMenu().clear();
@@ -222,12 +250,16 @@ public class OtpVerificationActivity extends AppCompatActivity {
     public void onSignInButtonClicked(View view) {
         if (isConnected()) {
             // Show progressBar
-            binding.progressBar.setVisibility(View.VISIBLE);
+            progressDialog = new ProgressDialog(OtpVerificationActivity.this);
+            progressDialog.show();
+            progressDialog.setContentView(R.layout.progress_dialog);
+            progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            progressDialog.setCancelable(false);
             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(otpId, pinViewOTP);
             signInWithPhoneAuthCredential(credential);
         } else {
             // Hide progressBar
-            binding.progressBar.setVisibility(View.GONE);
+            progressDialog.dismiss();
             showMessageNoConnection();
         }
 
@@ -260,7 +292,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             if (whatToDo.equals("resetPassword")) {
                                 // Hide progressBar
-                                binding.progressBar.setVisibility(View.GONE);
+                                progressDialog.dismiss();
                                 // Status to check that the password successfully resetted or not
                                 SharedPreference.setPasswordResettedValue(OtpVerificationActivity.this, false);
                                 // send to Reset password activity
@@ -282,12 +314,14 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                 user.put("email", email);
                                 user.put("userType", "GENERAL_USER");
                                 user.put("imageUrl", null);
+                                user.put("district", null);
+                                user.put("upazilla", null);
                                 collectionReference.document(currentUser.getUid()).set(user)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void unused) {
                                                 // Hide progressBar
-                                                binding.progressBar.setVisibility(View.GONE);
+                                                progressDialog.dismiss();
                                                 Toast.makeText(OtpVerificationActivity.this, "Registration Success!", Toast.LENGTH_SHORT).show();
                                                 startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
                                                 finish();
@@ -296,7 +330,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
                             }
                         } else {
                             // Hide progressBar
-                            binding.progressBar.setVisibility(View.GONE);
+                            progressDialog.dismiss();
                             Toast.makeText(OtpVerificationActivity.this, "Wrong OTP!", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -306,6 +340,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
     // Close Drawer on back pressed
     @Override
     public void onBackPressed() {
+        progressDialog.dismiss();
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
             return;

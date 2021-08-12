@@ -1,5 +1,6 @@
 package com.example.kitbag;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -30,6 +31,9 @@ public class SignUpActivity extends AppCompatActivity {
 
     // Swipe to back
     private SlidrInterface slidrInterface;
+
+    // Show progressBar
+    private ProgressDialog progressDialog;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -124,7 +128,12 @@ public class SignUpActivity extends AppCompatActivity {
         boolean valid = validation();
         if (valid) {
             if (isConnected()) {
-                binding.progressBar.setVisibility(View.VISIBLE);
+                // Show progressBar
+                progressDialog = new ProgressDialog(SignUpActivity.this);
+                progressDialog.show();
+                progressDialog.setContentView(R.layout.progress_dialog);
+                progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                progressDialog.setCancelable(false);
                 // Check user already registered or not
                 String email = binding.cpp.getFullNumber().trim() + "@gmail.com";
                 mAuth.fetchSignInMethodsForEmail(email)
@@ -133,7 +142,7 @@ public class SignUpActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
                                 boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
                                 if (isNewUser) {
-                                    binding.progressBar.setVisibility(View.GONE);
+                                    progressDialog.dismiss();
                                     Intent intent = new Intent(SignUpActivity.this, OtpVerificationActivity.class);
                                     intent.putExtra("whatToDo", "registration");
                                     intent.putExtra("username", binding.editTextUsername.getText().toString());
@@ -142,19 +151,20 @@ public class SignUpActivity extends AppCompatActivity {
                                     intent.putExtra("password", binding.editTextPassword.getText().toString());
                                     startActivity(intent);
                                 } else {
-                                    binding.progressBar.setVisibility(View.GONE);
+                                    progressDialog.dismiss();
                                     binding.editTextContact.setError("User Already Registered!");
                                     binding.editTextContact.requestFocus();
                                 }
                             }
                         });
             } else {
-                binding.progressBar.setVisibility(View.GONE);
+                progressDialog.dismiss();
                 showMessageNoConnection();
             }
         }
     }
 
+    // EditText Validation
     private boolean validation() {
         if (TextUtils.isEmpty(binding.editTextUsername.getText().toString())) {
             binding.editTextUsername.setError("Required");
@@ -194,6 +204,7 @@ public class SignUpActivity extends AppCompatActivity {
     // Close Drawer on back pressed
     @Override
     public void onBackPressed() {
+        progressDialog.dismiss();
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
             return;
