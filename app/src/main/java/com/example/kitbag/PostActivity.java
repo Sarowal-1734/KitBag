@@ -124,6 +124,9 @@ public class PostActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
+                if (getCurrentFocus() != null) {
+                    getCurrentFocus().clearFocus();
+                }
                 slidrInterface.lock();
             }
 
