@@ -68,6 +68,7 @@ public class NotificationsActivity extends AppCompatActivity {
                             View view = navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
+                            // set userName to the drawer
                             userName.setText(documentSnapshot.getString("userName"));
                             if (documentSnapshot.getString("imageUrl") != null) {
                                 // Picasso library for download & show image

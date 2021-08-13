@@ -83,7 +83,7 @@
                             android:ellipsize="end"
                             android:enabled="false"
                             android:focusable="false"
-                            android:text="+8801768670951" />
+                            android:hint="Contact" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout

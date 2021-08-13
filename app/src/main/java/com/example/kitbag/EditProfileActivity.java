@@ -125,38 +125,45 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         });
 
-        // Set drawer menu based on Login/Logout
-        if (currentUser != null) {
-            // User is signed in
-            binding.navigationView.getMenu().clear();
-            binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
-            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
-            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
-            // Get userName and image from database and set to the drawer
-            collectionReference.document(currentUser.getUid()).get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
-                            NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-                            View view = navigationView.getHeaderView(0);
-                            TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
-                            CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
-                            userName.setText(documentSnapshot.getString("userName"));
-                            if (documentSnapshot.getString("imageUrl") != null) {
-                                // Picasso library for download & show image
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().into(imageView);
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().into(binding.customAppBar.appbarImageviewProfile);
-                            }
+        // User will be always signed in here
+        binding.navigationView.getMenu().clear();
+        binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
+        binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
+        binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+        // Get userName and image from database and set to the drawer
+        collectionReference.document(currentUser.getUid()).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
+                        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+                        View view = navigationView.getHeaderView(0);
+                        TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
+                        CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
+                        // set userName to the drawer
+                        userName.setText(documentSnapshot.getString("userName"));
+                        // get user info from database and set to fields
+                        binding.editTextUsername.setText(documentSnapshot.getString("userName"));
+                        binding.editTextContact.setText(documentSnapshot.getString("phoneNumber"));
+                        if (documentSnapshot.getString("email") != null) {
+                            binding.editTextEmail.setText(documentSnapshot.getString("email"));
                         }
-                    });
-        } else {
-            // No user is signed in
-            binding.navigationView.getMenu().clear();
-            binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
-            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
-            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
-        }
+                        if (documentSnapshot.getString("district") != null) {
+                            binding.EditTextDistrict.setText(documentSnapshot.getString("district"));
+                        }
+                        if (documentSnapshot.getString("upazilla") != null) {
+                            binding.EditTextUpazila.setText(documentSnapshot.getString("upazilla"));
+                        }
+                        if (documentSnapshot.getString("imageUrl") != null) {
+                            // set image to the imageView (activity)
+                            Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().into(binding.customEditProfileImage.circularImageViewProfile);
+                            // Set image to the drawer
+                            Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().into(imageView);
+                            // set image to the appBar
+                            Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().into(binding.customAppBar.appbarImageviewProfile);
+                        }
+                    }
+                });
 
         // Get image from gallery and set to the imageView
         binding.customEditProfileImage.cardViewAddProfilePic.setOnClickListener(new View.OnClickListener() {
