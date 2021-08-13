@@ -49,7 +49,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
     private ActivityOtpVerificationBinding binding;
 
-    private String otpId, phoneNumber, userName, email, password, pinViewOTP, whatToDo;
+    private String otpId, phoneNumber, userName, password, pinViewOTP, whatToDo;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
@@ -80,7 +80,6 @@ public class OtpVerificationActivity extends AppCompatActivity {
         whatToDo = getIntent().getStringExtra("whatToDo");
         phoneNumber = getIntent().getStringExtra("mobile");
         userName = getIntent().getStringExtra("username");
-        email = getIntent().getStringExtra("email");
         password = getIntent().getStringExtra("password");
 
         if (whatToDo.equals("resetPassword")) {
@@ -112,6 +111,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
                             View view = navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
+                            // set userName to the drawer
                             userName.setText(documentSnapshot.getString("userName"));
                             if (documentSnapshot.getString("imageUrl") != null) {
                                 // Picasso library for download & show image
@@ -311,8 +311,8 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                 user.put("userId", currentUser.getUid());
                                 user.put("userName", userName);
                                 user.put("phoneNumber", phoneNumber);
-                                user.put("email", email);
                                 user.put("userType", "GENERAL_USER");
+                                user.put("email", null);
                                 user.put("imageUrl", null);
                                 user.put("district", null);
                                 user.put("upazilla", null);
@@ -340,7 +340,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
     // Close Drawer on back pressed
     @Override
     public void onBackPressed() {
-        progressDialog.dismiss();
+        // progressDialog.dismiss(); //produce bug
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
             return;

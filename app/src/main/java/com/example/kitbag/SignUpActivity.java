@@ -147,7 +147,6 @@ public class SignUpActivity extends AppCompatActivity {
                                     intent.putExtra("whatToDo", "registration");
                                     intent.putExtra("username", binding.editTextUsername.getText().toString());
                                     intent.putExtra("mobile", binding.cpp.getFullNumberWithPlus().trim());
-                                    intent.putExtra("email", binding.editTextEmail.getText().toString());
                                     intent.putExtra("password", binding.editTextPassword.getText().toString());
                                     startActivity(intent);
                                 } else {
@@ -204,7 +203,7 @@ public class SignUpActivity extends AppCompatActivity {
     // Close Drawer on back pressed
     @Override
     public void onBackPressed() {
-        progressDialog.dismiss();
+        // progressDialog.dismiss(); //produce bug
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
             return;

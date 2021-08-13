@@ -175,7 +175,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     // Close Drawer on back pressed
     @Override
     public void onBackPressed() {
-        progressDialog.dismiss();
+        // progressDialog.dismiss(); //produce bug
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
             return;
