@@ -100,7 +100,9 @@ public class SignUpActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
-                getCurrentFocus().clearFocus();
+                if (getCurrentFocus() != null) {
+                    getCurrentFocus().clearFocus();
+                }
                 slidrInterface.lock();
             }
 
