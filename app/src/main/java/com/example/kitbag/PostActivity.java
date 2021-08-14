@@ -266,16 +266,10 @@ public class PostActivity extends AppCompatActivity {
                                                         @Override
                                                         public void onSuccess(DocumentReference documentReference) {
                                                             // Storing the post into My_Post Collection
-                                                            db.collection("My_Post").document(currentUser.getUid()).collection("My_Posts_list").add(modelClassPost)
-                                                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                                        @Override
-                                                                        public void onSuccess(DocumentReference documentReference) {
-                                                                            progressDialog.dismiss();
-                                                                            Toast.makeText(PostActivity.this, "Your post is now visible to everyone", Toast.LENGTH_SHORT).show();
-                                                                            startActivity(new Intent(PostActivity.this, MainActivity.class));
-                                                                            finish();
-                                                                        }
-                                                                    });
+                                                            progressDialog.dismiss();
+                                                            Toast.makeText(PostActivity.this, "Your post is now visible to everyone", Toast.LENGTH_SHORT).show();
+                                                            startActivity(new Intent(PostActivity.this, MainActivity.class));
+                                                            finish();
                                                         }
                                                     });
                                         }
