@@ -14,9 +14,8 @@
     <string name="post_title">Title</string>
     <string name="post_description">Description</string>
     <string name="ButtonPostItem">Post Item</string>
-    <string name="weight">Weight</string>
     <string name="all_fields_are_required">*All fields are required</string>
-    <string name="by_posting_this_ad_you_agree_to_our_terms_and_conditions">By posting this ad you agree to our <br /> <font color='#FFFF0000'>Terms &amp; Conditions</font></string>
+    <string name="by_posting_this_ad_you_agree_to_our_terms_and_conditions"> <br /> <font color='#FFFF0000'>Terms &amp; Conditions</font></string>
     <string name="otp">OTP</string>
     <string name="resend_otp"><u>RESEND OTP</u></string>
 
