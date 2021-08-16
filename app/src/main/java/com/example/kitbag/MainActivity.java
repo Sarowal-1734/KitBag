@@ -20,6 +20,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.kitbag.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -29,7 +30,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -118,6 +122,24 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // get data from fireStore and set to the recyclerView
+        ArrayList<ModelClassPost> postList = new ArrayList<>();
+        db.collection("All_Post")//.whereEqualTo("userId", currentUser.getUid())  //to get journalList of current user
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            ModelClassPost modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
+                            postList.add(modelClassPost);
+                        }
+                        PostAdapter postAdapter = new PostAdapter(MainActivity.this, postList);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
+                        binding.recyclerViewPostLists.setLayoutManager(linearLayoutManager);
+                        binding.recyclerViewPostLists.setAdapter(postAdapter);
+                    }
+                });
 
         // Open post Activity
         binding.fab.setOnClickListener(new View.OnClickListener() {

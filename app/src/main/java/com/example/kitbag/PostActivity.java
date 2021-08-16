@@ -1,12 +1,19 @@
 package com.example.kitbag;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,25 +21,45 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityPostBinding;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.annotations.Nullable;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
+
+import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostActivity extends AppCompatActivity {
 
+    // Get from database and upload with post
+    String userName, phoneNumber, userType, email;
+
     private ActivityPostBinding binding;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
+
+    // Show progressBar
+    private ProgressDialog progressDialog;
+
+    // Get image from gallery and set to the imageView
+    private static final int PICK_IMAGE = 1;
+    private Uri imageUri;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -41,6 +68,7 @@ public class PostActivity extends AppCompatActivity {
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("Users");
+    private final StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,6 +168,27 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
+        // Get image from gallery and set to the imageView
+        binding.imageViewAddPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // making implicit intent to pick photo from external gallery
+                Intent gallery = new Intent();
+                gallery.setType("image/*");
+                gallery.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(gallery, PICK_IMAGE);
+            }
+        });
+    }
+
+    // Picking photo from external storage
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
+            imageUri = data.getData();
+            binding.imageViewAddPhoto.setImageURI(imageUri);
+        }
     }
 
     // Close Drawer on back pressed
@@ -150,6 +199,160 @@ public class PostActivity extends AppCompatActivity {
             return;
         }
         super.onBackPressed();
+    }
+
+    // On Post Button Clicked
+    public void onPostButtonClick(View view) {
+        if (valid()) {
+            if (isConnected()) {
+                if (currentUser != null) {
+                    // Show progressBar
+                    progressDialog = new ProgressDialog(PostActivity.this);
+                    progressDialog.show();
+                    progressDialog.setContentView(R.layout.progress_dialog);
+                    progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                    progressDialog.setCancelable(false);
+                    String title = binding.EditTextPostTitle.getText().toString().trim();
+                    String weight = binding.EditTextPostWeight.getText().toString().trim();
+                    String description = binding.EditTextPostDescription.getText().toString().trim();
+                    String fromDistrict = binding.EditTextFromDistrict.getText().toString().trim();
+                    String fromUpazilla = binding.EditTextFromUpazila.getText().toString().trim();
+                    String toDistrict = binding.EditTextToDistrict.getText().toString().trim();
+                    String toUpazilla = binding.EditTextToUpazila.getText().toString().trim();
+                    // Get userInfo from database for storing with the post
+                    collectionReference.document(currentUser.getUid()).get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    userName = documentSnapshot.getString("userName");
+                                    phoneNumber = documentSnapshot.getString("phoneNumber");
+                                    userType = documentSnapshot.getString("userType");
+                                    if (documentSnapshot.getString("email") != null) {
+                                        email = documentSnapshot.getString("email");
+                                    }
+                                }
+                            });
+
+                    // Make partially global for two Collection All_Post & My_Post
+                    ModelClassPost modelClassPost = new ModelClassPost();
+
+                    // Store image to Firebase Storage
+                    StorageReference filepath = storageReference.child("all_post_images").child(currentUser.getUid() + new Timestamp(new Date()));
+                    filepath.putFile(imageUri)
+                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            String imageUrl = uri.toString();
+                                            modelClassPost.setImageUrl(imageUrl);
+                                            modelClassPost.setTitle(title);
+                                            modelClassPost.setWeight(weight);
+                                            modelClassPost.setDescription(description);
+                                            modelClassPost.setFromDistrict(fromDistrict);
+                                            modelClassPost.setFromUpazilla(fromUpazilla);
+                                            modelClassPost.setToDistrict(toDistrict);
+                                            modelClassPost.setToUpazilla(toUpazilla);
+                                            modelClassPost.setTimeAdded(new Timestamp(new Date()));
+                                            modelClassPost.setUserId(currentUser.getUid());
+                                            modelClassPost.setUserName(userName);
+                                            modelClassPost.setPhoneNumber(phoneNumber);
+                                            modelClassPost.setEmail(email);
+                                            modelClassPost.setUserType(userType);
+                                            // Storing the post into All_Post Collection
+                                            db.collection("All_Post").add(modelClassPost)
+                                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                        @Override
+                                                        public void onSuccess(DocumentReference documentReference) {
+                                                            // Storing the post into My_Post Collection
+                                                            progressDialog.dismiss();
+                                                            Toast.makeText(PostActivity.this, "Your post is now visible to everyone", Toast.LENGTH_SHORT).show();
+                                                            startActivity(new Intent(PostActivity.this, MainActivity.class));
+                                                            finish();
+                                                        }
+                                                    });
+                                        }
+                                    });
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(PostActivity.this, "Failed to upload image!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                }
+            } else {
+                // Show that no connection
+                View parentLayout = findViewById(R.id.snackBarContainer);
+                // create an instance of the snackBar
+                final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+                // inflate the custom_snackBar_view created previously
+                View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
+                // set the background of the default snackBar as transparent
+                snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+                // now change the layout of the snackBar
+                Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+                // set padding of the all corners as 0
+                snackbarLayout.setPadding(0, 0, 0, 0);
+                // add the custom snack bar layout to snackbar layout
+                snackbarLayout.addView(customSnackView, 0);
+                snackbar.show();
+            }
+        }
+    }
+
+    // Check the internet connection
+    public boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private boolean valid() {
+        if (imageUri == null) {
+            Toast.makeText(this, "Please add a picture", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(binding.EditTextPostTitle.getText().toString())) {
+            binding.EditTextPostTitle.setError("Required");
+            binding.EditTextPostTitle.requestFocus();
+            return false;
+        }
+        if (TextUtils.isEmpty(binding.EditTextPostWeight.getText().toString())) {
+            binding.EditTextPostWeight.setError("Required");
+            binding.EditTextPostWeight.requestFocus();
+            return false;
+        }
+        if (TextUtils.isEmpty(binding.EditTextPostDescription.getText().toString())) {
+            binding.EditTextPostDescription.setError("Required");
+            binding.EditTextPostDescription.requestFocus();
+            return false;
+        }
+        if (TextUtils.isEmpty(binding.EditTextFromDistrict.getText().toString())) {
+            binding.EditTextFromDistrict.setError("Required");
+            binding.EditTextFromDistrict.requestFocus();
+            return false;
+        }
+        if (TextUtils.isEmpty(binding.EditTextFromUpazila.getText().toString())) {
+            binding.EditTextFromUpazila.setError("Required");
+            binding.EditTextFromUpazila.requestFocus();
+            return false;
+        }
+        if (TextUtils.isEmpty(binding.EditTextToDistrict.getText().toString())) {
+            binding.EditTextToDistrict.setError("Required");
+            binding.EditTextToDistrict.requestFocus();
+            return false;
+        }
+        if (TextUtils.isEmpty(binding.EditTextToUpazila.getText().toString())) {
+            binding.EditTextToUpazila.setError("Required");
+            binding.EditTextToUpazila.requestFocus();
+            return false;
+        }
+        return true;
     }
 
     // District and Upazila Recommendation
@@ -443,39 +646,5 @@ public class PostActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    // On Post Button Click
-    public void onPostButtonClick(View view) {
-        if (TextUtils.isEmpty(binding.EditTextPostTitle.getText().toString())) {
-            binding.EditTextPostTitle.setError("Required");
-            return;
-        }
-        if (TextUtils.isEmpty(binding.EditTextPostWeight.getText().toString())) {
-            binding.EditTextPostWeight.setError("Required");
-            return;
-        }
-        if (TextUtils.isEmpty(binding.EditTextPostDescription.getText().toString())) {
-            binding.EditTextPostDescription.setError("Required");
-            return;
-        }
-        if (TextUtils.isEmpty(binding.EditTextFromDistrict.getText().toString())) {
-            binding.EditTextFromDistrict.setError("Required");
-            return;
-        }
-        if (TextUtils.isEmpty(binding.EditTextFromUpazila.getText().toString())) {
-            binding.EditTextFromUpazila.setError("Required");
-            return;
-        }
-        if (TextUtils.isEmpty(binding.EditTextToDistrict.getText().toString())) {
-            binding.EditTextToDistrict.setError("Required");
-            return;
-        }
-        if (TextUtils.isEmpty(binding.EditTextToUpazila.getText().toString())) {
-            binding.EditTextToUpazila.setError("Required");
-            return;
-        }
-        startActivity(new Intent(PostActivity.this, MainActivity.class));
-        finish();
     }
 }
