@@ -22,7 +22,7 @@ import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.kitbag.databinding.ActivityMainBinding;
+import com.example.kitbag.databinding.ActivityMyPostBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,15 +31,17 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity {
+public class MyPostActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
+    private ActivityMyPostBinding binding;
     private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
 
     // Exit app on back pressed again
@@ -49,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
+    // Swipe to back
+    private SlidrInterface slidrInterface;
+
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("Users");
@@ -56,23 +61,27 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityMyPostBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
-        // Status to check that the password successfully resetted or not
-        if (!SharedPreference.getPasswordResettedValue(this)) {
-            // smoothly signOut activity
-            SharedPreference.setPasswordResettedValue(MainActivity.this, true);
-            mAuth.signOut();
-            finish();
-            overridePendingTransition(0,0);
-            startActivity(getIntent());
-            overridePendingTransition(0,0);
-        }
+        // Change appBar title
+        binding.customAppBar.appbarTitle.setText("My Posts");
+
+        // Swipe to back
+        slidrInterface = Slidr.attach(this);
+
+        // Adding back arrow in the appBar
+        binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
+        binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -116,16 +125,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (switchDarkMode.isChecked()) {
-                    Toast.makeText(MainActivity.this, "Dark Mode Enabled!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyPostActivity.this, "Dark Mode Enabled!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MainActivity.this, "Dark Mode Disabled!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyPostActivity.this, "Dark Mode Disabled!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
         // get data from fireStore and set to the recyclerView
         ArrayList<ModelClassPost> postList = new ArrayList<>();
-        db.collection("All_Post")//.whereEqualTo("userId", currentUser.getUid())  //to get journalList of current user
+        db.collection("All_Post").whereEqualTo("userId", currentUser.getUid())  //to get postList of current user
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -134,8 +143,8 @@ public class MainActivity extends AppCompatActivity {
                             ModelClassPost modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
                             postList.add(modelClassPost);
                         }
-                        PostAdapter postAdapter = new PostAdapter(MainActivity.this, postList);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
+                        PostAdapter postAdapter = new PostAdapter(MyPostActivity.this, postList);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MyPostActivity.this, LinearLayoutManager.VERTICAL, false);
                         binding.recyclerViewPostLists.setLayoutManager(linearLayoutManager);
                         binding.recyclerViewPostLists.setAdapter(postAdapter);
                     }
@@ -145,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, PostActivity.class));
+                startActivity(new Intent(MyPostActivity.this, PostActivity.class));
             }
         });
 
@@ -153,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.appbar_notification_icon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
+                startActivity(new Intent(MyPostActivity.this, NotificationsActivity.class));
             }
         });
 
@@ -171,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
+                startActivity(new Intent(MyPostActivity.this, EditProfileActivity.class));
             }
         });
 
@@ -180,20 +189,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
-                    case R.id.nav_login:
-                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                        break;
-                    case R.id.nav_my_post:
-                        startActivity(new Intent(MainActivity.this, MyPostActivity.class));
-                        break;
                     case R.id.nav_logout:
                         mAuth.signOut();
-                        Toast.makeText(MainActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
-                        // smoothly reload activity
+                        Toast.makeText(MyPostActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MyPostActivity.this, MainActivity.class));
                         finish();
-                        overridePendingTransition(0,0);
-                        startActivity(getIntent());
-                        overridePendingTransition(0,0);
                         break;
                 }
                 return false;
@@ -206,11 +206,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 // Inflate Custom layout for searching
-                LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+                LayoutInflater inflater = MyPostActivity.this.getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.custom_search_dialog, null);
 
                 // Create Dialog Builder
-                AlertDialog.Builder ab = new AlertDialog.Builder(MainActivity.this);
+                AlertDialog.Builder ab = new AlertDialog.Builder(MyPostActivity.this);
 
                 // Init the editText of the custom dialog box
                 editTextFromDistrict = dialogView.findViewById(R.id.EditTextFromDistrict);
@@ -249,11 +249,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
                 binding.fab.hide();
+                slidrInterface.lock();
             }
 
             @Override
             public void onDrawerClosed(@NonNull View drawerView) {
                 binding.fab.show();
+                slidrInterface.unlock();
             }
 
             @Override
@@ -266,25 +268,18 @@ public class MainActivity extends AppCompatActivity {
     // Exit app on back pressed
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
-        } else {
-            if (backPressedTime + 2000 > System.currentTimeMillis()) {
-                moveTaskToBack(true);
-            }
-            else {
-                Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
-            }
-            backPressedTime = System.currentTimeMillis();
+            return;
         }
+        super.onBackPressed();
     }
 
     // District and Upazila Recommendation
     private void setDistrictUpazilaOnEditText() {
         // District Recommendation
         String[] districts = getResources().getStringArray(R.array.Districts);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, districts);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(MyPostActivity.this, android.R.layout.simple_list_item_1, districts);
         editTextFromDistrict.setAdapter(adapter);  // District
         editTextToDistrict.setAdapter(adapter);    // District
 
@@ -424,7 +419,7 @@ public class MainActivity extends AppCompatActivity {
                     upazilas = getResources().getStringArray(R.array.Thakurgaon);
                 }
                 if (upazilas != null) {
-                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, upazilas);
+                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MyPostActivity.this, android.R.layout.simple_list_item_1, upazilas);
                     editTextFromUpazila.setAdapter(adapterUpazila);  // Define Upazilas
                 }
             }
@@ -566,7 +561,7 @@ public class MainActivity extends AppCompatActivity {
                     upazilas = getResources().getStringArray(R.array.Thakurgaon);
                 }
                 if (upazilas != null) {
-                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, upazilas);
+                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MyPostActivity.this, android.R.layout.simple_list_item_1, upazilas);
                     editTextToUpazila.setAdapter(adapterUpazila);  // Define Upazilas
                 }
             }

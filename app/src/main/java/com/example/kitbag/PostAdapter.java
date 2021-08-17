@@ -43,7 +43,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         holder.titleTV.setText(post.getTitle());
         String destination = post.getFromDistrict() + " - " + post.getToDistrict();
         holder.destinationTV.setText(destination);
-        holder.postedByTV.setText(post.getUserName());
+        holder.postedByTV.setText("Posted by "+post.getUserName());
         // Adding time ago format
         String timeAgo = (String) DateUtils.getRelativeTimeSpanString(post.getTimeAdded().getSeconds() * 1000);
         holder.timeAddedTV.setText(timeAgo);
