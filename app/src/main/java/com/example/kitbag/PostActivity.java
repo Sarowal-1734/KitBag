@@ -86,6 +86,14 @@ public class PostActivity extends AppCompatActivity {
         // Swipe to back
         slidrInterface = Slidr.attach(this);
 
+        // Change the title of the appBar according to Edit or Create post
+        if (getIntent().getData() != null && getIntent().getStringExtra("whatToDo").equals("EditPost")) {
+            binding.customAppBar.appbarTitle.setText("Edit Post");
+            binding.buttonPostItem.setText("Update Post");
+        } else {
+            binding.customAppBar.appbarTitle.setText("Create Post");
+        }
+
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
             // User is signed in
@@ -107,8 +115,8 @@ public class PostActivity extends AppCompatActivity {
                             userName.setText(documentSnapshot.getString("userName"));
                             if (documentSnapshot.getString("imageUrl") != null) {
                                 // Picasso library for download & show image
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().into(imageView);
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().into(binding.customAppBar.appbarImageviewProfile);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
                             }
                         }
                     });
@@ -129,9 +137,6 @@ public class PostActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
-        // Change the title of the appBar
-        binding.customAppBar.appbarTitle.setText("Create Post");
 
         //setAdapter on District and Upazila
         setDistrictUpazilaOnEditText();
@@ -206,84 +211,88 @@ public class PostActivity extends AppCompatActivity {
         if (valid()) {
             if (isConnected()) {
                 if (currentUser != null) {
-                    // Show progressBar
-                    progressDialog = new ProgressDialog(PostActivity.this);
-                    progressDialog.show();
-                    progressDialog.setContentView(R.layout.progress_dialog);
-                    progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                    progressDialog.setCancelable(false);
-                    String title = binding.EditTextPostTitle.getText().toString().trim();
-                    String weight = binding.EditTextPostWeight.getText().toString().trim();
-                    String description = binding.EditTextPostDescription.getText().toString().trim();
-                    String fromDistrict = binding.EditTextFromDistrict.getText().toString().trim();
-                    String fromUpazilla = binding.EditTextFromUpazila.getText().toString().trim();
-                    String toDistrict = binding.EditTextToDistrict.getText().toString().trim();
-                    String toUpazilla = binding.EditTextToUpazila.getText().toString().trim();
-                    // Get userInfo from database for storing with the post
-                    collectionReference.document(currentUser.getUid()).get()
-                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    userName = documentSnapshot.getString("userName");
-                                    phoneNumber = documentSnapshot.getString("phoneNumber");
-                                    userType = documentSnapshot.getString("userType");
-                                    if (documentSnapshot.getString("email") != null) {
-                                        email = documentSnapshot.getString("email");
-                                    }
-                                }
-                            });
-
-                    // Make partially global for two Collection All_Post & My_Post
-                    ModelClassPost modelClassPost = new ModelClassPost();
-
-                    // Store image to Firebase Storage
-                    StorageReference filepath = storageReference.child("all_post_images").child(currentUser.getUid() + new Timestamp(new Date()));
-                    filepath.putFile(imageUri)
-                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                    filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            String imageUrl = uri.toString();
-                                            modelClassPost.setImageUrl(imageUrl);
-                                            modelClassPost.setTitle(title);
-                                            modelClassPost.setWeight(weight);
-                                            modelClassPost.setDescription(description);
-                                            modelClassPost.setFromDistrict(fromDistrict);
-                                            modelClassPost.setFromUpazilla(fromUpazilla);
-                                            modelClassPost.setToDistrict(toDistrict);
-                                            modelClassPost.setToUpazilla(toUpazilla);
-                                            modelClassPost.setTimeAdded(new Timestamp(new Date()));
-                                            modelClassPost.setUserId(currentUser.getUid());
-                                            modelClassPost.setUserName(userName);
-                                            modelClassPost.setPhoneNumber(phoneNumber);
-                                            modelClassPost.setEmail(email);
-                                            modelClassPost.setUserType(userType);
-                                            // Storing the post into All_Post Collection
-                                            db.collection("All_Post").add(modelClassPost)
-                                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                        @Override
-                                                        public void onSuccess(DocumentReference documentReference) {
-                                                            // Storing the post into My_Post Collection
-                                                            progressDialog.dismiss();
-                                                            Toast.makeText(PostActivity.this, "Your post is now visible to everyone", Toast.LENGTH_SHORT).show();
-                                                            startActivity(new Intent(PostActivity.this, MainActivity.class));
-                                                            finish();
-                                                        }
-                                                    });
+                    if (getIntent().getData() != null && getIntent().getStringExtra("whatToDo").equals("EditPost")) {
+                        // Edit post here...
+                    } else {
+                        showProgressBar();
+                        String title = binding.EditTextPostTitle.getText().toString().trim();
+                        String weight = binding.EditTextPostWeight.getText().toString().trim();
+                        String description = binding.EditTextPostDescription.getText().toString().trim();
+                        String fromDistrict = binding.EditTextFromDistrict.getText().toString().trim();
+                        String fromUpazilla = binding.EditTextFromUpazila.getText().toString().trim();
+                        String toDistrict = binding.EditTextToDistrict.getText().toString().trim();
+                        String toUpazilla = binding.EditTextToUpazila.getText().toString().trim();
+                        // Get userInfo from database for storing with the post
+                        collectionReference.document(currentUser.getUid()).get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        userName = documentSnapshot.getString("userName");
+                                        phoneNumber = documentSnapshot.getString("phoneNumber");
+                                        userType = documentSnapshot.getString("userType");
+                                        if (documentSnapshot.getString("email") != null) {
+                                            email = documentSnapshot.getString("email");
                                         }
-                                    });
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    progressDialog.dismiss();
-                                    Toast.makeText(PostActivity.this, "Failed to upload image!", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                                    }
+                                });
 
+                        // Make partially global for two Collection All_Post & My_Post
+                        ModelClassPost modelClassPost = new ModelClassPost();
+
+                        // Store image to Firebase Storage
+                        StorageReference filepath = storageReference.child("all_post_images").child(currentUser.getUid() + new Timestamp(new Date()));
+                        filepath.putFile(imageUri)
+                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                        filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                            @Override
+                                            public void onSuccess(Uri uri) {
+                                                String imageUrl = uri.toString();
+                                                modelClassPost.setImageUrl(imageUrl);
+                                                modelClassPost.setTitle(title);
+                                                modelClassPost.setWeight(weight);
+                                                modelClassPost.setDescription(description);
+                                                modelClassPost.setFromDistrict(fromDistrict);
+                                                modelClassPost.setFromUpazilla(fromUpazilla);
+                                                modelClassPost.setToDistrict(toDistrict);
+                                                modelClassPost.setToUpazilla(toUpazilla);
+                                                modelClassPost.setTimeAdded(new Timestamp(new Date()));
+                                                modelClassPost.setUserId(currentUser.getUid());
+                                                modelClassPost.setUserName(userName);
+                                                modelClassPost.setPhoneNumber(phoneNumber);
+                                                modelClassPost.setEmail(email);
+                                                modelClassPost.setUserType(userType);
+                                                modelClassPost.setPostReference(null);
+                                                // Storing the post into All_Post Collection
+                                                db.collection("All_Post").add(modelClassPost)
+                                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                            @Override
+                                                            public void onSuccess(DocumentReference documentReference) {
+                                                                // Storing the document reference for easy to delete later
+                                                                db.collection("All_Post").document(documentReference.getId())
+                                                                        .update("postReference", documentReference.getId());
+                                                                // Hide progressBar
+                                                                progressDialog.dismiss();
+                                                                Toast.makeText(PostActivity.this, "Your post is now visible to everyone", Toast.LENGTH_SHORT).show();
+                                                                startActivity(new Intent(PostActivity.this, MainActivity.class));
+                                                                finish();
+                                                            }
+                                                        });
+                                            }
+                                        });
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        progressDialog.dismiss();
+                                        Toast.makeText(PostActivity.this, "Failed to upload image!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                } else {
+                    Toast.makeText(PostActivity.this, "Please login first", Toast.LENGTH_SHORT).show();
                 }
             } else {
                 // Show that no connection
@@ -353,6 +362,16 @@ public class PostActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    // ProgressBar Setup
+    private void showProgressBar() {
+        // Show progressBar
+        progressDialog = new ProgressDialog(PostActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
     }
 
     // District and Upazila Recommendation

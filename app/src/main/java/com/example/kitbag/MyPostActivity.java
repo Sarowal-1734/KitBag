@@ -44,9 +44,6 @@ public class MyPostActivity extends AppCompatActivity {
     private ActivityMyPostBinding binding;
     private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
 
-    // Exit app on back pressed again
-    private long backPressedTime;
-
     // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -103,8 +100,8 @@ public class MyPostActivity extends AppCompatActivity {
                             userName.setText(documentSnapshot.getString("userName"));
                             if (documentSnapshot.getString("imageUrl") != null) {
                                 // Picasso library for download & show image
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().into(imageView);
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().into(binding.customAppBar.appbarImageviewProfile);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
                             }
                         }
                     });
@@ -147,6 +144,30 @@ public class MyPostActivity extends AppCompatActivity {
                         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MyPostActivity.this, LinearLayoutManager.VERTICAL, false);
                         binding.recyclerViewPostLists.setLayoutManager(linearLayoutManager);
                         binding.recyclerViewPostLists.setAdapter(postAdapter);
+                        // On recycler item click listener
+                        postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(ModelClassPost post) {
+                                Intent intent = new Intent(MyPostActivity.this, PostInfoActivity.class);
+                                intent.putExtra("title", post.getTitle());
+                                intent.putExtra("postedBy", post.getUserName());
+                                intent.putExtra("imageUrl", post.getImageUrl());
+                                intent.putExtra("timeAdded", post.getTimeAdded());
+                                intent.putExtra("description", post.getDescription());
+                                intent.putExtra("weight", post.getWeight());
+                                intent.putExtra("status", "N/A");
+                                intent.putExtra("fromUpazilla", post.getFromUpazilla());
+                                intent.putExtra("fromDistrict", post.getFromDistrict());
+                                intent.putExtra("toUpazilla", post.getToUpazilla());
+                                intent.putExtra("toDistrict", post.getToDistrict());
+                                intent.putExtra("userType", post.getUserType());
+                                intent.putExtra("userPhone", post.getPhoneNumber());
+                                intent.putExtra("userEmail", post.getEmail());
+                                intent.putExtra("userId", post.getUserId());
+                                intent.putExtra("postRef", post.getPostReference());
+                                startActivity(intent);
+                            }
+                        });
                     }
                 });
 

@@ -156,11 +156,11 @@ public class EditProfileActivity extends AppCompatActivity {
                         }
                         if (documentSnapshot.getString("imageUrl") != null) {
                             // set image to the imageView (activity)
-                            Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().into(binding.customEditProfileImage.circularImageViewProfile);
+                            Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(binding.customEditProfileImage.circularImageViewProfile);
                             // Set image to the drawer
-                            Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().into(imageView);
+                            Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
                             // set image to the appBar
-                            Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().into(binding.customAppBar.appbarImageviewProfile);
+                            Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
                         }
                     }
                 });

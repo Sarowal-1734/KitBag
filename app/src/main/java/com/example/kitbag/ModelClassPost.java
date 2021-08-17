@@ -17,6 +17,15 @@ public class ModelClassPost {
     private String phoneNumber;
     private String email;
     private String userType;
+    private String postReference;
+
+    public String getPostReference() {
+        return postReference;
+    }
+
+    public void setPostReference(String postReference) {
+        this.postReference = postReference;
+    }
 
     public ModelClassPost() {
     } // must for fireStore to work

@@ -13,6 +13,7 @@
         <entry key="app/src/main/res/drawable/ic_contact.xml" value="0.41333333333333333" />
         <entry key="app/src/main/res/drawable/ic_profile.xml" value="0.41333333333333333" />
         <entry key="app/src/main/res/drawable/ripple_effect.xml" value="0.41333333333333333" />
+        <entry key="app/src/main/res/layout-v21/activity_post_info.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_edit_profile.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_forgot_password.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.33" />

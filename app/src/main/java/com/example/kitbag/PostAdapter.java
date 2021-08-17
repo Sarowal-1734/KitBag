@@ -17,6 +17,10 @@ import java.util.ArrayList;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> {
 
+    //for use onItemClickListener from MainActivity
+    private OnItemClickListener listener;
+    int position;
+
     private Context context;
     private ArrayList<ModelClassPost> postList;
 
@@ -39,7 +43,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         ModelClassPost post = postList.get(position);
         String imageUrl = post.getImageUrl();
         // Picasso library for download & show image
-        Picasso.get().load(imageUrl).placeholder(R.drawable.logo).fit().into(holder.imageView);
+        Picasso.get().load(imageUrl).placeholder(R.drawable.logo).fit().centerCrop().into(holder.imageView);
         holder.titleTV.setText(post.getTitle());
         String destination = post.getFromDistrict() + " - " + post.getToDistrict();
         holder.destinationTV.setText(destination);
@@ -65,6 +69,27 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             destinationTV = itemView.findViewById(R.id.from_to);
             timeAddedTV = itemView.findViewById(R.id.postDate);
             postedByTV = itemView.findViewById(R.id.postedBy);
+
+            //for use onItemClickListener from MainActivity
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    position = getAdapterPosition();
+                    if (listener != null && position != -1) {
+                        listener.onItemClick(postList.get(position));
+                    }
+                }
+            });
+
         }
+    }
+
+    //for use onItemClickListener from MainActivity
+    public interface OnItemClickListener {
+        void onItemClick(ModelClassPost post);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }

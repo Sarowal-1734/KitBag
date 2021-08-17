@@ -1,8 +1,17 @@
 package com.example.kitbag;
 
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,16 +19,24 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -29,6 +46,9 @@ public class PostInfoActivity extends AppCompatActivity {
 
     // Swipe to back
     private SlidrInterface slidrInterface;
+
+    // Show progressBar
+    private ProgressDialog progressDialog;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -54,6 +74,36 @@ public class PostInfoActivity extends AppCompatActivity {
         // Swipe to back
         slidrInterface = Slidr.attach(this);
 
+        // Set button text AddToCart or DeletePost
+        if (currentUser != null && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
+            binding.buttonPostItem.setText("Edit Post");
+            binding.buttonDeleteItem.setVisibility(View.VISIBLE);
+            binding.TextViewChat.setEnabled(false);
+            binding.TextViewMail.setEnabled(false);
+            binding.TextViewCall.setEnabled(false);
+        }
+
+        // get Intent data and set to the fields
+        String title, postedUser, source, destination, chatWith;
+        title = "Title: " + getIntent().getStringExtra("title");
+        postedUser = "Posted by " + getIntent().getStringExtra("postedBy");
+        source = getIntent().getStringExtra("fromUpazilla") + ", " + getIntent().getStringExtra("fromDistrict");
+        destination = getIntent().getStringExtra("toUpazilla") + ", " + getIntent().getStringExtra("toDistrict");
+        chatWith = "Chat (" + getIntent().getStringExtra("postedBy") + ")";
+        binding.textViewTitle.setText(title);
+        binding.textViewUserTime.setText(postedUser);
+        // Picasso library for download & show image
+        Picasso.get().load(getIntent().getStringExtra("imageUrl")).placeholder(R.drawable.logo).fit().centerInside().into(binding.photoView);
+        binding.TextViewDescription.setText(getIntent().getStringExtra("description"));
+        binding.TextViewWeight.setText(getIntent().getStringExtra("weight"));
+        binding.TextViewStatus.setText(getIntent().getStringExtra("status"));
+        binding.TextViewSource.setText(source);
+        binding.TextViewDestination.setText(destination);
+        binding.TextViewUserType.setText(getIntent().getStringExtra("userType"));
+        binding.TextViewChat.setText(chatWith);
+        binding.TextViewCall.setText(getIntent().getStringExtra("userPhone"));
+        binding.TextViewMail.setText(getIntent().getStringExtra("userEmail"));
+
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
             // User is signed in
@@ -75,8 +125,8 @@ public class PostInfoActivity extends AppCompatActivity {
                             userName.setText(documentSnapshot.getString("userName"));
                             if (documentSnapshot.getString("imageUrl") != null) {
                                 // Picasso library for download & show image
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().into(imageView);
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().into(binding.customAppBar.appbarImageviewProfile);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
                             }
                         }
                     });
@@ -144,6 +194,110 @@ public class PostInfoActivity extends AppCompatActivity {
 
     // On add to cart button click
     public void onAddToCartButtonClick(View view) {
-        // Code here...
+        if (isConnected()) {
+            if (currentUser != null) {
+                if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
+                    Intent intent = new Intent(PostInfoActivity.this, PostActivity.class);
+                    intent.putExtra("whatToDo", "EditPost");
+                    startActivity(intent);
+                    return;
+                }
+                showProgressBar();
+                Map<String, String> post = new HashMap<>();
+                post.put("userId", currentUser.getUid());
+                post.put("userType", "GENERAL_USER");
+                post.put("email", null);
+                post.put("imageUrl", null);
+                post.put("district", null);
+                post.put("upazilla", null);
+                db.collection("My_Cart").document(currentUser.getUid()).collection("Cart_Lists")
+                        .add(post).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentReference> task) {
+                        progressDialog.dismiss();
+                        Toast.makeText(PostInfoActivity.this, "Successfully added to your cart", Toast.LENGTH_SHORT).show();
+                        binding.buttonPostItem.setEnabled(false);
+                    }
+                });
+            } else {
+                Toast.makeText(PostInfoActivity.this, "Please login first", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            displayNoConnection();
+        }
     }
+
+    // On delete button clicked
+    public void onDeletePostButtonClick(View view) {
+        if (isConnected()) {
+            AlertDialog.Builder ab = new AlertDialog.Builder(PostInfoActivity.this);
+            ab.setTitle("Are you sure you want to delete this post?");
+            ab.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    showProgressBar();
+                    db.collection("All_Post").document(getIntent().getStringExtra("postRef")).delete()
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(PostInfoActivity.this, "Successfully deleted", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(PostInfoActivity.this, MainActivity.class));
+                                    finish();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(PostInfoActivity.this, "Some error occurred!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }
+            });
+            ab.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+            ab.show();
+        } else {
+            displayNoConnection();
+        }
+
+    }
+
+    // ProgressBar Setup
+    private void showProgressBar() {
+        // Show progressBar
+        progressDialog = new ProgressDialog(PostInfoActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
+    }
+
+    // Check the internet connection
+    public boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void displayNoConnection() {
+        View parentLayout = findViewById(R.id.snackBarContainer);
+        // create an instance of the snackBar
+        final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+        // inflate the custom_snackBar_view created previously
+        View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
+        // set the background of the default snackBar as transparent
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        // now change the layout of the snackBar
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        // set padding of the all corners as 0
+        snackbarLayout.setPadding(0, 0, 0, 0);
+        // add the custom snack bar layout to snackbar layout
+        snackbarLayout.addView(customSnackView, 0);
+        snackbar.show();
+    }
+
 }
