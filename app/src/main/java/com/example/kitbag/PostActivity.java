@@ -87,9 +87,17 @@ public class PostActivity extends AppCompatActivity {
         slidrInterface = Slidr.attach(this);
 
         // Change the title of the appBar according to Edit or Create post
-        if (getIntent().getData() != null && getIntent().getStringExtra("whatToDo").equals("EditPost")) {
+        if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
             binding.customAppBar.appbarTitle.setText("Edit Post");
             binding.buttonPostItem.setText("Update Post");
+            binding.EditTextPostTitle.setText(getIntent().getStringExtra("title"));
+            binding.EditTextPostWeight.setText(getIntent().getStringExtra("weight"));
+            binding.EditTextPostDescription.setText(getIntent().getStringExtra("description"));
+            binding.EditTextFromDistrict.setText(getIntent().getStringExtra("fromDistrict"));
+            binding.EditTextFromUpazila.setText(getIntent().getStringExtra("fromUpazilla"));
+            binding.EditTextToDistrict.setText(getIntent().getStringExtra("toDistrict"));
+            binding.EditTextToUpazila.setText(getIntent().getStringExtra("toUpazilla"));
+            Picasso.get().load(getIntent().getStringExtra("imageUrl")).placeholder(R.drawable.logo).fit().into(binding.imageViewAddPhoto);
         } else {
             binding.customAppBar.appbarTitle.setText("Create Post");
         }
@@ -211,8 +219,9 @@ public class PostActivity extends AppCompatActivity {
         if (valid()) {
             if (isConnected()) {
                 if (currentUser != null) {
-                    if (getIntent().getData() != null && getIntent().getStringExtra("whatToDo").equals("EditPost")) {
+                    if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
                         // Edit post here...
+                        updatePost();
                     } else {
                         showProgressBar();
                         String title = binding.EditTextPostTitle.getText().toString().trim();
@@ -312,6 +321,47 @@ public class PostActivity extends AppCompatActivity {
                 snackbar.show();
             }
         }
+    }
+
+    private void updatePost() {
+        // Show progressBar
+        showProgressBar();
+        // Store image to firebase
+        StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl(getIntent().getStringExtra("imageUrl"));
+        reference.putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                // Update post info in Database
+                                db.collection("All_Post").document(getIntent().getStringExtra("postRef"))
+                                        .update(
+                                                "imageUrl", uri.toString(),
+                                                "title", binding.EditTextPostTitle.getText().toString(),
+                                                "weight", binding.EditTextPostWeight.getText().toString(),
+                                                "description", binding.EditTextPostDescription.getText().toString(),
+                                                "fromDistrict", binding.EditTextFromDistrict.getText().toString(),
+                                                "fromUpazilla", binding.EditTextFromUpazila.getText().toString(),
+                                                "toDistrict", binding.EditTextToDistrict.getText().toString(),
+                                                "toUpazilla", binding.EditTextToUpazila.getText().toString()
+                                        );
+                                progressDialog.dismiss();
+                                Toast.makeText(PostActivity.this, "Post successfully updated", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(PostActivity.this, MainActivity.class));
+                                finish();
+                            }
+                        });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(PostActivity.this, "Failed to update image", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     // Check the internet connection

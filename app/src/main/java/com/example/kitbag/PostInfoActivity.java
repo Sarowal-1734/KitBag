@@ -31,6 +31,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
@@ -84,13 +86,12 @@ public class PostInfoActivity extends AppCompatActivity {
         }
 
         // get Intent data and set to the fields
-        String title, postedUser, source, destination, chatWith;
-        title = "Title: " + getIntent().getStringExtra("title");
+        String postedUser, source, destination, chatWith;
         postedUser = "Posted by " + getIntent().getStringExtra("postedBy");
         source = getIntent().getStringExtra("fromUpazilla") + ", " + getIntent().getStringExtra("fromDistrict");
         destination = getIntent().getStringExtra("toUpazilla") + ", " + getIntent().getStringExtra("toDistrict");
         chatWith = "Chat (" + getIntent().getStringExtra("postedBy") + ")";
-        binding.textViewTitle.setText(title);
+        binding.textViewTitle.setText(getIntent().getStringExtra("title"));
         binding.textViewUserTime.setText(postedUser);
         // Picasso library for download & show image
         Picasso.get().load(getIntent().getStringExtra("imageUrl")).placeholder(R.drawable.logo).fit().centerInside().into(binding.photoView);
@@ -199,6 +200,15 @@ public class PostInfoActivity extends AppCompatActivity {
                 if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
                     Intent intent = new Intent(PostInfoActivity.this, PostActivity.class);
                     intent.putExtra("whatToDo", "EditPost");
+                    intent.putExtra("imageUrl", getIntent().getStringExtra("imageUrl"));
+                    intent.putExtra("title", getIntent().getStringExtra("title"));
+                    intent.putExtra("weight", getIntent().getStringExtra("weight"));
+                    intent.putExtra("description", getIntent().getStringExtra("description"));
+                    intent.putExtra("fromDistrict", getIntent().getStringExtra("fromDistrict"));
+                    intent.putExtra("fromUpazilla", getIntent().getStringExtra("fromUpazilla"));
+                    intent.putExtra("toDistrict", getIntent().getStringExtra("toDistrict"));
+                    intent.putExtra("toUpazilla", getIntent().getStringExtra("toUpazilla"));
+                    intent.putExtra("postRef", getIntent().getStringExtra("postRef"));
                     startActivity(intent);
                     return;
                 }
@@ -239,6 +249,8 @@ public class PostInfoActivity extends AppCompatActivity {
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
+                                    StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(getIntent().getStringExtra("imageUrl"));
+                                    storageReference.delete();
                                     progressDialog.dismiss();
                                     Toast.makeText(PostInfoActivity.this, "Successfully deleted", Toast.LENGTH_SHORT).show();
                                     startActivity(new Intent(PostInfoActivity.this, MainActivity.class));

@@ -20,7 +20,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.kitbag.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -30,6 +30,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
@@ -125,7 +126,8 @@ public class MainActivity extends AppCompatActivity {
 
         // get data from fireStore and set to the recyclerView
         ArrayList<ModelClassPost> postList = new ArrayList<>();
-        db.collection("All_Post")//.whereEqualTo("userId", currentUser.getUid())  //to get journalList of current user
+        db.collection("All_Post")
+                .orderBy("timeAdded", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -135,8 +137,9 @@ public class MainActivity extends AppCompatActivity {
                             postList.add(modelClassPost);
                         }
                         PostAdapter postAdapter = new PostAdapter(MainActivity.this, postList);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
-                        binding.recyclerViewPostLists.setLayoutManager(linearLayoutManager);
+                        //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
+                        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, 2, GridLayoutManager.VERTICAL, false);
+                        binding.recyclerViewPostLists.setLayoutManager(gridLayoutManager);
                         binding.recyclerViewPostLists.setAdapter(postAdapter);
                         // On recycler item click listener
                         postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
@@ -169,7 +172,9 @@ public class MainActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, PostActivity.class));
+                Intent intent = new Intent(MainActivity.this, PostActivity.class);
+                intent.putExtra("whatToDo", "CreatePost");
+                startActivity(intent);
             }
         });
 
