@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,6 +32,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.r0adkll.slidr.Slidr;
@@ -213,22 +215,28 @@ public class PostInfoActivity extends AppCompatActivity {
                     return;
                 }
                 showProgressBar();
-                Map<String, String> post = new HashMap<>();
-                post.put("userId", currentUser.getUid());
-                post.put("userType", "GENERAL_USER");
-                post.put("email", null);
-                post.put("imageUrl", null);
-                post.put("district", null);
-                post.put("upazilla", null);
-                db.collection("My_Cart").document(currentUser.getUid()).collection("Cart_Lists")
-                        .add(post).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentReference> task) {
-                        progressDialog.dismiss();
-                        Toast.makeText(PostInfoActivity.this, "Successfully added to your cart", Toast.LENGTH_SHORT).show();
-                        binding.buttonPostItem.setEnabled(false);
-                    }
-                });
+                // Get all the Post_Info to store in Cart
+                db.collection("All_Post")
+                        .whereEqualTo("postReference", getIntent().getStringExtra("postRef"))
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                    ModelClassPost modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
+                                    assert modelClassPost != null;
+                                    db.collection("My_Cart").document(currentUser.getUid()).collection("Cart_Lists")
+                                            .add(modelClassPost).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(PostInfoActivity.this, "Successfully added to your cart", Toast.LENGTH_SHORT).show();
+                                            binding.buttonPostItem.setEnabled(false);
+                                        }
+                                    });
+                                }
+                            }
+                        });
             } else {
                 Toast.makeText(PostInfoActivity.this, "Please login first", Toast.LENGTH_SHORT).show();
             }

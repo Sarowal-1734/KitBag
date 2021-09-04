@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                                 intent.putExtra("timeAdded", post.getTimeAdded());
                                 intent.putExtra("description", post.getDescription());
                                 intent.putExtra("weight", post.getWeight());
-                                intent.putExtra("status", "N/A");
+                                intent.putExtra("status", post.getStatus());
                                 intent.putExtra("fromUpazilla", post.getFromUpazilla());
                                 intent.putExtra("fromDistrict", post.getFromDistrict());
                                 intent.putExtra("toUpazilla", post.getToUpazilla());
@@ -214,6 +214,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.nav_my_post:
                         startActivity(new Intent(MainActivity.this, MyPostActivity.class));
+                        break;
+                    case R.id.nav_my_cart:
+                        startActivity(new Intent(MainActivity.this, MyCartActivity.class));
                         break;
                     case R.id.nav_logout:
                         mAuth.signOut();

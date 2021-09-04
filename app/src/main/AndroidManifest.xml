@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KitBag">
         <activity
+            android:name=".MyCartActivity"
+            android:exported="true" />
+        <activity
             android:name=".MyPostActivity"
             android:exported="true" />
         <activity

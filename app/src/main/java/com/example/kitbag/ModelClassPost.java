@@ -18,6 +18,15 @@ public class ModelClassPost {
     private String email;
     private String userType;
     private String postReference;
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getPostReference() {
         return postReference;
