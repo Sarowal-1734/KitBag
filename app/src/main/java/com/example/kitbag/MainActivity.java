@@ -20,7 +20,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.kitbag.databinding.ActivityMainBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -30,6 +30,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
@@ -94,8 +95,8 @@ public class MainActivity extends AppCompatActivity {
                             userName.setText(documentSnapshot.getString("userName"));
                             if (documentSnapshot.getString("imageUrl") != null) {
                                 // Picasso library for download & show image
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().into(imageView);
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().into(binding.customAppBar.appbarImageviewProfile);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
                             }
                         }
                     });
@@ -125,7 +126,8 @@ public class MainActivity extends AppCompatActivity {
 
         // get data from fireStore and set to the recyclerView
         ArrayList<ModelClassPost> postList = new ArrayList<>();
-        db.collection("All_Post")//.whereEqualTo("userId", currentUser.getUid())  //to get journalList of current user
+        db.collection("All_Post")
+                .orderBy("timeAdded", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -135,9 +137,34 @@ public class MainActivity extends AppCompatActivity {
                             postList.add(modelClassPost);
                         }
                         PostAdapter postAdapter = new PostAdapter(MainActivity.this, postList);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
-                        binding.recyclerViewPostLists.setLayoutManager(linearLayoutManager);
+                        //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
+                        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, 2, GridLayoutManager.VERTICAL, false);
+                        binding.recyclerViewPostLists.setLayoutManager(gridLayoutManager);
                         binding.recyclerViewPostLists.setAdapter(postAdapter);
+                        // On recycler item click listener
+                        postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(ModelClassPost post) {
+                                Intent intent = new Intent(MainActivity.this, PostInfoActivity.class);
+                                intent.putExtra("title", post.getTitle());
+                                intent.putExtra("postedBy", post.getUserName());
+                                intent.putExtra("imageUrl", post.getImageUrl());
+                                intent.putExtra("timeAdded", post.getTimeAdded());
+                                intent.putExtra("description", post.getDescription());
+                                intent.putExtra("weight", post.getWeight());
+                                intent.putExtra("status", post.getStatus());
+                                intent.putExtra("fromUpazilla", post.getFromUpazilla());
+                                intent.putExtra("fromDistrict", post.getFromDistrict());
+                                intent.putExtra("toUpazilla", post.getToUpazilla());
+                                intent.putExtra("toDistrict", post.getToDistrict());
+                                intent.putExtra("userType", post.getUserType());
+                                intent.putExtra("userPhone", post.getPhoneNumber());
+                                intent.putExtra("userEmail", post.getEmail());
+                                intent.putExtra("userId", post.getUserId());
+                                intent.putExtra("postRef", post.getPostReference());
+                                startActivity(intent);
+                            }
+                        });
                     }
                 });
 
@@ -145,7 +172,9 @@ public class MainActivity extends AppCompatActivity {
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, PostActivity.class));
+                Intent intent = new Intent(MainActivity.this, PostActivity.class);
+                intent.putExtra("whatToDo", "CreatePost");
+                startActivity(intent);
             }
         });
 
@@ -182,6 +211,12 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.nav_login:
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        break;
+                    case R.id.nav_my_post:
+                        startActivity(new Intent(MainActivity.this, MyPostActivity.class));
+                        break;
+                    case R.id.nav_my_cart:
+                        startActivity(new Intent(MainActivity.this, MyCartActivity.class));
                         break;
                     case R.id.nav_logout:
                         mAuth.signOut();

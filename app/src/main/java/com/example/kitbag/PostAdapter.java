@@ -17,6 +17,10 @@ import java.util.ArrayList;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> {
 
+    //for use onItemClickListener from MainActivity
+    private OnItemClickListener listener;
+    int position;
+
     private Context context;
     private ArrayList<ModelClassPost> postList;
 
@@ -39,11 +43,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         ModelClassPost post = postList.get(position);
         String imageUrl = post.getImageUrl();
         // Picasso library for download & show image
-        Picasso.get().load(imageUrl).placeholder(R.drawable.logo).fit().into(holder.imageView);
+        Picasso.get().load(imageUrl).placeholder(R.drawable.logo).fit().centerCrop().into(holder.imageView);
         holder.titleTV.setText(post.getTitle());
         String destination = post.getFromDistrict() + " - " + post.getToDistrict();
         holder.destinationTV.setText(destination);
-        holder.postedByTV.setText(post.getUserName());
         // Adding time ago format
         String timeAgo = (String) DateUtils.getRelativeTimeSpanString(post.getTimeAdded().getSeconds() * 1000);
         holder.timeAddedTV.setText(timeAgo);
@@ -56,7 +59,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private ImageView imageView;
-        private TextView destinationTV, titleTV, timeAddedTV, postedByTV;
+        private TextView destinationTV, titleTV, timeAddedTV;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -64,7 +67,27 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             titleTV = itemView.findViewById(R.id.postTitle);
             destinationTV = itemView.findViewById(R.id.from_to);
             timeAddedTV = itemView.findViewById(R.id.postDate);
-            postedByTV = itemView.findViewById(R.id.postedBy);
+
+            //for use onItemClickListener from MainActivity
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    position = getAdapterPosition();
+                    if (listener != null && position != -1) {
+                        listener.onItemClick(postList.get(position));
+                    }
+                }
+            });
+
         }
+    }
+
+    //for use onItemClickListener from MainActivity
+    public interface OnItemClickListener {
+        void onItemClick(ModelClassPost post);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }

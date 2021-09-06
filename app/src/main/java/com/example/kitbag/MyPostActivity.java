@@ -1,106 +1,85 @@
 package com.example.kitbag;
 
-import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.example.kitbag.databinding.ActivityPostBinding;
-import com.google.android.gms.tasks.OnFailureListener;
+import com.example.kitbag.databinding.ActivityMyPostBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.annotations.Nullable;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
-import java.util.Date;
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class PostActivity extends AppCompatActivity {
+public class MyPostActivity extends AppCompatActivity {
 
-    // Get from database and upload with post
-    String userName, phoneNumber, userType, email;
-
-    private ActivityPostBinding binding;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
-
-    // Show progressBar
-    private ProgressDialog progressDialog;
-
-    // Get image from gallery and set to the imageView
-    private static final int PICK_IMAGE = 1;
-    private Uri imageUri;
+    private ActivityMyPostBinding binding;
+    private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
 
     // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
+    // Swipe to back
+    private SlidrInterface slidrInterface;
+
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("Users");
-    private final StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityPostBinding.inflate(getLayoutInflater());
+        binding = ActivityMyPostBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        // remove search icon icon from appBar
-        binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
 
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
+        // Change appBar title
+        binding.customAppBar.appbarTitle.setText("My Posts");
+
         // Swipe to back
         slidrInterface = Slidr.attach(this);
 
-        // Change the title of the appBar according to Edit or Create post
-        if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
-            binding.customAppBar.appbarTitle.setText("Edit Post");
-            binding.buttonPostItem.setText("Update Post");
-            binding.EditTextPostTitle.setText(getIntent().getStringExtra("title"));
-            binding.EditTextPostWeight.setText(getIntent().getStringExtra("weight"));
-            binding.EditTextPostDescription.setText(getIntent().getStringExtra("description"));
-            binding.EditTextFromDistrict.setText(getIntent().getStringExtra("fromDistrict"));
-            binding.EditTextFromUpazila.setText(getIntent().getStringExtra("fromUpazilla"));
-            binding.EditTextToDistrict.setText(getIntent().getStringExtra("toDistrict"));
-            binding.EditTextToUpazila.setText(getIntent().getStringExtra("toUpazilla"));
-            Picasso.get().load(getIntent().getStringExtra("imageUrl")).placeholder(R.drawable.logo).fit().into(binding.imageViewAddPhoto);
-        } else {
-            binding.customAppBar.appbarTitle.setText("Create Post");
-        }
+        // Adding back arrow in the appBar
+        binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
+        binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -119,7 +98,6 @@ public class PostActivity extends AppCompatActivity {
                             View view = navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
-                            // set userName to the drawer
                             userName.setText(documentSnapshot.getString("userName"));
                             if (documentSnapshot.getString("imageUrl") != null) {
                                 // Picasso library for download & show image
@@ -130,26 +108,90 @@ public class PostActivity extends AppCompatActivity {
                     });
         } else {
             // No user is signed in
+            binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
             binding.navigationView.getMenu().clear();
             binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
-            binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
         }
 
-        // Adding back arrow in the appBar
-        binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
-        binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
+        // Initial view of dark mode button in drawer menu
+        SwitchCompat switchDarkMode = MenuItemCompat.getActionView(binding.navigationView.getMenu().findItem(R.id.nav_dark_mode)).findViewById(R.id.switch_dark_mode);
+        switchDarkMode.setChecked(true);
+        // Toggle dark mode button in drawer menu
+        switchDarkMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onBackPressed();
+                if (switchDarkMode.isChecked()) {
+                    Toast.makeText(MyPostActivity.this, "Dark Mode Enabled!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MyPostActivity.this, "Dark Mode Disabled!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        //setAdapter on District and Upazila
-        setDistrictUpazilaOnEditText();
+        // get data from fireStore and set to the recyclerView
+        ArrayList<ModelClassPost> postList = new ArrayList<>();
+        db.collection("All_Post")
+                .whereEqualTo("userId", currentUser.getUid())  //to get postList of current user
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            ModelClassPost modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
+                            postList.add(modelClassPost);
+                        }
+                        PostAdapter postAdapter = new PostAdapter(MyPostActivity.this, postList);
+                        GridLayoutManager gridLayoutManager = new GridLayoutManager(MyPostActivity.this, 2, GridLayoutManager.VERTICAL, false);
+                        binding.recyclerViewPostLists.setLayoutManager(gridLayoutManager);
+                        binding.recyclerViewPostLists.setAdapter(postAdapter);
+                        // On recycler item click listener
+                        postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(ModelClassPost post) {
+                                Intent intent = new Intent(MyPostActivity.this, PostInfoActivity.class);
+                                intent.putExtra("title", post.getTitle());
+                                intent.putExtra("postedBy", post.getUserName());
+                                intent.putExtra("imageUrl", post.getImageUrl());
+                                intent.putExtra("timeAdded", post.getTimeAdded());
+                                intent.putExtra("description", post.getDescription());
+                                intent.putExtra("weight", post.getWeight());
+                                intent.putExtra("status", "N/A");
+                                intent.putExtra("fromUpazilla", post.getFromUpazilla());
+                                intent.putExtra("fromDistrict", post.getFromDistrict());
+                                intent.putExtra("toUpazilla", post.getToUpazilla());
+                                intent.putExtra("toDistrict", post.getToDistrict());
+                                intent.putExtra("userType", post.getUserType());
+                                intent.putExtra("userPhone", post.getPhoneNumber());
+                                intent.putExtra("userEmail", post.getEmail());
+                                intent.putExtra("userId", post.getUserId());
+                                intent.putExtra("postRef", post.getPostReference());
+                                startActivity(intent);
+                            }
+                        });
+                    }
+                });
 
-        // Open Drawer Layout
+        // Open post Activity
+        binding.fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyPostActivity.this, PostActivity.class);
+                intent.putExtra("whatToDo", "CreatePost");
+                startActivity(intent);
+            }
+        });
+
+        // Open notifications Activity
+        findViewById(R.id.appbar_notification_icon).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MyPostActivity.this, NotificationsActivity.class));
+            }
+        });
+
+        // Click profile to open drawer
         binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -157,7 +199,73 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
-        // Active Inactive Slider to back based on drawer
+        // On Edit profile icon clicked
+        View view = binding.navigationView.getHeaderView(0);
+        ImageView imageView = view.findViewById(R.id.nav_edit_profile);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MyPostActivity.this, EditProfileActivity.class));
+            }
+        });
+
+        // On drawer menu item clicked
+        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_logout:
+                        mAuth.signOut();
+                        Toast.makeText(MyPostActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MyPostActivity.this, MainActivity.class));
+                        finish();
+                        break;
+                }
+                return false;
+            }
+        });
+
+        // On search button click
+        binding.customAppBar.appbarImageviewSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // Inflate Custom layout for searching
+                LayoutInflater inflater = MyPostActivity.this.getLayoutInflater();
+                View dialogView = inflater.inflate(R.layout.custom_search_dialog, null);
+
+                // Create Dialog Builder
+                AlertDialog.Builder ab = new AlertDialog.Builder(MyPostActivity.this);
+
+                // Init the editText of the custom dialog box
+                editTextFromDistrict = dialogView.findViewById(R.id.EditTextFromDistrict);
+                editTextFromUpazila = dialogView.findViewById(R.id.EditTextFromUpazila);
+                editTextToDistrict = dialogView.findViewById(R.id.EditTextToDistrict);
+                editTextToUpazila = dialogView.findViewById(R.id.EditTextToUpazila);
+
+                //setAdapter on District and Upazila
+                setDistrictUpazilaOnEditText();
+
+                //Setting positive "Ok" Button
+                ab.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Write your code here...
+                    }
+                });
+                //Setting Negative "Cancel" Button
+                ab.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Write your code here to execute after dialog
+                        dialog.cancel();
+                    }
+                });
+                ab.setCancelable(false);
+                ab.setView(dialogView);
+                ab.show();
+            }
+        });
+
+        // Show or Hide Floating Action Button
         binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
@@ -165,14 +273,13 @@ public class PostActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
-                if (getCurrentFocus() != null) {
-                    getCurrentFocus().clearFocus();
-                }
+                binding.fab.hide();
                 slidrInterface.lock();
             }
 
             @Override
             public void onDrawerClosed(@NonNull View drawerView) {
+                binding.fab.show();
                 slidrInterface.unlock();
             }
 
@@ -181,30 +288,9 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
-        // Get image from gallery and set to the imageView
-        binding.imageViewAddPhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // making implicit intent to pick photo from external gallery
-                Intent gallery = new Intent();
-                gallery.setType("image/*");
-                gallery.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(gallery, PICK_IMAGE);
-            }
-        });
     }
 
-    // Picking photo from external storage
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
-            imageUri = data.getData();
-            binding.imageViewAddPhoto.setImageURI(imageUri);
-        }
-    }
-
-    // Close Drawer on back pressed
+    // Exit app on back pressed
     @Override
     public void onBackPressed() {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
@@ -214,225 +300,16 @@ public class PostActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    // On Post Button Clicked
-    public void onPostButtonClick(View view) {
-        if (valid()) {
-            if (isConnected()) {
-                if (currentUser != null) {
-                    if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
-                        // Edit post here...
-                        updatePost();
-                    } else {
-                        showProgressBar();
-                        String title = binding.EditTextPostTitle.getText().toString().trim();
-                        String weight = binding.EditTextPostWeight.getText().toString().trim();
-                        String description = binding.EditTextPostDescription.getText().toString().trim();
-                        String fromDistrict = binding.EditTextFromDistrict.getText().toString().trim();
-                        String fromUpazilla = binding.EditTextFromUpazila.getText().toString().trim();
-                        String toDistrict = binding.EditTextToDistrict.getText().toString().trim();
-                        String toUpazilla = binding.EditTextToUpazila.getText().toString().trim();
-                        // Get userInfo from database for storing with the post
-                        collectionReference.document(currentUser.getUid()).get()
-                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        userName = documentSnapshot.getString("userName");
-                                        phoneNumber = documentSnapshot.getString("phoneNumber");
-                                        userType = documentSnapshot.getString("userType");
-                                        if (documentSnapshot.getString("email") != null) {
-                                            email = documentSnapshot.getString("email");
-                                        }
-                                    }
-                                });
-
-                        // Store image to Firebase Storage
-                        StorageReference filepath = storageReference.child("all_post_images").child(currentUser.getUid() + new Timestamp(new Date()));
-                        filepath.putFile(imageUri)
-                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                    @Override
-                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                        filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                            @Override
-                                            public void onSuccess(Uri uri) {
-                                                String imageUrl = uri.toString();
-                                                ModelClassPost modelClassPost = new ModelClassPost();
-                                                modelClassPost.setImageUrl(imageUrl);
-                                                modelClassPost.setTitle(title);
-                                                modelClassPost.setWeight(weight);
-                                                modelClassPost.setDescription(description);
-                                                modelClassPost.setFromDistrict(fromDistrict);
-                                                modelClassPost.setFromUpazilla(fromUpazilla);
-                                                modelClassPost.setToDistrict(toDistrict);
-                                                modelClassPost.setToUpazilla(toUpazilla);
-                                                modelClassPost.setTimeAdded(new Timestamp(new Date()));
-                                                modelClassPost.setUserId(currentUser.getUid());
-                                                modelClassPost.setUserName(userName);
-                                                modelClassPost.setPhoneNumber(phoneNumber);
-                                                modelClassPost.setEmail(email);
-                                                modelClassPost.setUserType(userType);
-                                                modelClassPost.setStatus("N/A");
-                                                modelClassPost.setPostReference(null);
-                                                // Storing the post into All_Post Collection
-                                                db.collection("All_Post").add(modelClassPost)
-                                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                            @Override
-                                                            public void onSuccess(DocumentReference documentReference) {
-                                                                // Storing the document reference for easy to delete later
-                                                                db.collection("All_Post").document(documentReference.getId())
-                                                                        .update("postReference", documentReference.getId());
-                                                                // Hide progressBar
-                                                                progressDialog.dismiss();
-                                                                Toast.makeText(PostActivity.this, "Your post is now visible to everyone", Toast.LENGTH_SHORT).show();
-                                                                startActivity(new Intent(PostActivity.this, MainActivity.class));
-                                                                finish();
-                                                            }
-                                                        });
-                                            }
-                                        });
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        progressDialog.dismiss();
-                                        Toast.makeText(PostActivity.this, "Failed to upload image!", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
-                } else {
-                    Toast.makeText(PostActivity.this, "Please login first", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                // Show that no connection
-                View parentLayout = findViewById(R.id.snackBarContainer);
-                // create an instance of the snackBar
-                final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
-                // inflate the custom_snackBar_view created previously
-                View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
-                // set the background of the default snackBar as transparent
-                snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
-                // now change the layout of the snackBar
-                Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
-                // set padding of the all corners as 0
-                snackbarLayout.setPadding(0, 0, 0, 0);
-                // add the custom snack bar layout to snackbar layout
-                snackbarLayout.addView(customSnackView, 0);
-                snackbar.show();
-            }
-        }
-    }
-
-    private void updatePost() {
-        // Show progressBar
-        showProgressBar();
-        // Store image to firebase
-        StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl(getIntent().getStringExtra("imageUrl"));
-        reference.putFile(imageUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                // Update post info in Database
-                                db.collection("All_Post").document(getIntent().getStringExtra("postRef"))
-                                        .update(
-                                                "imageUrl", uri.toString(),
-                                                "title", binding.EditTextPostTitle.getText().toString(),
-                                                "weight", binding.EditTextPostWeight.getText().toString(),
-                                                "description", binding.EditTextPostDescription.getText().toString(),
-                                                "fromDistrict", binding.EditTextFromDistrict.getText().toString(),
-                                                "fromUpazilla", binding.EditTextFromUpazila.getText().toString(),
-                                                "toDistrict", binding.EditTextToDistrict.getText().toString(),
-                                                "toUpazilla", binding.EditTextToUpazila.getText().toString()
-                                        );
-                                progressDialog.dismiss();
-                                Toast.makeText(PostActivity.this, "Post successfully updated", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(PostActivity.this, MainActivity.class));
-                                finish();
-                            }
-                        });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(PostActivity.this, "Failed to update image", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
-
-    // Check the internet connection
-    public boolean isConnected() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-
-    private boolean valid() {
-        if (imageUri == null) {
-            Toast.makeText(this, "Please add a picture", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (TextUtils.isEmpty(binding.EditTextPostTitle.getText().toString())) {
-            binding.EditTextPostTitle.setError("Required");
-            binding.EditTextPostTitle.requestFocus();
-            return false;
-        }
-        if (TextUtils.isEmpty(binding.EditTextPostWeight.getText().toString())) {
-            binding.EditTextPostWeight.setError("Required");
-            binding.EditTextPostWeight.requestFocus();
-            return false;
-        }
-        if (TextUtils.isEmpty(binding.EditTextPostDescription.getText().toString())) {
-            binding.EditTextPostDescription.setError("Required");
-            binding.EditTextPostDescription.requestFocus();
-            return false;
-        }
-        if (TextUtils.isEmpty(binding.EditTextFromDistrict.getText().toString())) {
-            binding.EditTextFromDistrict.setError("Required");
-            binding.EditTextFromDistrict.requestFocus();
-            return false;
-        }
-        if (TextUtils.isEmpty(binding.EditTextFromUpazila.getText().toString())) {
-            binding.EditTextFromUpazila.setError("Required");
-            binding.EditTextFromUpazila.requestFocus();
-            return false;
-        }
-        if (TextUtils.isEmpty(binding.EditTextToDistrict.getText().toString())) {
-            binding.EditTextToDistrict.setError("Required");
-            binding.EditTextToDistrict.requestFocus();
-            return false;
-        }
-        if (TextUtils.isEmpty(binding.EditTextToUpazila.getText().toString())) {
-            binding.EditTextToUpazila.setError("Required");
-            binding.EditTextToUpazila.requestFocus();
-            return false;
-        }
-        return true;
-    }
-
-    // ProgressBar Setup
-    private void showProgressBar() {
-        // Show progressBar
-        progressDialog = new ProgressDialog(PostActivity.this);
-        progressDialog.show();
-        progressDialog.setContentView(R.layout.progress_dialog);
-        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        progressDialog.setCancelable(false);
-    }
-
     // District and Upazila Recommendation
     private void setDistrictUpazilaOnEditText() {
         // District Recommendation
         String[] districts = getResources().getStringArray(R.array.Districts);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(PostActivity.this, android.R.layout.simple_list_item_1, districts);
-        binding.EditTextFromDistrict.setAdapter(adapter);  // District
-        binding.EditTextToDistrict.setAdapter(adapter);    // District
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(MyPostActivity.this, android.R.layout.simple_list_item_1, districts);
+        editTextFromDistrict.setAdapter(adapter);  // District
+        editTextToDistrict.setAdapter(adapter);    // District
 
         // UpazilaFrom Recommendation
-        binding.EditTextFromDistrict.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        editTextFromDistrict.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String district = adapter.getItem(position);
@@ -567,14 +444,14 @@ public class PostActivity extends AppCompatActivity {
                     upazilas = getResources().getStringArray(R.array.Thakurgaon);
                 }
                 if (upazilas != null) {
-                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(PostActivity.this, android.R.layout.simple_list_item_1, upazilas);
-                    binding.EditTextFromUpazila.setAdapter(adapterUpazila);  // Define Upazilas
+                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MyPostActivity.this, android.R.layout.simple_list_item_1, upazilas);
+                    editTextFromUpazila.setAdapter(adapterUpazila);  // Define Upazilas
                 }
             }
         });
 
         // UpazilaTo Recommendation
-        binding.EditTextToDistrict.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        editTextToDistrict.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String district = adapter.getItem(position);
@@ -709,8 +586,8 @@ public class PostActivity extends AppCompatActivity {
                     upazilas = getResources().getStringArray(R.array.Thakurgaon);
                 }
                 if (upazilas != null) {
-                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(PostActivity.this, android.R.layout.simple_list_item_1, upazilas);
-                    binding.EditTextToUpazila.setAdapter(adapterUpazila);  // Define Upazilas
+                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MyPostActivity.this, android.R.layout.simple_list_item_1, upazilas);
+                    editTextToUpazila.setAdapter(adapterUpazila);  // Define Upazilas
                 }
             }
         });
