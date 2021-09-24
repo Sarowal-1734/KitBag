@@ -1,4 +1,4 @@
-package com.example.kitbag;
+package com.example.kitbag.adapter;
 
 import android.content.Context;
 import android.text.format.DateUtils;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.kitbag.model.ModelClassPost;
+import com.example.kitbag.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

@@ -22,7 +22,10 @@ import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.example.kitbag.adapter.PostAdapter;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityMainBinding;
+import com.example.kitbag.model.ModelClassPost;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
