@@ -293,6 +293,8 @@ public class EditProfileActivity extends AppCompatActivity {
         return true;
     }
 
+    //
+
     // District and Upazila Recommendation
     private void setDistrictUpazilaOnEditText() {
         // District Recommendation

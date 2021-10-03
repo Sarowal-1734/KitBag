@@ -154,6 +154,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
                         android:gravity="center_horizontal"
+                        android:textColor="@color/black"
                         android:text="@string/already_have_an_account"/>
 
                     <TextView

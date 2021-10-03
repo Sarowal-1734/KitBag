@@ -136,6 +136,8 @@ public class SignUpActivity extends AppCompatActivity {
                 progressDialog.setContentView(R.layout.progress_dialog);
                 progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                 progressDialog.setCancelable(false);
+
+
                 // Check user already registered or not
                 String email = binding.cpp.getFullNumber().trim() + "@gmail.com";
                 mAuth.fetchSignInMethodsForEmail(email)
