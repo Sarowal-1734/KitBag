@@ -26,6 +26,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.kitbag.adapter.PostAdapter;
+import com.example.kitbag.authentication.LoginActivity;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityMainBinding;
 import com.example.kitbag.model.ModelClassPost;
@@ -33,7 +34,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.EmailAuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -347,11 +347,11 @@ public class MainActivity extends AppCompatActivity {
                 if(!newPassword.equals(conformNewPassword)){
                     Toast.makeText(MainActivity.this, "Conform Password Again", Toast.LENGTH_SHORT).show();
                 }
-                if(newPassword.length() < 8){
-                    editTextNewPassword.setError("Length must be 8 or more");
+                if(newPassword.length() < 6){
+                    editTextNewPassword.setError("Length must be 6 or more");
                 }
-                if(conformNewPassword.length() < 8){
-                    editTextNewPassword.setError("Length must be 8 or more");
+                if(conformNewPassword.length() < 6){
+                    editTextNewPassword.setError("Length must be 6 or more");
                 }
                 if(!TextUtils.isEmpty(newPassword) && !TextUtils.isEmpty(conformNewPassword) &&
                 newPassword.equals(conformNewPassword) && newPassword.length() >= 8 && conformNewPassword.length() >=8){
@@ -392,7 +392,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(@NonNull Exception e) {
                 //re-authentication failed
-                dialog.dismiss();
                 Toast.makeText(MainActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
             }
         });
