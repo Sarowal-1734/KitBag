@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
     android:background="@color/white"
-    tools:context=".SignUpActivity">
+    tools:context=".authentication.SignUpActivity">
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
@@ -154,6 +154,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
                         android:gravity="center_horizontal"
+                        android:textColor="@color/black"
                         android:text="@string/already_have_an_account"/>
 
                     <TextView

@@ -21,6 +21,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityEditProfileBinding;
+import com.example.kitbag.model.UserModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -184,6 +185,8 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
             imageUri = data.getData();
+            UserModel userModel = new UserModel();
+            userModel.setImageUrl(imageUri.toString());
             binding.customEditProfileImage.circularImageViewProfile.setImageURI(imageUri);
         }
     }
@@ -292,6 +295,9 @@ public class EditProfileActivity extends AppCompatActivity {
         }
         return true;
     }
+
+    // on drawer menu item click
+
 
     // District and Upazila Recommendation
     private void setDistrictUpazilaOnEditText() {

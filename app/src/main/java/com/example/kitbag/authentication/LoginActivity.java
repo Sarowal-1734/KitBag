@@ -1,4 +1,4 @@
-package com.example.kitbag;
+package com.example.kitbag.authentication;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,25 +9,29 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.example.kitbag.databinding.ActivityForgotPasswordBinding;
+import com.example.kitbag.MainActivity;
+import com.example.kitbag.R;
+import com.example.kitbag.databinding.ActivityLoginBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 
-public class ForgotPasswordActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
-    private ActivityForgotPasswordBinding binding;
+    private ActivityLoginBinding binding;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
@@ -35,25 +39,22 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     // Show progressBar
     private ProgressDialog progressDialog;
 
+    // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityForgotPasswordBinding.inflate(getLayoutInflater());
+        binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Initialize FirebaseAuth
+        // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
         // Swipe to back
         slidrInterface = Slidr.attach(this);
-
-        // remove search icon and notification icon from appBar
-        binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
-        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -70,6 +71,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
         }
 
+        // Attach full number from edittext with cpp
+        binding.cpp.registerCarrierNumberEditText(binding.EditTextContact);
+
+        // remove search icon and notification icon from appBar
+        binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+
         // Open Drawer Layout
         binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +85,18 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                 binding.drawerLayout.openDrawer(GravityCompat.END);
             }
         });
+
+        // Adding back arrow in the appBar
+        binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
+        binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
+        // Change the title of the appBar
+        binding.customAppBar.appbarTitle.setText("Login");
 
         // Active Inactive Slider to back based on drawer
         binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -101,42 +121,36 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             public void onDrawerStateChanged(int newState) {
             }
         });
-
-        // Adding back arrow in the appBar
-        binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
-        binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-
-        // Change the title of the appBar
-        binding.customAppBar.appbarTitle.setText("Forgot Password");
-
-        // Attach full number from edittext with cpp
-        binding.cpp.registerCarrierNumberEditText(binding.EditTextContact);
     }
 
-    // On next button clicked
-    public void onNextButtonClick(View view) {
+    public void onLoginButtonClick(View view) {
         if (TextUtils.isEmpty(binding.EditTextContact.getText().toString())) {
             binding.EditTextContact.setError("Required");
             binding.EditTextContact.requestFocus();
             return;
         }
+        if (TextUtils.isEmpty(binding.EditTextPassword.getText().toString())) {
+            binding.EditTextPassword.setError("Required");
+            binding.EditTextPassword.requestFocus();
+            return;
+        }
+        // Get user input data
+        String phone = binding.cpp.getFullNumber().trim();
+        String fakeEmail = phone + "@gmail.com";
+        String password = binding.EditTextPassword.getText().toString();
 
-        // Check Phone already registered or not
-        String email = binding.cpp.getFullNumber().trim() + "@gmail.com";
-
+        // Check the internet connection then do the background tasks
         if (isConnected()) {
+            // Connected
             // Show progressBar
-            progressDialog = new ProgressDialog(ForgotPasswordActivity.this);
+            progressDialog = new ProgressDialog(LoginActivity.this);
             progressDialog.show();
             progressDialog.setContentView(R.layout.progress_dialog);
             progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
             progressDialog.setCancelable(false);
-            mAuth.fetchSignInMethodsForEmail(email)
+
+            // Check user already registered or not
+            mAuth.fetchSignInMethodsForEmail(fakeEmail)
                     .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
                         @Override
                         public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
@@ -144,15 +158,13 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                             if (isNewUser) {
                                 // Hide progressBar
                                 progressDialog.dismiss();
+                                //binding.progressBar.setVisibility(View.GONE);
+
                                 binding.EditTextContact.setError("User Not Found!");
                                 binding.EditTextContact.requestFocus();
                             } else {
-                                // Hide progressBar
-                                progressDialog.dismiss();
-                                Intent intent = new Intent(ForgotPasswordActivity.this, OtpVerificationActivity.class);
-                                intent.putExtra("whatToDo", "resetPassword");
-                                intent.putExtra("mobile", binding.cpp.getFullNumberWithPlus().trim());
-                                startActivity(intent);
+                                // Sign in with email and password
+                                SignIn(fakeEmail, password);
                             }
                         }
                     });
@@ -174,6 +186,28 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         }
     }
 
+    // Sign in with email and password
+    private void SignIn(String fakeEmail, String password) {
+        mAuth.signInWithEmailAndPassword(fakeEmail, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Hide progressBar
+                            progressDialog.dismiss();
+                            Toast.makeText(LoginActivity.this, "Login Success!", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            finish();
+                        } else {
+                            // Hide progressBar
+                            progressDialog.dismiss();
+                            binding.EditTextPassword.setError("Password Didn't Match!");
+                            binding.EditTextPassword.requestFocus();
+                        }
+                    }
+                });
+    }
+
     // Close Drawer on back pressed
     @Override
     public void onBackPressed() {
@@ -190,5 +224,15 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    // on Signup Button Clicked
+    public void onSignupButtonClicked(View view) {
+        startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
+    }
+
+    // on Forgot Password Button Clicked
+    public void onForgotPassButtonClicked(View view) {
+        startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
     }
 }

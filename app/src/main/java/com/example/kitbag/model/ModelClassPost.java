@@ -1,4 +1,4 @@
-package com.example.kitbag;
+package com.example.kitbag.model;
 
 import com.google.firebase.Timestamp;
 

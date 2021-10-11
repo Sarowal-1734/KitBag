@@ -21,17 +21,17 @@
             android:name=".EditProfileActivity"
             android:exported="true" />
         <activity
-            android:name=".ResetPasswordActivity"
+            android:name=".authentication.ResetPasswordActivity"
             android:exported="true"
-            android:parentActivityName=".ForgotPasswordActivity"
+            android:parentActivityName=".authentication.ForgotPasswordActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
-            android:name=".ForgotPasswordActivity"
+            android:name=".authentication.ForgotPasswordActivity"
             android:exported="true"
-            android:parentActivityName=".LoginActivity"
+            android:parentActivityName=".authentication.LoginActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
-            android:name=".OtpVerificationActivity"
+            android:name=".authentication.OtpVerificationActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".NotificationsActivity"
@@ -46,11 +46,11 @@
             android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
-            android:name=".SignUpActivity"
-            android:parentActivityName=".LoginActivity"
+            android:name=".authentication.SignUpActivity"
+            android:parentActivityName=".authentication.LoginActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".authentication.LoginActivity"
             android:parentActivityName=".MainActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity android:name=".MainActivity">

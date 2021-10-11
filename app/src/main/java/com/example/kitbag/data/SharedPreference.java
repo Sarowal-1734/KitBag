@@ -1,4 +1,4 @@
-package com.example.kitbag;
+package com.example.kitbag.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;

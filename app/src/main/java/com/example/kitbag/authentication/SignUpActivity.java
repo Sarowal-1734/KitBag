@@ -1,4 +1,4 @@
-package com.example.kitbag;
+package com.example.kitbag.authentication;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,28 +8,28 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.example.kitbag.databinding.ActivityResetPasswordBinding;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.navigation.NavigationView;
+import com.example.kitbag.R;
+import com.example.kitbag.databinding.ActivitySignUpBinding;
+import com.example.kitbag.model.UserModel;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.SignInMethodQueryResult;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 
-public class ResetPasswordActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
 
-    private ActivityResetPasswordBinding binding;
+    private ActivitySignUpBinding binding;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
@@ -44,7 +44,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityResetPasswordBinding.inflate(getLayoutInflater());
+        binding = ActivitySignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Initialize FirebaseAuth
@@ -54,16 +54,24 @@ public class ResetPasswordActivity extends AppCompatActivity {
         // Swipe to back
         slidrInterface = Slidr.attach(this);
 
+        // Set drawer menu based on Login/Logout
+        if (currentUser != null) {
+            // User is signed in
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+        } else {
+            // No user is signed in
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+            binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+        }
+
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
-        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
-
-        // Set drawer menu based on Login/Logout
-        // Set as no user is signed in
-        binding.navigationView.getMenu().clear();
-        binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
-        binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
-        binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
         // Adding back arrow in the appBar
@@ -71,14 +79,12 @@ public class ResetPasswordActivity extends AppCompatActivity {
         binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
-                mAuth.signOut();
                 onBackPressed();
             }
         });
 
         // Change the title of the appBar
-        binding.customAppBar.appbarTitle.setText("Reset Password");
+        binding.customAppBar.appbarTitle.setText("Sign Up");
 
         // Open Drawer Layout
         binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
@@ -112,53 +118,52 @@ public class ResetPasswordActivity extends AppCompatActivity {
             }
         });
 
-        // On drawer menu item clicked
-        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nav_login:
-                        Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
-                        mAuth.signOut();
-                        startActivity(new Intent(ResetPasswordActivity.this, LoginActivity.class));
-                        finish();
-                        break;
-                }
-                return false;
-            }
-        });
+        // Attach full number from edittext with cpp
+        binding.cpp.registerCarrierNumberEditText(binding.editTextContact);
 
     }
 
-    public void onResetPasswordButtonClicked(View view) {
+    public void onLoginButtonClick(View view) {
+        onBackPressed();
+    }
+
+    // On get OTP button clicked
+    public void onGetOTPButtonClicked(View view) {
         boolean valid = validation();
         if (valid) {
             if (isConnected()) {
                 // Show progressBar
-                progressDialog = new ProgressDialog(ResetPasswordActivity.this);
+                progressDialog = new ProgressDialog(SignUpActivity.this);
                 progressDialog.show();
                 progressDialog.setContentView(R.layout.progress_dialog);
                 progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                 progressDialog.setCancelable(false);
-                FirebaseUser currentUser = mAuth.getCurrentUser();
-                String newPassword = binding.editTextPassword.getText().toString();
-                currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        progressDialog.dismiss();
-                        // Status to check that the password successfully resetted or not
-                        SharedPreference.setPasswordResettedValue(ResetPasswordActivity.this, true);
-                        Toast.makeText(ResetPasswordActivity.this, "Password Reset Successfully.", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(ResetPasswordActivity.this, MainActivity.class));
-                        finish();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
-                    }
-                });
+
+
+                // Check user already registered or not
+                String email = binding.cpp.getFullNumber().trim() + "@gmail.com";
+                mAuth.fetchSignInMethodsForEmail(email)
+                        .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+                                boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
+                                if (isNewUser) {
+                                    progressDialog.dismiss();
+                                    Intent intent = new Intent(SignUpActivity.this, OtpVerificationActivity.class);
+                                    intent.putExtra("whatToDo", "registration");
+                                    UserModel userModel = new UserModel();
+                                    userModel.setUserId(currentUser.getUid());
+                                    userModel.setEmail(email);
+                                    userModel.setPassword(binding.editTextPassword.getText().toString());
+                                    userModel.setPhoneNumber(binding.cpp.getFullNumberWithPlus().trim());
+                                    startActivity(intent);
+                                } else {
+                                    progressDialog.dismiss();
+                                    binding.editTextContact.setError("User Already Registered!");
+                                    binding.editTextContact.requestFocus();
+                                }
+                            }
+                        });
             } else {
                 progressDialog.dismiss();
                 showMessageNoConnection();
@@ -166,12 +171,23 @@ public class ResetPasswordActivity extends AppCompatActivity {
         }
     }
 
+    // EditText Validation
     private boolean validation() {
+        if (TextUtils.isEmpty(binding.editTextUsername.getText().toString())) {
+            binding.editTextUsername.setError("Required");
+            binding.editTextUsername.requestFocus();
+            return false;
+        }
+        if (TextUtils.isEmpty(binding.editTextContact.getText().toString())) {
+            binding.editTextContact.setError("Required");
+            binding.editTextContact.requestFocus();
+            return false;
+        }
         if (TextUtils.isEmpty(binding.editTextPassword.getText().toString())) {
             binding.editTextPassword.setError("Required");
             return false;
-        } else if (binding.editTextPassword.getText().toString().length() < 8) {
-            binding.editTextPassword.setError("Minimum 8 characters");
+        } else if (binding.editTextPassword.getText().toString().length() < 6) {
+            binding.editTextPassword.setError("Minimum 6 characters");
             binding.editTextPassword.requestFocus();
             return false;
         }
@@ -179,8 +195,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
             binding.editTextConfirmPassword.setError("Required");
             binding.editTextConfirmPassword.requestFocus();
             return false;
-        } else if (binding.editTextConfirmPassword.getText().toString().length() < 8) {
-            binding.editTextConfirmPassword.setError("Minimum 8 characters");
+        } else if (binding.editTextConfirmPassword.getText().toString().length() < 6) {
+            binding.editTextConfirmPassword.setError("Minimum 6 characters");
             binding.editTextConfirmPassword.requestFocus();
             return false;
         }

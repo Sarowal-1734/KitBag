@@ -7,52 +7,56 @@
     <item
         android:id="@+id/nav_chat"
         android:icon="@drawable/ic_chat"
-        android:title="Chat" />
+        android:title="@string/nav_chat" />
 
     <item
         android:id="@+id/nav_my_post"
         android:icon="@drawable/ic_my_post_list"
-        android:title="My Posts" />
+        android:title="@string/nav_my_posts" />
 
     <item
         android:id="@+id/nav_my_cart"
         android:icon="@drawable/ic_cart"
-        android:title="My Cart" />
+        android:title="@string/nav_my_cart" />
+    <item
+        android:id="@+id/nav_change_password"
+        android:icon="@drawable/ic_change_password"
+        android:title="@string/nav_change_password" />
 
     <item
         android:id="@+id/nav_language"
         android:icon="@drawable/ic_language"
-        android:title="Language" />
+        android:title="@string/nav_language" />
 
     <item
         android:id="@+id/nav_dark_mode"
         app:actionLayout="@layout/switch_menu_dark_mode"
         android:icon="@drawable/ic_dark_mode"
-        android:title="Dark Mode" />
+        android:title="@string/nav_dark_mode" />
 
     <item
         android:id="@+id/nav_discover_kitbag"
         android:icon="@drawable/ic_language"
-        android:title="Discover KitBag" />
+        android:title="@string/nav_discover_kitbag" />
 
     <item
         android:id="@+id/nav_terms_conditions"
         android:icon="@drawable/ic_password"
-        android:title="Terms &amp; Conditions" />
+        android:title="@string/nav_terms_conditions" />
 
     <item
         android:id="@+id/nav_contact"
         android:icon="@drawable/ic_contact"
-        android:title="Contact Us" />
+        android:title="@string/nav_contact_us" />
 
     <item
         android:id="@+id/nav_about"
         android:icon="@drawable/ic_info"
-        android:title="About Us" />
+        android:title="@string/nav_about_us" />
 
     <item
         android:id="@+id/nav_logout"
         android:icon="@drawable/ic_logout"
-        android:title="Log out" />
+        android:title="@string/nav_log_out" />
 
 </menu>

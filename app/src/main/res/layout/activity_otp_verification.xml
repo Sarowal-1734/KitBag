@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".OtpVerificationActivity">
+    tools:context=".authentication.OtpVerificationActivity">
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
@@ -55,9 +55,10 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/black"
                     android:layout_marginBottom="16dp"
                     android:gravity="center"
-                    android:text="One Time Password (OTP) has been sent to your mobile number"/>
+                    android:text="@string/send_otp_message"/>
 
                 <TextView
                     android:id="@+id/textViewPhoneNumber"
@@ -65,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginBottom="16dp"
-                    android:text="+8801XXXXXXXX"
+                    android:text="@string/number_hint"
                     android:textColor="@color/black"
                     android:textStyle="bold" />
 
@@ -94,7 +95,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Didn't get OTP? "/>
+                        android:text="@string/didnt_get_otp"/>
                     <TextView
                         android:id="@+id/textViewResendOTP"
                         android:layout_width="wrap_content"

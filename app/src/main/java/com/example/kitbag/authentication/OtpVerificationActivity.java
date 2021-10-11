@@ -1,4 +1,4 @@
-package com.example.kitbag;
+package com.example.kitbag.authentication;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -16,7 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.kitbag.MainActivity;
+import com.example.kitbag.R;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
+import com.example.kitbag.model.UserModel;
 import com.goodiebag.pinview.Pinview;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -101,6 +105,8 @@ public class OtpVerificationActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+
+
             // Get userName and image from database and set to the drawer
             collectionReference.document(currentUser.getUid()).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -307,15 +313,18 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                 currentUser.linkWithCredential(authCredential);
 
                                 // Store user info in Database
+                                UserModel userModel = new UserModel();
+
                                 Map<String, String> user = new HashMap<>();
                                 user.put("userId", currentUser.getUid());
-                                user.put("userName", userName);
-                                user.put("phoneNumber", phoneNumber);
+                                user.put("userName", userModel.getUserName());
+                                user.put("phoneNumber", userModel.getPhoneNumber());
                                 user.put("userType", "GENERAL_USER");
-                                user.put("email", null);
+                                user.put("email", userModel.getEmail());
                                 user.put("imageUrl", null);
                                 user.put("district", null);
                                 user.put("upazilla", null);
+
                                 collectionReference.document(currentUser.getUid()).set(user)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
