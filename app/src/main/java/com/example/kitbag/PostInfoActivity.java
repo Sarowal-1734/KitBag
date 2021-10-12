@@ -20,10 +20,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
 import com.example.kitbag.model.ModelClassPost;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.example.kitbag.model.UserModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,6 +44,8 @@ public class PostInfoActivity extends AppCompatActivity {
 
     private ActivityPostInfoBinding binding;
 
+    private ModelClassPost modelClassPost;
+
     // Swipe to back
     private SlidrInterface slidrInterface;
 
@@ -58,6 +59,8 @@ public class PostInfoActivity extends AppCompatActivity {
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("Users");
+
+    private boolean removeFromCart = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,34 +78,96 @@ public class PostInfoActivity extends AppCompatActivity {
         // Swipe to back
         slidrInterface = Slidr.attach(this);
 
-        // Set button text AddToCart or DeletePost
-        if (currentUser != null && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
-            binding.buttonPostItem.setText("Edit Post");
-            binding.buttonDeleteItem.setVisibility(View.VISIBLE);
-            binding.TextViewChat.setEnabled(false);
-            binding.TextViewMail.setEnabled(false);
-            binding.TextViewCall.setEnabled(false);
-        }
+        // Display all the info to the activity
+        db.collection("All_Post")
+                .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
+                            // get Intent data and set to the fields
+                            String postedUser, source, destination, chatWith;
+                            postedUser = "Posted by " + modelClassPost.getUserName();
+                            source = modelClassPost.getFromUpazilla() + ", " + modelClassPost.getFromDistrict();
+                            destination = modelClassPost.getToUpazilla() + ", " + modelClassPost.getToDistrict();
+                            chatWith = "Chat (" + modelClassPost.getUserName() + ")";
+                            binding.textViewTitle.setText(modelClassPost.getTitle());
+                            binding.textViewUserTime.setText(postedUser);
+                            // Picasso library for download & show image
+                            Picasso.get().load(modelClassPost.getImageUrl()).placeholder(R.drawable.logo).fit().centerInside().into(binding.photoView);
+                            binding.TextViewDescription.setText(modelClassPost.getDescription());
+                            binding.TextViewWeight.setText(modelClassPost.getWeight());
+                            binding.TextViewStatus.setText(modelClassPost.getStatus());
+                            binding.TextViewSource.setText(source);
+                            binding.TextViewDestination.setText(destination);
+                            binding.TextViewUserType.setText(modelClassPost.getUserType());
+                            binding.TextViewChat.setText(chatWith);
+                            binding.TextViewCall.setText(modelClassPost.getPhoneNumber());
+                            binding.TextViewMail.setText(modelClassPost.getEmail());
+                        }
+                    }
+                });
 
-        // get Intent data and set to the fields
-        String postedUser, source, destination, chatWith;
-        postedUser = "Posted by " + getIntent().getStringExtra("postedBy");
-        source = getIntent().getStringExtra("fromUpazilla") + ", " + getIntent().getStringExtra("fromDistrict");
-        destination = getIntent().getStringExtra("toUpazilla") + ", " + getIntent().getStringExtra("toDistrict");
-        chatWith = "Chat (" + getIntent().getStringExtra("postedBy") + ")";
-        binding.textViewTitle.setText(getIntent().getStringExtra("title"));
-        binding.textViewUserTime.setText(postedUser);
-        // Picasso library for download & show image
-        Picasso.get().load(getIntent().getStringExtra("imageUrl")).placeholder(R.drawable.logo).fit().centerInside().into(binding.photoView);
-        binding.TextViewDescription.setText(getIntent().getStringExtra("description"));
-        binding.TextViewWeight.setText(getIntent().getStringExtra("weight"));
-        binding.TextViewStatus.setText(getIntent().getStringExtra("status"));
-        binding.TextViewSource.setText(source);
-        binding.TextViewDestination.setText(destination);
-        binding.TextViewUserType.setText(getIntent().getStringExtra("userType"));
-        binding.TextViewChat.setText(chatWith);
-        binding.TextViewCall.setText(getIntent().getStringExtra("userPhone"));
-        binding.TextViewMail.setText(getIntent().getStringExtra("userEmail"));
+        // Set button text AddToCart or DeletePost or inactive AddToCartButton
+        if (currentUser != null) {
+            if (getIntent().getStringExtra("fromActivity") != null
+                    && getIntent().getStringExtra("fromActivity").equals("MainActivity")
+                    && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
+                binding.buttonAddToCart.setEnabled(false);
+                return;
+            }
+            if (getIntent().getStringExtra("fromActivity") != null
+                    && getIntent().getStringExtra("fromActivity").equals("MainActivity")) {
+                db.collection("My_Cart").document(currentUser.getUid())
+                        .collection("Cart_Lists")
+                        .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                    if (documentSnapshot != null) {
+                                        binding.buttonAddToCart.setEnabled(false);
+                                    }
+                                }
+                            }
+                        });
+                return;
+            }
+            if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
+                binding.buttonAddToCart.setText("Edit Post");
+                binding.buttonDeleteItem.setVisibility(View.VISIBLE);
+                binding.TextViewChat.setEnabled(false);
+                binding.TextViewMail.setEnabled(false);
+                binding.TextViewCall.setEnabled(false);
+            } else {
+                db.collection("My_Cart").document(currentUser.getUid())
+                        .collection("Cart_Lists")
+                        .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                    if (documentSnapshot != null) {
+                                        binding.buttonAddToCart.setBackgroundColor(Color.RED);
+                                        binding.buttonAddToCart.setText("Remove from My Cart");
+                                        removeFromCart = true;
+                                    }
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                progressDialog.dismiss();
+                                Toast.makeText(PostInfoActivity.this, "Error while loading!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        }
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -116,17 +181,18 @@ public class PostInfoActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            UserModel user = documentSnapshot.toObject(UserModel.class);
                             //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
                             NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
                             View view = navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
                             // set userName to the drawer
-                            userName.setText(documentSnapshot.getString("userName"));
-                            if (documentSnapshot.getString("imageUrl") != null) {
+                            userName.setText(user.getUserName());
+                            if (user.getImageUrl() != null) {
                                 // Picasso library for download & show image
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
+                                Picasso.get().load(user.getImageUrl()).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
+                                Picasso.get().load(user.getImageUrl()).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
                             }
                         }
                     });
@@ -199,22 +265,53 @@ public class PostInfoActivity extends AppCompatActivity {
                 if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
                     Intent intent = new Intent(PostInfoActivity.this, PostActivity.class);
                     intent.putExtra("whatToDo", "EditPost");
-                    intent.putExtra("imageUrl", getIntent().getStringExtra("imageUrl"));
-                    intent.putExtra("title", getIntent().getStringExtra("title"));
-                    intent.putExtra("weight", getIntent().getStringExtra("weight"));
-                    intent.putExtra("description", getIntent().getStringExtra("description"));
-                    intent.putExtra("fromDistrict", getIntent().getStringExtra("fromDistrict"));
-                    intent.putExtra("fromUpazilla", getIntent().getStringExtra("fromUpazilla"));
-                    intent.putExtra("toDistrict", getIntent().getStringExtra("toDistrict"));
-                    intent.putExtra("toUpazilla", getIntent().getStringExtra("toUpazilla"));
-                    intent.putExtra("postRef", getIntent().getStringExtra("postRef"));
+                    intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
                     startActivity(intent);
+                    return;
+                }
+                if (removeFromCart) {
+                    if (isConnected()) {
+                        AlertDialog.Builder ab = new AlertDialog.Builder(PostInfoActivity.this);
+                        ab.setTitle("Are you sure to remove this item?");
+                        ab.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                showProgressBar();
+                                db.collection("My_Cart").document(currentUser.getUid()).collection("Cart_Lists")
+                                        .document(getIntent().getStringExtra("documentReference"))
+                                        .delete()
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void unused) {
+                                                progressDialog.dismiss();
+                                                Toast.makeText(PostInfoActivity.this, "Item successfully removed from your cart", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(PostInfoActivity.this, MainActivity.class));
+                                                finish();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                progressDialog.dismiss();
+                                                Toast.makeText(PostInfoActivity.this, "Some error occurred!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
+                        });
+                        ab.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                        ab.show();
+                    } else {
+                        displayNoConnection();
+                    }
                     return;
                 }
                 showProgressBar();
                 // Get all the Post_Info to store in Cart
                 db.collection("All_Post")
-                        .whereEqualTo("postReference", getIntent().getStringExtra("postRef"))
+                        .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
                         .get()
                         .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                             @Override
@@ -223,12 +320,16 @@ public class PostInfoActivity extends AppCompatActivity {
                                     ModelClassPost modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
                                     assert modelClassPost != null;
                                     db.collection("My_Cart").document(currentUser.getUid()).collection("Cart_Lists")
-                                            .add(modelClassPost).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                                            .add(modelClassPost).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                         @Override
-                                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                                        public void onSuccess(DocumentReference documentReference) {
+                                            // Storing the document reference for easy to delete later from my cart
+                                            db.collection("My_Cart").document(currentUser.getUid())
+                                                    .collection("Cart_Lists").document(documentReference.getId())
+                                                    .update("documentReference", documentReference.getId());
                                             progressDialog.dismiss();
                                             Toast.makeText(PostInfoActivity.this, "Successfully added to your cart", Toast.LENGTH_SHORT).show();
-                                            binding.buttonPostItem.setEnabled(false);
+                                            binding.buttonAddToCart.setEnabled(false);
                                         }
                                     });
                                 }
@@ -250,11 +351,11 @@ public class PostInfoActivity extends AppCompatActivity {
             ab.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     showProgressBar();
-                    db.collection("All_Post").document(getIntent().getStringExtra("postRef")).delete()
+                    db.collection("All_Post").document(modelClassPost.getPostReference()).delete()
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unused) {
-                                    StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(getIntent().getStringExtra("imageUrl"));
+                                    StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(modelClassPost.getImageUrl());
                                     storageReference.delete();
                                     progressDialog.dismiss();
                                     Toast.makeText(PostInfoActivity.this, "Successfully deleted", Toast.LENGTH_SHORT).show();

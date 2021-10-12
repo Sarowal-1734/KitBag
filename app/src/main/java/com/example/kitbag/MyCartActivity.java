@@ -19,7 +19,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.kitbag.adapter.PostAdapter;
@@ -154,37 +153,15 @@ public class MyCartActivity extends AppCompatActivity {
                             @Override
                             public void onItemClick(ModelClassPost post) {
                                 Intent intent = new Intent(MyCartActivity.this, PostInfoActivity.class);
-                                intent.putExtra("title", post.getTitle());
-                                intent.putExtra("postedBy", post.getUserName());
-                                intent.putExtra("imageUrl", post.getImageUrl());
-                                intent.putExtra("timeAdded", post.getTimeAdded());
-                                intent.putExtra("description", post.getDescription());
-                                intent.putExtra("weight", post.getWeight());
-                                intent.putExtra("status", post.getStatus());
-                                intent.putExtra("fromUpazilla", post.getFromUpazilla());
-                                intent.putExtra("fromDistrict", post.getFromDistrict());
-                                intent.putExtra("toUpazilla", post.getToUpazilla());
-                                intent.putExtra("toDistrict", post.getToDistrict());
-                                intent.putExtra("userType", post.getUserType());
-                                intent.putExtra("userPhone", post.getPhoneNumber());
-                                intent.putExtra("userEmail", post.getEmail());
                                 intent.putExtra("userId", post.getUserId());
-                                intent.putExtra("postRef", post.getPostReference());
+                                intent.putExtra("postReference", post.getPostReference());
+                                intent.putExtra("documentReference", post.getDocumentReference());
+                                intent.putExtra("fromActivity", "MyCartActivity");
                                 startActivity(intent);
                             }
                         });
                     }
                 });
-
-        // Open post Activity
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MyCartActivity.this, PostActivity.class);
-                intent.putExtra("whatToDo", "CreatePost");
-                startActivity(intent);
-            }
-        });
 
         // Open notifications Activity
         findViewById(R.id.appbar_notification_icon).setOnClickListener(new View.OnClickListener() {
@@ -265,29 +242,6 @@ public class MyCartActivity extends AppCompatActivity {
                 ab.setCancelable(false);
                 ab.setView(dialogView);
                 ab.show();
-            }
-        });
-
-        // Show or Hide Floating Action Button
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                binding.fab.hide();
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                binding.fab.show();
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
             }
         });
 

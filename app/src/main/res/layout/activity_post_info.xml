@@ -301,7 +301,7 @@
                     </LinearLayout>
 
                     <Button
-                        android:id="@+id/buttonPostItem"
+                        android:id="@+id/buttonAddToCart"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
