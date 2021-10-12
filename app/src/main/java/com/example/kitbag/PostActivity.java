@@ -22,6 +22,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityPostBinding;
 import com.example.kitbag.model.ModelClassPost;
+import com.example.kitbag.model.UserModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -34,6 +35,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -46,6 +48,8 @@ import java.util.Date;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostActivity extends AppCompatActivity {
+
+    private ModelClassPost modelClassPost;
 
     // Get from database and upload with post
     String userName, phoneNumber, userType, email;
@@ -90,15 +94,25 @@ public class PostActivity extends AppCompatActivity {
         // Change the title of the appBar according to Edit or Create post
         if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
             binding.customAppBar.appbarTitle.setText("Edit Post");
-            binding.buttonPostItem.setText("Update Post");
-            binding.EditTextPostTitle.setText(getIntent().getStringExtra("title"));
-            binding.EditTextPostWeight.setText(getIntent().getStringExtra("weight"));
-            binding.EditTextPostDescription.setText(getIntent().getStringExtra("description"));
-            binding.EditTextFromDistrict.setText(getIntent().getStringExtra("fromDistrict"));
-            binding.EditTextFromUpazila.setText(getIntent().getStringExtra("fromUpazilla"));
-            binding.EditTextToDistrict.setText(getIntent().getStringExtra("toDistrict"));
-            binding.EditTextToUpazila.setText(getIntent().getStringExtra("toUpazilla"));
-            Picasso.get().load(getIntent().getStringExtra("imageUrl")).placeholder(R.drawable.logo).fit().into(binding.imageViewAddPhoto);
+            binding.buttonAddToCart.setText("Update Post");
+            db.collection("All_Post")
+                    .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
+                    .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
+                        binding.EditTextPostTitle.setText(modelClassPost.getTitle());
+                        binding.EditTextPostWeight.setText(modelClassPost.getWeight());
+                        binding.EditTextPostDescription.setText(modelClassPost.getDescription());
+                        binding.EditTextFromDistrict.setText(modelClassPost.getFromDistrict());
+                        binding.EditTextFromUpazila.setText(modelClassPost.getFromUpazilla());
+                        binding.EditTextToDistrict.setText(modelClassPost.getToDistrict());
+                        binding.EditTextToUpazila.setText(modelClassPost.getToUpazilla());
+                        Picasso.get().load(modelClassPost.getImageUrl()).placeholder(R.drawable.logo).fit().into(binding.imageViewAddPhoto);
+                    }
+                }
+            });
         } else {
             binding.customAppBar.appbarTitle.setText("Create Post");
         }
@@ -115,17 +129,18 @@ public class PostActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            UserModel userModel = documentSnapshot.toObject(UserModel.class);
                             //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
                             NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
                             View view = navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
                             // set userName to the drawer
-                            userName.setText(documentSnapshot.getString("userName"));
-                            if (documentSnapshot.getString("imageUrl") != null) {
+                            userName.setText(userModel.getUserName());
+                            if (userModel.getImageUrl() != null) {
                                 // Picasso library for download & show image
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
+                                Picasso.get().load(userModel.getImageUrl()).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
+                                Picasso.get().load(userModel.getImageUrl()).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
                             }
                         }
                     });
@@ -327,7 +342,7 @@ public class PostActivity extends AppCompatActivity {
         // Show progressBar
         showProgressBar();
         // Store image to firebase
-        StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl(getIntent().getStringExtra("imageUrl"));
+        StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl(modelClassPost.getImageUrl());
         reference.putFile(imageUri)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -336,7 +351,7 @@ public class PostActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(Uri uri) {
                                 // Update post info in Database
-                                db.collection("All_Post").document(getIntent().getStringExtra("postRef"))
+                                db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
                                         .update(
                                                 "imageUrl", uri.toString(),
                                                 "title", binding.EditTextPostTitle.getText().toString(),

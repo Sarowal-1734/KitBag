@@ -31,6 +31,8 @@ public class SignUpActivity extends AppCompatActivity {
 
     private ActivitySignUpBinding binding;
 
+    private UserModel userModel;
+
     // Swipe to back
     private SlidrInterface slidrInterface;
 
@@ -46,6 +48,8 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        userModel = new UserModel();
 
         // Initialize FirebaseAuth
         mAuth = FirebaseAuth.getInstance();
@@ -151,11 +155,9 @@ public class SignUpActivity extends AppCompatActivity {
                                     progressDialog.dismiss();
                                     Intent intent = new Intent(SignUpActivity.this, OtpVerificationActivity.class);
                                     intent.putExtra("whatToDo", "registration");
-                                    UserModel userModel = new UserModel();
-                                    userModel.setUserId(currentUser.getUid());
-                                    userModel.setEmail(email);
-                                    userModel.setPassword(binding.editTextPassword.getText().toString());
-                                    userModel.setPhoneNumber(binding.cpp.getFullNumberWithPlus().trim());
+                                    intent.putExtra("password",binding.editTextPassword.getText().toString());
+                                    intent.putExtra("userName",binding.editTextUsername.getText().toString());
+                                    intent.putExtra("phoneNumber",binding.cpp.getFullNumberWithPlus().trim());
                                     startActivity(intent);
                                 } else {
                                     progressDialog.dismiss();

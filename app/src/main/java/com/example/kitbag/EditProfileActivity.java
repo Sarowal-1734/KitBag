@@ -21,6 +21,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.databinding.ActivityEditProfileBinding;
+import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,6 +45,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class EditProfileActivity extends AppCompatActivity {
 
     private ActivityEditProfileBinding binding;
+    private UserModel userModel;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
@@ -70,6 +72,9 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityEditProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        userModel = new UserModel();
+        binding.editTextUsername.setText(userModel.getUserName());
 
         // Swipe to back
         slidrInterface = Slidr.attach(this);
@@ -112,7 +117,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerOpened(@NonNull View drawerView) {
-                getCurrentFocus().clearFocus();
                 slidrInterface.lock();
             }
 
@@ -136,32 +140,33 @@ public class EditProfileActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        UserModel userModel = documentSnapshot.toObject(UserModel.class);
                         //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
                         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
                         View view = navigationView.getHeaderView(0);
                         TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                         CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
                         // set userName to the drawer
-                        userName.setText(documentSnapshot.getString("userName"));
+                        userName.setText(userModel.getUserName());
                         // get user info from database and set to fields
-                        binding.editTextUsername.setText(documentSnapshot.getString("userName"));
-                        binding.editTextContact.setText(documentSnapshot.getString("phoneNumber"));
+                        binding.editTextUsername.setText(userModel.getUserName());
+                        binding.editTextContact.setText(userModel.getPhoneNumber());
                         if (documentSnapshot.getString("email") != null) {
-                            binding.editTextEmail.setText(documentSnapshot.getString("email"));
+                            binding.editTextEmail.setText(userModel.getEmail());
                         }
                         if (documentSnapshot.getString("district") != null) {
-                            binding.EditTextDistrict.setText(documentSnapshot.getString("district"));
+                            binding.EditTextDistrict.setText(userModel.getDistrict());
                         }
                         if (documentSnapshot.getString("upazilla") != null) {
-                            binding.EditTextUpazila.setText(documentSnapshot.getString("upazilla"));
+                            binding.EditTextUpazila.setText(userModel.getUpazilla());
                         }
                         if (documentSnapshot.getString("imageUrl") != null) {
                             // set image to the imageView (activity)
-                            Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(binding.customEditProfileImage.circularImageViewProfile);
+                            Picasso.get().load(userModel.getImageUrl()).placeholder(R.drawable.logo).fit().centerCrop().into(binding.customEditProfileImage.circularImageViewProfile);
                             // Set image to the drawer
-                            Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
+                            Picasso.get().load(userModel.getImageUrl()).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
                             // set image to the appBar
-                            Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
+                            Picasso.get().load(userModel.getImageUrl()).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
                         }
                     }
                 });
@@ -185,8 +190,6 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
             imageUri = data.getData();
-            UserModel userModel = new UserModel();
-            userModel.setImageUrl(imageUri.toString());
             binding.customEditProfileImage.circularImageViewProfile.setImageURI(imageUri);
         }
     }
@@ -205,6 +208,12 @@ public class EditProfileActivity extends AppCompatActivity {
     public void onUpdateProfileButtonClicked(View view) {
         if (validation()) {
             if (isConnected()) {
+                // Setting user value to model class
+                userModel.setEmail(binding.editTextEmail.getText().toString());
+                userModel.setUserName(binding.editTextUsername.getText().toString());
+                userModel.setUpazilla(binding.EditTextUpazila.getText().toString());
+                userModel.setDistrict(binding.EditTextDistrict.getText().toString());
+
                 // Show progressBar
                 progressDialog = new ProgressDialog(EditProfileActivity.this);
                 progressDialog.show();
@@ -224,10 +233,10 @@ public class EditProfileActivity extends AppCompatActivity {
                                         db.collection("Users").document(currentUser.getUid())
                                                 .update(
                                                         "imageUrl", uri.toString(),
-                                                        "userName", binding.editTextUsername.getText().toString(),
-                                                        "email", binding.editTextEmail.getText().toString(),
-                                                        "district", binding.EditTextDistrict.getText().toString(),
-                                                        "upazilla", binding.EditTextUpazila.getText().toString()
+                                                        "userName", userModel.getUserName(),
+                                                        "email", userModel.getEmail(),
+                                                        "district", userModel.getDistrict(),
+                                                        "upazilla", userModel.getUpazilla()
                                                 );
                                         progressDialog.dismiss();
                                         Toast.makeText(EditProfileActivity.this, "Profile successfully updated", Toast.LENGTH_SHORT).show();

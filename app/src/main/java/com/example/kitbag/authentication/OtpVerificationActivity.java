@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.example.kitbag.MainActivity;
+import com.example.kitbag.EditProfileActivity;
 import com.example.kitbag.R;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
@@ -43,8 +43,6 @@ import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -53,7 +51,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
     private ActivityOtpVerificationBinding binding;
 
-    private String otpId, phoneNumber, userName, password, pinViewOTP, whatToDo;
+    private String otpId, password, pinViewOTP, whatToDo, phoneNumber, userName;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
@@ -82,9 +80,9 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
         // Picking value which send from signUp activity
         whatToDo = getIntent().getStringExtra("whatToDo");
-        phoneNumber = getIntent().getStringExtra("mobile");
-        userName = getIntent().getStringExtra("username");
         password = getIntent().getStringExtra("password");
+        userName = getIntent().getStringExtra("userName");
+        phoneNumber = getIntent().getStringExtra("phoneNumber");
 
         if (whatToDo.equals("resetPassword")) {
             // Change the title of the appBar
@@ -308,31 +306,29 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                 // Register user
                                 currentUser = task.getResult().getUser();
                                 // Link phone number as fake email for login
-                                String subPhone = phoneNumber.substring(1, 14);
+                                String subPhone = OtpVerificationActivity.this.phoneNumber.substring(1, 14);
                                 AuthCredential authCredential = EmailAuthProvider.getCredential(subPhone + "@gmail.com", password);
                                 currentUser.linkWithCredential(authCredential);
 
                                 // Store user info in Database
                                 UserModel userModel = new UserModel();
+                                userModel.setUserId(currentUser.getUid());
+                                userModel.setUserName(userName);
+                                userModel.setPhoneNumber(phoneNumber);
+                                userModel.setUserType("GENERAL_USER");
+                                userModel.setEmail(null);
+                                userModel.setDistrict(null);
+                                userModel.setUpazilla(null);
+                                userModel.setImageUrl(null);
 
-                                Map<String, String> user = new HashMap<>();
-                                user.put("userId", currentUser.getUid());
-                                user.put("userName", userModel.getUserName());
-                                user.put("phoneNumber", userModel.getPhoneNumber());
-                                user.put("userType", "GENERAL_USER");
-                                user.put("email", userModel.getEmail());
-                                user.put("imageUrl", null);
-                                user.put("district", null);
-                                user.put("upazilla", null);
-
-                                collectionReference.document(currentUser.getUid()).set(user)
+                                collectionReference.document(currentUser.getUid()).set(userModel)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void unused) {
                                                 // Hide progressBar
                                                 progressDialog.dismiss();
                                                 Toast.makeText(OtpVerificationActivity.this, "Registration Success!", Toast.LENGTH_SHORT).show();
-                                                startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
+                                                startActivity(new Intent(OtpVerificationActivity.this, EditProfileActivity.class));
                                                 finish();
                                             }
                                         });

@@ -3,33 +3,35 @@ package com.example.kitbag.model;
 public class UserModel {
     private String userId;
     private String userName;
-    private String password;
     private String phoneNumber;
     private String email;
-    private String imageUrl;
-    private String userType;
     private String upazilla;
+    private String imageUrl;
     private String district;
+    private String userType;
 
-    public UserModel(){
+    public UserModel() {
         // Must Needed empty constructor
-    }
-
-    public UserModel(String userId, String userName, String password, String phoneNumber,
-                     String email, String imageUrl, String userType, String upazilla, String district) {
-        this.userId = userId;
-        this.userName = userName;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.imageUrl = imageUrl;
-        this.userType = userType;
-        this.upazilla = upazilla;
-        this.district = district;
     }
 
     public String getUserId() {
         return userId;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public void setUserId(String userId) {
@@ -42,14 +44,6 @@ public class UserModel {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getPhoneNumber() {
@@ -66,22 +60,6 @@ public class UserModel {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public String getUserType() {
-        return userType;
-    }
-
-    public void setUserType(String userType) {
-        this.userType = userType;
     }
 
     public String getUpazilla() {

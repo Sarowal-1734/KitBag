@@ -18,6 +18,7 @@ public class ModelClassPost {
     private String email;
     private String userType;
     private String postReference;
+    private String documentReference;
     private String status;
 
     public String getStatus() {
@@ -38,6 +39,14 @@ public class ModelClassPost {
 
     public ModelClassPost() {
     } // must for fireStore to work
+
+    public String getDocumentReference() {
+        return documentReference;
+    }
+
+    public void setDocumentReference(String documentReference) {
+        this.documentReference = documentReference;
+    }
 
     public String getImageUrl() {
         return imageUrl;
