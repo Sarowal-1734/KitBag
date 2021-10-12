@@ -1,9 +1,5 @@
 package com.example.kitbag;
 
-
-//lkdjfgblkdxzcvbnd/vnblkcxvnb./xcmvbn.,mxcvnb.,xmcvnb.,xmcvnb.x,cmvbn
-
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
