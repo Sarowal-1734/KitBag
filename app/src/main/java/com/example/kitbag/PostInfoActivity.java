@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -77,97 +78,6 @@ public class PostInfoActivity extends AppCompatActivity {
 
         // Swipe to back
         slidrInterface = Slidr.attach(this);
-
-        // Display all the info to the activity
-        db.collection("All_Post")
-                .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
-                            // get Intent data and set to the fields
-                            String postedUser, source, destination, chatWith;
-                            postedUser = "Posted by " + modelClassPost.getUserName();
-                            source = modelClassPost.getFromUpazilla() + ", " + modelClassPost.getFromDistrict();
-                            destination = modelClassPost.getToUpazilla() + ", " + modelClassPost.getToDistrict();
-                            chatWith = "Chat (" + modelClassPost.getUserName() + ")";
-                            binding.textViewTitle.setText(modelClassPost.getTitle());
-                            binding.textViewUserTime.setText(postedUser);
-                            // Picasso library for download & show image
-                            Picasso.get().load(modelClassPost.getImageUrl()).placeholder(R.drawable.logo).fit().centerInside().into(binding.photoView);
-                            binding.TextViewDescription.setText(modelClassPost.getDescription());
-                            binding.TextViewWeight.setText(modelClassPost.getWeight());
-                            binding.TextViewStatus.setText(modelClassPost.getStatus());
-                            binding.TextViewSource.setText(source);
-                            binding.TextViewDestination.setText(destination);
-                            binding.TextViewUserType.setText(modelClassPost.getUserType());
-                            binding.TextViewChat.setText(chatWith);
-                            binding.TextViewCall.setText(modelClassPost.getPhoneNumber());
-                            binding.TextViewMail.setText(modelClassPost.getEmail());
-                        }
-                    }
-                });
-
-        // Set button text AddToCart or DeletePost or inactive AddToCartButton
-        if (currentUser != null) {
-            if (getIntent().getStringExtra("fromActivity") != null
-                    && getIntent().getStringExtra("fromActivity").equals("MainActivity")
-                    && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
-                binding.buttonAddToCart.setEnabled(false);
-                return;
-            }
-            if (getIntent().getStringExtra("fromActivity") != null
-                    && getIntent().getStringExtra("fromActivity").equals("MainActivity")) {
-                db.collection("My_Cart").document(currentUser.getUid())
-                        .collection("Cart_Lists")
-                        .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
-                        .get()
-                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                    if (documentSnapshot != null) {
-                                        binding.buttonAddToCart.setEnabled(false);
-                                    }
-                                }
-                            }
-                        });
-                return;
-            }
-            if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
-                binding.buttonAddToCart.setText("Edit Post");
-                binding.buttonDeleteItem.setVisibility(View.VISIBLE);
-                binding.TextViewChat.setEnabled(false);
-                binding.TextViewMail.setEnabled(false);
-                binding.TextViewCall.setEnabled(false);
-            } else {
-                db.collection("My_Cart").document(currentUser.getUid())
-                        .collection("Cart_Lists")
-                        .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
-                        .get()
-                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                    if (documentSnapshot != null) {
-                                        binding.buttonAddToCart.setBackgroundColor(Color.RED);
-                                        binding.buttonAddToCart.setText("Remove from My Cart");
-                                        removeFromCart = true;
-                                    }
-                                }
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                progressDialog.dismiss();
-                                Toast.makeText(PostInfoActivity.this, "Error while loading!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }
-        }
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -246,6 +156,117 @@ public class PostInfoActivity extends AppCompatActivity {
             }
         });
 
+        // Display all the info to the activity
+        db.collection("All_Post")
+                .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
+                            String postedUser, source, destination, chatWith;
+                            postedUser = "Posted by " + modelClassPost.getUserName();
+                            source = modelClassPost.getFromUpazilla() + ", " + modelClassPost.getFromDistrict();
+                            destination = modelClassPost.getToUpazilla() + ", " + modelClassPost.getToDistrict();
+                            chatWith = "Chat (" + modelClassPost.getUserName() + ")";
+                            binding.textViewTitle.setText(modelClassPost.getTitle());
+                            binding.textViewUserTime.setText(postedUser);
+                            binding.TextViewDescription.setText(modelClassPost.getDescription());
+                            binding.TextViewWeight.setText(modelClassPost.getWeight());
+                            binding.TextViewStatus.setText(modelClassPost.getStatus());
+                            binding.TextViewSource.setText(source);
+                            binding.TextViewDestination.setText(destination);
+                            binding.TextViewUserType.setText(modelClassPost.getUserType());
+                            binding.TextViewChat.setText(chatWith);
+                            binding.TextViewCall.setText(modelClassPost.getPhoneNumber());
+                            binding.TextViewMail.setText(modelClassPost.getEmail());
+                            // Stop the shimmer effect and display data
+                            binding.shimmerContainer.stopShimmer();
+                            binding.shimmerContainer.setVisibility(View.GONE);
+                            binding.view.setVisibility(View.GONE);
+                            // Picasso library for download & show image
+                            Picasso.get().load(modelClassPost.getImageUrl()).placeholder(R.drawable.logo).fit().centerInside().into(binding.photoView);
+                            return;
+                        }
+                        // Stop the shimmer effect and display data
+                        binding.shimmerContainer.stopShimmer();
+                        binding.shimmerContainer.setVisibility(View.GONE);
+                        binding.view.setVisibility(View.GONE);
+                        binding.textViewTitle.setText("This post has been deleted by the owner! Now please remove this post from your cart.");
+                        binding.textViewTitle.setGravity(Gravity.CENTER);
+                        binding.textViewTitle.setTextColor(Color.RED);
+                        binding.textViewUserTime.setVisibility(View.GONE);
+                        binding.cardViewPhoto.setVisibility(View.GONE);
+                        binding.TextViewDescriptionLayout.setVisibility(View.GONE);
+                        binding.weightStatus.setVisibility(View.GONE);
+                        binding.fromTo.setVisibility(View.GONE);
+                        binding.typeChat.setVisibility(View.GONE);
+                        binding.callEmail.setVisibility(View.GONE);
+                        // Stop the shimmer effect and display data
+                        binding.shimmerContainer.stopShimmer();
+                        binding.shimmerContainer.setVisibility(View.GONE);
+                        binding.view.setVisibility(View.GONE);
+                    }
+                });
+
+        // Set button text AddToCart or DeletePost or inactive AddToCartButton
+        if (currentUser != null) {
+            if (getIntent().getStringExtra("fromActivity") != null
+                    && getIntent().getStringExtra("fromActivity").equals("MainActivity")
+                    && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
+                binding.buttonAddToCart.setEnabled(false);
+                return;
+            }
+            if (getIntent().getStringExtra("fromActivity") != null
+                    && getIntent().getStringExtra("fromActivity").equals("MainActivity")) {
+                db.collection("My_Cart").document(currentUser.getUid())
+                        .collection("Cart_Lists")
+                        .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                    if (documentSnapshot != null) {
+                                        binding.buttonAddToCart.setEnabled(false);
+                                    }
+                                }
+                            }
+                        });
+                return;
+            }
+            if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
+                binding.buttonAddToCart.setText("Edit Post");
+                binding.buttonDeleteItem.setVisibility(View.VISIBLE);
+                binding.TextViewChat.setEnabled(false);
+                binding.TextViewMail.setEnabled(false);
+                binding.TextViewCall.setEnabled(false);
+            } else {
+                db.collection("My_Cart").document(currentUser.getUid())
+                        .collection("Cart_Lists")
+                        .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                    if (documentSnapshot != null) {
+                                        binding.buttonAddToCart.setBackgroundColor(Color.RED);
+                                        binding.buttonAddToCart.setText("Remove from My Cart");
+                                        removeFromCart = true;
+                                    }
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(PostInfoActivity.this, "Error while loading!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        }
     }
 
     // Close Drawer on back pressed
