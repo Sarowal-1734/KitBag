@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.kitbag.adapter.PostAdapter;
 import com.example.kitbag.authentication.LoginActivity;
+import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityMainBinding;
 import com.example.kitbag.model.ModelClassPost;
@@ -222,6 +223,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.nav_change_password:
                         validationUpdatePassword();
+                        break;
+                    case R.id.nav_chat:
+                        startActivity(new Intent(MainActivity.this, MessageActivity.class));
                         break;
                     case R.id.nav_logout:
                         mAuth.signOut();
