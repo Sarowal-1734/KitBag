@@ -9,6 +9,7 @@ public class UserModel {
     private String imageUrl;
     private String district;
     private String userType;
+    private String lastMessage;
 
     public UserModel() {
         // Must Needed empty constructor
@@ -76,5 +77,13 @@ public class UserModel {
 
     public void setDistrict(String district) {
         this.district = district;
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
     }
 }
