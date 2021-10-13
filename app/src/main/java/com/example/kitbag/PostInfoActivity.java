@@ -19,9 +19,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.bumptech.glide.Glide;
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
+import com.facebook.shimmer.Shimmer;
+import com.facebook.shimmer.ShimmerDrawable;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -185,8 +188,22 @@ public class PostInfoActivity extends AppCompatActivity {
                             binding.shimmerContainer.stopShimmer();
                             binding.shimmerContainer.setVisibility(View.GONE);
                             binding.view.setVisibility(View.GONE);
-                            // Picasso library for download & show image
-                            Picasso.get().load(modelClassPost.getImageUrl()).placeholder(R.drawable.logo).fit().centerInside().into(binding.photoView);
+                            // Initialize shimmer for loading the image
+                            Shimmer shimmer = new Shimmer.ColorHighlightBuilder()
+                                    .setBaseColor(Color.parseColor("#AEADAD"))
+                                    .setBaseAlpha(1)
+                                    .setHighlightColor(Color.parseColor("#E7E7E7"))
+                                    .setHighlightAlpha(1)
+                                    .setDropoff(50)
+                                    .build();
+                            // Initialize shimmer drawable
+                            ShimmerDrawable shimmerDrawable = new ShimmerDrawable();
+                            // Set shimmer
+                            shimmerDrawable.setShimmer(shimmer);
+
+                            Glide.with(PostInfoActivity.this).load(modelClassPost.getImageUrl())
+                                    .placeholder(shimmerDrawable)
+                                    .into(binding.photoView);
                             return;
                         }
                         // Stop the shimmer effect and display data

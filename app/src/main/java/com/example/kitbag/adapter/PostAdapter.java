@@ -1,6 +1,7 @@
 package com.example.kitbag.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +12,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.kitbag.model.ModelClassPost;
+import com.bumptech.glide.Glide;
 import com.example.kitbag.R;
-import com.squareup.picasso.Picasso;
+import com.example.kitbag.model.ModelClassPost;
+import com.facebook.shimmer.Shimmer;
+import com.facebook.shimmer.ShimmerDrawable;
 
 import java.util.ArrayList;
 
@@ -44,8 +47,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         ModelClassPost post = postList.get(position);
         String imageUrl = post.getImageUrl();
-        // Picasso library for download & show image
-        Picasso.get().load(imageUrl).placeholder(R.drawable.logo).fit().centerCrop().into(holder.imageView);
+
+        // Initialize shimmer
+        Shimmer shimmer = new Shimmer.ColorHighlightBuilder()
+                .setBaseColor(Color.parseColor("#AEADAD"))
+                .setBaseAlpha(1)
+                .setHighlightColor(Color.parseColor("#E7E7E7"))
+                .setHighlightAlpha(1)
+                .setDropoff(50)
+                .build();
+        // Initialize shimmer drawable
+        ShimmerDrawable shimmerDrawable = new ShimmerDrawable();
+        // Set shimmer
+        shimmerDrawable.setShimmer(shimmer);
+
+        Glide.with(context).load(imageUrl)
+                .placeholder(shimmerDrawable)
+                .into(holder.imageView);
+
         holder.titleTV.setText(post.getTitle());
         String destination = post.getFromDistrict() + " - " + post.getToDistrict();
         holder.destinationTV.setText(destination);

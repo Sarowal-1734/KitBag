@@ -22,11 +22,18 @@
                 android:id="@+id/custom_app_bar"
                 layout="@layout/custom_app_bar" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewPostLists"
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshLayout"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:listitem="@layout/row_post_items_recycler_view" />
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewPostLists"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/row_post_items_recycler_view" />
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
         </LinearLayout>
 
         <com.google.android.material.navigation.NavigationView

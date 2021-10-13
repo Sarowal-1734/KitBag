@@ -1,5 +1,6 @@
 package com.example.kitbag;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -24,6 +26,8 @@ import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.kitbag.adapter.PostAdapter;
 import com.example.kitbag.authentication.LoginActivity;
@@ -31,8 +35,10 @@ import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityMainBinding;
 import com.example.kitbag.model.ModelClassPost;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -70,6 +76,14 @@ public class MainActivity extends AppCompatActivity {
     AlertDialog.Builder builder;
     AlertDialog dialog;
 
+    // Show progressBar
+    private ProgressDialog progressDialog;
+
+    private boolean isScrolling = false;
+    private boolean isLastItemReached = false;
+    private DocumentSnapshot lastVisible;
+    ArrayList<ModelClassPost> postList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,10 +100,20 @@ public class MainActivity extends AppCompatActivity {
             SharedPreference.setPasswordResettedValue(MainActivity.this, true);
             mAuth.signOut();
             finish();
-            overridePendingTransition(0,0);
+            overridePendingTransition(0, 0);
             startActivity(getIntent());
-            overridePendingTransition(0,0);
+            overridePendingTransition(0, 0);
         }
+
+        // Swipe from up to bottom to refresh the recyclerView
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                binding.swipeRefreshLayout.setRefreshing(true);
+                recreate();
+                binding.swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -141,33 +165,93 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // get data from fireStore and set to the recyclerView
-        ArrayList<ModelClassPost> postList = new ArrayList<>();
+        PostAdapter postAdapter = new PostAdapter(MainActivity.this, postList);
+        //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, 2, GridLayoutManager.VERTICAL, false);
+        binding.recyclerViewPostLists.setLayoutManager(gridLayoutManager);
+        binding.recyclerViewPostLists.setAdapter(postAdapter);
+
+        // Show progressBar
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
+
         db.collection("All_Post")
                 .orderBy("timeAdded", Query.Direction.DESCENDING)
+                .limit(8)
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            ModelClassPost modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
-                            postList.add(modelClassPost);
-                        }
-                        PostAdapter postAdapter = new PostAdapter(MainActivity.this, postList);
-                        //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
-                        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, 2, GridLayoutManager.VERTICAL, false);
-                        binding.recyclerViewPostLists.setLayoutManager(gridLayoutManager);
-                        binding.recyclerViewPostLists.setAdapter(postAdapter);
-                        // On recycler item click listener
-                        postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(ModelClassPost post) {
-                                Intent intent = new Intent(MainActivity.this, PostInfoActivity.class);
-                                intent.putExtra("userId", post.getUserId());
-                                intent.putExtra("postReference", post.getPostReference());
-                                intent.putExtra("fromActivity", "MainActivity");
-                                startActivity(intent);
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                ModelClassPost modelClassPost = document.toObject(ModelClassPost.class);
+                                postList.add(modelClassPost);
                             }
-                        });
+                            progressDialog.dismiss();
+                            postAdapter.notifyDataSetChanged();
+                            lastVisible = task.getResult().getDocuments().get(task.getResult().size() - 1);
+
+                            // On recycler item click listener
+                            postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(ModelClassPost post) {
+                                    Intent intent = new Intent(MainActivity.this, PostInfoActivity.class);
+                                    intent.putExtra("userId", post.getUserId());
+                                    intent.putExtra("postReference", post.getPostReference());
+                                    intent.putExtra("fromActivity", "MainActivity");
+                                    startActivity(intent);
+                                }
+                            });
+
+                            RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+                                @Override
+                                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                                    super.onScrollStateChanged(recyclerView, newState);
+                                    if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                                        isScrolling = true;
+                                    }
+                                }
+
+                                @Override
+                                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                    super.onScrolled(recyclerView, dx, dy);
+
+                                    GridLayoutManager gridLayoutManager1 = ((GridLayoutManager) recyclerView.getLayoutManager());
+                                    int firstVisibleItemPosition = gridLayoutManager1.findFirstVisibleItemPosition();
+                                    int visibleItemCount = gridLayoutManager1.getChildCount();
+                                    int totalItemCount = gridLayoutManager1.getItemCount();
+
+                                    if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
+                                        isScrolling = false;
+                                        Query nextQuery = db.collection("All_Post")
+                                                .orderBy("timeAdded", Query.Direction.DESCENDING).startAfter(lastVisible).limit(6);
+                                        nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> t) {
+                                                if (t.isSuccessful()) {
+                                                    for (DocumentSnapshot d : t.getResult()) {
+                                                        ModelClassPost modelClassPost = d.toObject(ModelClassPost.class);
+                                                        postList.add(modelClassPost);
+                                                    }
+                                                    postAdapter.notifyDataSetChanged();
+                                                    if (t.getResult().size() > 0) {
+                                                        lastVisible = t.getResult().getDocuments().get(t.getResult().size() - 1);
+                                                    }
+
+                                                    if (t.getResult().size() < 8) {
+                                                        isLastItemReached = true;
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            };
+                            binding.recyclerViewPostLists.addOnScrollListener(onScrollListener);
+                        }
                     }
                 });
 
