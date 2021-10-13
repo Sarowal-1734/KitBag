@@ -13,9 +13,8 @@
         android:theme="@style/Theme.KitBag">
         <activity
             android:name=".chat.MessageActivity"
-            android:parentActivityName=".MainActivity"
-            android:exported="true" >
-        </activity>
+            android:exported="true"
+            android:parentActivityName=".MainActivity"></activity>
         <activity
             android:name=".MyCartActivity"
             android:exported="true" />
@@ -61,6 +60,8 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
