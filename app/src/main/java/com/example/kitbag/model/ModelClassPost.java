@@ -20,6 +20,15 @@ public class ModelClassPost {
     private String postReference;
     private String documentReference;
     private String status;
+    private String lastMessage;
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+    }
 
     public String getStatus() {
         return status;

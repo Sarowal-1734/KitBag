@@ -43,7 +43,7 @@ public class ChatDetailsActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Chats");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // Display all the info to the activity
+        // Display username, post Title and post image in Message details activity
         db.collection("All_Post")
                 .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
                 .get()
