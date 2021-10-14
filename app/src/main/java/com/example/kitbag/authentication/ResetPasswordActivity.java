@@ -126,6 +126,21 @@ public class ResetPasswordActivity extends AppCompatActivity {
                         startActivity(new Intent(ResetPasswordActivity.this, LoginActivity.class));
                         finish();
                         break;
+                    case R.id.nav_language:
+                        Toast.makeText(ResetPasswordActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_discover_kitbag:
+                        Toast.makeText(ResetPasswordActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_terms_conditions:
+                        Toast.makeText(ResetPasswordActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_contact:
+                        Toast.makeText(ResetPasswordActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_about:
+                        Toast.makeText(ResetPasswordActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        break;
                 }
                 return false;
             }

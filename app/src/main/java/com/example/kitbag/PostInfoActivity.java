@@ -15,8 +15,14 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +45,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -66,6 +74,10 @@ public class PostInfoActivity extends AppCompatActivity {
 
     // Show progressBar
     private ProgressDialog progressDialog;
+
+    // Dialog Declaration
+    private androidx.appcompat.app.AlertDialog.Builder builder;
+    private androidx.appcompat.app.AlertDialog dialog;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -170,6 +182,59 @@ public class PostInfoActivity extends AppCompatActivity {
             }
         });
 
+        // On Edit profile icon clicked
+        View view = binding.navigationView.getHeaderView(0);
+        ImageView imageView = view.findViewById(R.id.nav_edit_profile);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(PostInfoActivity.this, EditProfileActivity.class));
+            }
+        });
+
+        // On drawer menu item clicked
+        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_language:
+                        Toast.makeText(PostInfoActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_discover_kitbag:
+                        Toast.makeText(PostInfoActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_terms_conditions:
+                        Toast.makeText(PostInfoActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_contact:
+                        Toast.makeText(PostInfoActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_about:
+                        Toast.makeText(PostInfoActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_chat:
+                        startActivity(new Intent(PostInfoActivity.this, MessageActivity.class));
+                        break;
+                    case R.id.nav_my_post:
+                        startActivity(new Intent(PostInfoActivity.this, MyPostActivity.class));
+                        break;
+                    case R.id.nav_my_cart:
+                        startActivity(new Intent(PostInfoActivity.this, MyCartActivity.class));
+                        break;
+                    case R.id.nav_change_password:
+                        validationUpdatePassword();
+                        break;
+                    case R.id.nav_logout:
+                        mAuth.signOut();
+                        Toast.makeText(PostInfoActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(PostInfoActivity.this, MainActivity.class));
+                        finish();
+                        break;
+                }
+                return false;
+            }
+        });
+
         // Display all the info to the activity
         db.collection("All_Post")
                 .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
@@ -243,7 +308,7 @@ public class PostInfoActivity extends AppCompatActivity {
                 });
 
         // Adding onClickListener on Call text click
-        binding.TextViewCall.setOnClickListener(new View.OnClickListener() {
+        binding.call.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
@@ -261,7 +326,7 @@ public class PostInfoActivity extends AppCompatActivity {
         });
 
         // Adding onClickListener on Chat text click
-        binding.TextViewChat.setOnClickListener(new View.OnClickListener() {
+        binding.chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (currentUser != null) {
@@ -275,7 +340,7 @@ public class PostInfoActivity extends AppCompatActivity {
         });
 
         // Adding onClickListener on Mail text click
-        binding.TextViewMail.setOnClickListener(new View.OnClickListener() {
+        binding.imageIconMail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (currentUser != null) {
@@ -346,6 +411,87 @@ public class PostInfoActivity extends AppCompatActivity {
                         });
             }
         }
+    }
+
+    // validation for update password and create popup dialog
+    private void validationUpdatePassword() {
+        // inflate custom layout
+        View view = LayoutInflater.from(PostInfoActivity.this).inflate(R.layout.dialog_change_password,null);
+        // Getting view form custom dialog layout
+        EditText editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
+        EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);
+        EditText editTextConformNewPassword = view.findViewById(R.id.editTextConformNewPassword);
+        Button buttonUpdatePassword = view.findViewById(R.id.button_update_password);
+
+        builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+
+        buttonUpdatePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // getting value from user edit text
+                String oldPassword = editTextOldPassword.getText().toString().trim();
+                String newPassword = editTextNewPassword.getText().toString().trim();
+                String conformNewPassword = editTextConformNewPassword.getText().toString().toString();
+
+                if(TextUtils.isEmpty(oldPassword)){
+                    editTextOldPassword.setError("Enter Your Old Password");
+                }
+                if(TextUtils.isEmpty(newPassword)){
+                    editTextNewPassword.setError("Enter New Password");
+                }
+                if(TextUtils.isEmpty(conformNewPassword)){
+                    editTextConformNewPassword.setError("Conform New Password");
+                }
+                if(!newPassword.equals(conformNewPassword)){
+                    Toast.makeText(PostInfoActivity.this, "Conform Password Again", Toast.LENGTH_SHORT).show();
+                }
+                if(newPassword.length() < 6){
+                    editTextNewPassword.setError("Length must be 6 or more");
+                }
+                if(conformNewPassword.length() < 6){
+                    editTextNewPassword.setError("Length must be 6 or more");
+                }
+                if(!TextUtils.isEmpty(newPassword) && !TextUtils.isEmpty(conformNewPassword) &&
+                        newPassword.equals(conformNewPassword) && newPassword.length() >= 8 && conformNewPassword.length() >=8){
+                    updatePassword(oldPassword,newPassword);
+                }
+            }
+        });
+    }
+
+    // Update password
+    private void updatePassword(String oldPassword, String newPassword) {
+        // before updating password we have to re-authenticate our user
+        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(),oldPassword);
+        currentUser.reauthenticate(authCredential).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                // re-authentication successful
+                currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        // Password update successfully
+                        dialog.dismiss();
+                        Toast.makeText(PostInfoActivity.this, "Password Update Successfully", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // password update failed
+                        Toast.makeText(PostInfoActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //re-authentication failed
+                Toast.makeText(PostInfoActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // Close Drawer on back pressed

@@ -73,8 +73,8 @@ public class MainActivity extends AppCompatActivity {
     private final CollectionReference collectionReference = db.collection("Users");
 
     // Dialog Declaration
-    AlertDialog.Builder builder;
-    AlertDialog dialog;
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
 
     // Show progressBar
     private ProgressDialog progressDialog;
@@ -302,6 +302,24 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_login:
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
                         break;
+                    case R.id.nav_language:
+                        Toast.makeText(MainActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_discover_kitbag:
+                        Toast.makeText(MainActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_terms_conditions:
+                        Toast.makeText(MainActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_contact:
+                        Toast.makeText(MainActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_about:
+                        Toast.makeText(MainActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_chat:
+                        startActivity(new Intent(MainActivity.this, MessageActivity.class));
+                        break;
                     case R.id.nav_my_post:
                         startActivity(new Intent(MainActivity.this, MyPostActivity.class));
                         break;
@@ -310,9 +328,6 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.nav_change_password:
                         validationUpdatePassword();
-                        break;
-                    case R.id.nav_chat:
-                        startActivity(new Intent(MainActivity.this, MessageActivity.class));
                         break;
                     case R.id.nav_logout:
                         mAuth.signOut();
@@ -438,13 +453,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-
     }
 
 
-    // update password
+    // Update password
     private void updatePassword(String oldPassword, String newPassword) {
         // before updating password we have to re-authenticate our user
         AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(),oldPassword);

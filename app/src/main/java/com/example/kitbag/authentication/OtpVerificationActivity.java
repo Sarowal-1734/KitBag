@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -158,6 +159,36 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerStateChanged(int newState) {
+            }
+        });
+
+        // On drawer menu item clicked
+        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_login:
+                        Toast.makeText(OtpVerificationActivity.this, "Process dismissed!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(OtpVerificationActivity.this, LoginActivity.class));
+                        finish();
+                        break;
+                    case R.id.nav_language:
+                        Toast.makeText(OtpVerificationActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_discover_kitbag:
+                        Toast.makeText(OtpVerificationActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_terms_conditions:
+                        Toast.makeText(OtpVerificationActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_contact:
+                        Toast.makeText(OtpVerificationActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_about:
+                        Toast.makeText(OtpVerificationActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                return false;
             }
         });
 
