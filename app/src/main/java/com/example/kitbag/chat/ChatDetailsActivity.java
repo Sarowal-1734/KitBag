@@ -29,6 +29,10 @@ public class ChatDetailsActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
+    // id for chat
+    String userId;
+    String postId;
+
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -42,6 +46,12 @@ public class ChatDetailsActivity extends AppCompatActivity {
         setSupportActionBar(binding.toolbarChatDetail);
         getSupportActionBar().setTitle("Chats");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
+        // getting id for chatting
+
+        userId = getIntent().getStringExtra("userId");
+        postId = getIntent().getStringExtra("postId");
 
         // Display username, post Title and post image in Message details activity
         db.collection("All_Post")
