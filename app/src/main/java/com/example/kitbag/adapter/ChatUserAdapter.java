@@ -44,7 +44,8 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
 
         Picasso.get().load(userModel.getImageUrl()).placeholder(R.drawable.logo).fit().into(holder.circleImageViewSampleUserChat);
         holder.textViewSampleUserNameChat.setText(userModel.getUserName());
-       // holder.textViewSampleLastMessageChat.setText(userModel.getLastMessage());
+        holder.textViewSampleLastMessageChat.setText(userModel.getLastMessage());
+        holder.textViewSampleProductTitle.setText(userModel.getProductTitle());
 
     }
 
@@ -57,12 +58,14 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
         private CircleImageView circleImageViewSampleUserChat;
         private TextView textViewSampleUserNameChat;
         private TextView textViewSampleLastMessageChat;
+        private TextView textViewSampleProductTitle;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             circleImageViewSampleUserChat = itemView.findViewById(R.id.circularImageViewSampleChatUser);
             textViewSampleUserNameChat = itemView.findViewById(R.id.textViewSampleUsernameChat);
             textViewSampleLastMessageChat = itemView.findViewById(R.id.textViewSampleLastMessageChat);
+            textViewSampleProductTitle = itemView.findViewById(R.id.textViewUserTitle);
             itemView.setOnClickListener(this);
         }
 

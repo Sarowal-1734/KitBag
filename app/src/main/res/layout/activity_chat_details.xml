@@ -19,7 +19,7 @@
             android:orientation="horizontal">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/circularImageViewToolbarChatDetail"
+                android:id="@+id/circularImageViewToolbarItemPhotoChat"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/logo"
@@ -27,17 +27,29 @@
                 app:civ_border_width="1dp"
                 android:layout_marginLeft="5dp"
                 android:padding="5dp"/>
-
-            <TextView
-                android:id="@+id/textViewUserNameToolbarChatDetail"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="User Name"
-                android:textSize="20sp"
-                android:textColor="@color/white"
-                android:textStyle="bold"
                 android:layout_gravity="center"
-                />
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/textViewToolbarItemTitleChat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Post Title"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    />
+                <TextView
+                    android:id="@+id/textViewToolbarUsernameChat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User Name"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    />
+            </LinearLayout>
         </LinearLayout>
     </androidx.appcompat.widget.Toolbar>
 
