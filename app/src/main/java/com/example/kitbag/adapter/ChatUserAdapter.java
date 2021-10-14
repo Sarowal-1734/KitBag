@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.kitbag.R;
 import com.example.kitbag.chat.ChatDetailsActivity;
+import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
 import com.squareup.picasso.Picasso;
 
@@ -23,12 +24,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHolder> {
     private Context context;
-    private List<UserModel> userModelList = new ArrayList<>();
+    private List<ModelClassPost> modelClassPostListUser = new ArrayList<>();
     private String friendId;
 
-    public ChatUserAdapter(Context context, List<UserModel> userModelList) {
+    public ChatUserAdapter(Context context, List<ModelClassPost> modelClassPostListUser) {
         this.context = context;
-        this.userModelList = userModelList;
+        this.modelClassPostListUser = modelClassPostListUser;
     }
 
     @NonNull
@@ -40,18 +41,17 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        UserModel userModel = userModelList.get(position);
+        ModelClassPost postModelClass  = modelClassPostListUser.get(position);
 
-        Picasso.get().load(userModel.getImageUrl()).placeholder(R.drawable.logo).fit().into(holder.circleImageViewSampleUserChat);
-        holder.textViewSampleUserNameChat.setText(userModel.getUserName());
-        holder.textViewSampleLastMessageChat.setText(userModel.getLastMessage());
-        holder.textViewSampleProductTitle.setText(userModel.getProductTitle());
+        Picasso.get().load(postModelClass.getImageUrl()).placeholder(R.drawable.logo).fit().into(holder.circleImageViewSampleUserChat);
+        holder.textViewSampleUserNameChat.setText(postModelClass.getUserName());
+        holder.textViewSampleProductTitle.setText(postModelClass.getTitle());
 
     }
 
     @Override
     public int getItemCount() {
-        return userModelList.size();
+        return modelClassPostListUser.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -71,13 +71,13 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
 
         @Override
         public void onClick(View v) {
-            UserModel userModel = userModelList.get(getAdapterPosition());
-            friendId = userModel.getUserId();
+            ModelClassPost postModelClass = modelClassPostListUser.get(getAdapterPosition());
+            friendId = postModelClass.getUserId();
             Intent intent = new Intent(context,ChatDetailsActivity.class);
             intent.putExtra("friendId",friendId);
             Toast.makeText(context, friendId, Toast.LENGTH_SHORT).show();
-            intent.putExtra("userName",userModel.getUserName());
-            intent.putExtra("imageUrl",userModel.getImageUrl());
+            intent.putExtra("userName",postModelClass.getUserName());
+            intent.putExtra("imageUrl",postModelClass.getImageUrl());
             context.startActivity(intent);
         }
     }

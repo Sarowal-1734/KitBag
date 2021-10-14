@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -58,6 +59,7 @@ public class PostInfoActivity extends AppCompatActivity {
     private ActivityPostInfoBinding binding;
 
     private ModelClassPost modelClassPost;
+
 
     // Swipe to back
     private SlidrInterface slidrInterface;
