@@ -152,49 +152,6 @@ public class MyCartActivity extends AppCompatActivity {
             }
         });
 
-        // On drawer menu item clicked
-        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nav_language:
-                        Toast.makeText(MyCartActivity.this, "Language", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_discover_kitbag:
-                        Toast.makeText(MyCartActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_terms_conditions:
-                        Toast.makeText(MyCartActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_contact:
-                        Toast.makeText(MyCartActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_about:
-                        Toast.makeText(MyCartActivity.this, "About Us", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_chat:
-                        startActivity(new Intent(MyCartActivity.this, MessageActivity.class));
-                        break;
-                    case R.id.nav_my_post:
-                        startActivity(new Intent(MyCartActivity.this, MyPostActivity.class));
-                        break;
-                    case R.id.nav_my_cart:
-                        binding.drawerLayout.closeDrawer(GravityCompat.END);
-                        break;
-                    case R.id.nav_change_password:
-                        validationUpdatePassword();
-                        break;
-                    case R.id.nav_logout:
-                        mAuth.signOut();
-                        Toast.makeText(MyCartActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(MyCartActivity.this, MainActivity.class));
-                        finish();
-                        break;
-                }
-                return false;
-            }
-        });
-
         // get data from fireStore and set to the recyclerView
         ArrayList<ModelClassPost> postList = new ArrayList<>();
         db.collection("My_Cart").document(currentUser.getUid())
@@ -308,6 +265,49 @@ public class MyCartActivity extends AppCompatActivity {
                 ab.show();
             }
         });
+
+        // On drawer menu item clicked
+        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_language:
+                        Toast.makeText(MyCartActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_discover_kitbag:
+                        Toast.makeText(MyCartActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_terms_conditions:
+                        Toast.makeText(MyCartActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_contact:
+                        Toast.makeText(MyCartActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_about:
+                        Toast.makeText(MyCartActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_chat:
+                        startActivity(new Intent(MyCartActivity.this, MessageActivity.class));
+                        break;
+                    case R.id.nav_my_post:
+                        startActivity(new Intent(MyCartActivity.this, MyPostActivity.class));
+                        break;
+                    case R.id.nav_my_cart:
+                        binding.drawerLayout.closeDrawer(GravityCompat.END);
+                        break;
+                    case R.id.nav_change_password:
+                        validationUpdatePassword();
+                        break;
+                    case R.id.nav_logout:
+                        mAuth.signOut();
+                        Toast.makeText(MyCartActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MyCartActivity.this, MainActivity.class));
+                        finish();
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
     // validation for update password and create popup dialog
@@ -342,18 +342,18 @@ public class MyCartActivity extends AppCompatActivity {
                 if(TextUtils.isEmpty(conformNewPassword)){
                     editTextConformNewPassword.setError("Conform New Password");
                 }
-                if(!newPassword.equals(conformNewPassword)){
+                if (!newPassword.equals(conformNewPassword)) {
                     Toast.makeText(MyCartActivity.this, "Conform Password Again", Toast.LENGTH_SHORT).show();
                 }
-                if(newPassword.length() < 6){
+                if (newPassword.length() < 6) {
                     editTextNewPassword.setError("Length must be 6 or more");
                 }
-                if(conformNewPassword.length() < 6){
+                if (conformNewPassword.length() < 6) {
                     editTextNewPassword.setError("Length must be 6 or more");
                 }
-                if(!TextUtils.isEmpty(newPassword) && !TextUtils.isEmpty(conformNewPassword) &&
-                        newPassword.equals(conformNewPassword) && newPassword.length() >= 8 && conformNewPassword.length() >=8){
-                    updatePassword(oldPassword,newPassword);
+                if (!TextUtils.isEmpty(newPassword) && !TextUtils.isEmpty(conformNewPassword) &&
+                        newPassword.equals(conformNewPassword) && newPassword.length() >= 8 && conformNewPassword.length() >= 8) {
+                    updatePassword(oldPassword, newPassword);
                 }
             }
         });

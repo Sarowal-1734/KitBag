@@ -267,6 +267,14 @@ public class PostInfoActivity extends AppCompatActivity {
                             } else {
                                 binding.TextViewMail.setText(modelClassPost.getEmail());
                             }
+
+                            // Disable Call, Chat and Mail with yourself
+                            if (currentUser != null && currentUser.getUid().equals(modelClassPost.getUserId())) {
+                                binding.call.setEnabled(false);
+                                binding.chat.setEnabled(false);
+                                binding.imageIconMail.setEnabled(false);
+                            }
+
                             // Stop the shimmer effect and display data
                             binding.shimmerContainer.stopShimmer();
                             binding.shimmerContainer.setVisibility(View.GONE);
