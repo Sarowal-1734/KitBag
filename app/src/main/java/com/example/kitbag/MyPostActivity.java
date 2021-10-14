@@ -22,7 +22,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.example.kitbag.adapter.PostAdapter;
@@ -152,49 +151,6 @@ public class MyPostActivity extends AppCompatActivity {
             }
         });
 
-        // On drawer menu item clicked
-        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nav_language:
-                        Toast.makeText(MyPostActivity.this, "Language", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_discover_kitbag:
-                        Toast.makeText(MyPostActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_terms_conditions:
-                        Toast.makeText(MyPostActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_contact:
-                        Toast.makeText(MyPostActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_about:
-                        Toast.makeText(MyPostActivity.this, "About Us", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_chat:
-                        startActivity(new Intent(MyPostActivity.this, MessageActivity.class));
-                        break;
-                    case R.id.nav_my_post:
-                        binding.drawerLayout.closeDrawer(GravityCompat.END);
-                        break;
-                    case R.id.nav_my_cart:
-                        startActivity(new Intent(MyPostActivity.this, MyCartActivity.class));
-                        break;
-                    case R.id.nav_change_password:
-                        validationUpdatePassword();
-                        break;
-                    case R.id.nav_logout:
-                        mAuth.signOut();
-                        Toast.makeText(MyPostActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(MyPostActivity.this, MainActivity.class));
-                        finish();
-                        break;
-                }
-                return false;
-            }
-        });
-
         // get data from fireStore and set to the recyclerView
         ArrayList<ModelClassPost> postList = new ArrayList<>();
         db.collection("All_Post")
@@ -304,6 +260,49 @@ public class MyPostActivity extends AppCompatActivity {
                 ab.setCancelable(false);
                 ab.setView(dialogView);
                 ab.show();
+            }
+        });
+
+        // On drawer menu item clicked
+        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_language:
+                        Toast.makeText(MyPostActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_discover_kitbag:
+                        Toast.makeText(MyPostActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_terms_conditions:
+                        Toast.makeText(MyPostActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_contact:
+                        Toast.makeText(MyPostActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_about:
+                        Toast.makeText(MyPostActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_chat:
+                        startActivity(new Intent(MyPostActivity.this, MessageActivity.class));
+                        break;
+                    case R.id.nav_my_post:
+                        binding.drawerLayout.closeDrawer(GravityCompat.END);
+                        break;
+                    case R.id.nav_my_cart:
+                        startActivity(new Intent(MyPostActivity.this, MyCartActivity.class));
+                        break;
+                    case R.id.nav_change_password:
+                        validationUpdatePassword();
+                        break;
+                    case R.id.nav_logout:
+                        mAuth.signOut();
+                        Toast.makeText(MyPostActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MyPostActivity.this, MainActivity.class));
+                        finish();
+                        break;
+                }
+                return false;
             }
         });
 
