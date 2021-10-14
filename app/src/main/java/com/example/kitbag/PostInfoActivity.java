@@ -1,13 +1,18 @@
 package com.example.kitbag;
 
+import static android.Manifest.permission.CALL_PHONE;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -15,11 +20,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
+import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
@@ -116,9 +124,6 @@ public class PostInfoActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
             binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
-            binding.TextViewChat.setEnabled(false);
-            binding.TextViewMail.setEnabled(false);
-            binding.TextViewCall.setEnabled(false);
         }
 
         // Adding back arrow in the appBar
@@ -186,7 +191,11 @@ public class PostInfoActivity extends AppCompatActivity {
                             binding.TextViewUserType.setText(modelClassPost.getUserType());
                             binding.TextViewChat.setText(chatWith);
                             binding.TextViewCall.setText(modelClassPost.getPhoneNumber());
-                            binding.TextViewMail.setText(modelClassPost.getEmail());
+                            if (modelClassPost.getEmail().equals("")) {
+                                binding.imageIconMail.setVisibility(View.GONE);
+                            } else {
+                                binding.TextViewMail.setText(modelClassPost.getEmail());
+                            }
                             // Stop the shimmer effect and display data
                             binding.shimmerContainer.stopShimmer();
                             binding.shimmerContainer.setVisibility(View.GONE);
@@ -229,6 +238,54 @@ public class PostInfoActivity extends AppCompatActivity {
                         binding.view.setVisibility(View.GONE);
                     }
                 });
+
+        // Adding onClickListener on Call text click
+        binding.TextViewCall.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(View v) {
+                if (currentUser != null) {
+                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + modelClassPost.getPhoneNumber()));
+                    if (ContextCompat.checkSelfPermission(getApplicationContext(), CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                        startActivity(intent);
+                    } else {
+                        requestPermissions(new String[]{CALL_PHONE}, 1);
+                    }
+                    return;
+                }
+                Toast.makeText(PostInfoActivity.this, "Please Login To Call", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Adding onClickListener on Chat text click
+        binding.TextViewChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentUser != null) {
+                    startActivity(new Intent(PostInfoActivity.this, MessageActivity.class));
+                    return;
+                }
+                Toast.makeText(PostInfoActivity.this, "Please Login To Chat", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Adding onClickListener on Mail text click
+        binding.TextViewMail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentUser != null) {
+                    String subject = "Providing Delivery Service In KitBag";
+                    String body = "Hi! I am a deliveryman. I found that you are going to deliver a product. Here as deliveryman," +
+                            " I can deliver your product. If you are interested then please check the inbox in KitBag Chat option.";
+                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + modelClassPost.getEmail()));
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                    emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+                    startActivity(Intent.createChooser(emailIntent, "KitBag Courier Service"));
+                    return;
+                }
+                Toast.makeText(PostInfoActivity.this, "Please Login To Send Mail", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         // Set button text AddToCart or DeletePost or inactive AddToCartButton
         if (currentUser != null) {
