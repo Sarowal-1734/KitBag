@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".chat.MessageActivity">
+    tools:context=".chat.ChatDetailsActivity">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/toolbarChatDetail"
         android:background="@color/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/circularImageViewToolbarUser"
+                android:id="@+id/circularImageViewToolbarChatDetail"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:src="@drawable/logo"
@@ -26,8 +27,9 @@
                 app:civ_border_width="1dp"
                 android:layout_marginLeft="5dp"
                 android:padding="5dp"/>
+
             <TextView
-                android:id="@+id/textViewUserNameToolbar"
+                android:id="@+id/textViewUserNameToolbarChatDetail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="User Name"
@@ -37,24 +39,41 @@
                 android:layout_gravity="center"
                 />
         </LinearLayout>
-
     </androidx.appcompat.widget.Toolbar>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/app_bar"
-        app:tabSelectedTextColor="@color/white"
-        app:tabIndicator="@color/gray"
-        app:tabMaxWidth="0dp"
-        app:tabGravity="fill"
-        app:tabMode="fixed"
-        android:elevation="16dp" />
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewChatDetails"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        />
-</LinearLayout>
+        android:layout_above="@+id/linearLayoutMessage"
+        android:layout_below="@id/toolbarChatDetail" />
+
+    <LinearLayout
+        android:id="@+id/linearLayoutMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="10"
+        android:layout_alignParentBottom="true"
+        >
+
+        <EditText
+            android:id="@+id/editTextSendText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="8"
+            android:hint="Enter Message"
+            android:layout_marginLeft="10dp"
+            />
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_send"
+            android:layout_weight="2"
+            android:layout_gravity="center"
+            />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

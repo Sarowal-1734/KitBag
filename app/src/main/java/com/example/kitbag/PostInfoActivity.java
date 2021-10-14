@@ -116,6 +116,9 @@ public class PostInfoActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
             binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+            binding.TextViewChat.setEnabled(false);
+            binding.TextViewMail.setEnabled(false);
+            binding.TextViewCall.setEnabled(false);
         }
 
         // Adding back arrow in the appBar
@@ -256,9 +259,6 @@ public class PostInfoActivity extends AppCompatActivity {
             if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
                 binding.buttonAddToCart.setText("Edit Post");
                 binding.buttonDeleteItem.setVisibility(View.VISIBLE);
-                binding.TextViewChat.setEnabled(false);
-                binding.TextViewMail.setEnabled(false);
-                binding.TextViewCall.setEnabled(false);
             } else {
                 db.collection("My_Cart").document(currentUser.getUid())
                         .collection("Cart_Lists")
