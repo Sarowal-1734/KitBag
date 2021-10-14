@@ -131,7 +131,7 @@ public class SignUpActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav_login:
-                        onBackPressed();
+                        finish();
                         break;
                     case R.id.nav_language:
                         Toast.makeText(SignUpActivity.this, "Language", Toast.LENGTH_SHORT).show();
