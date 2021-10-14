@@ -27,6 +27,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
+import com.example.kitbag.chat.ChatDetailsActivity;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
 import com.example.kitbag.model.ModelClassPost;
@@ -262,7 +263,9 @@ public class PostInfoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (currentUser != null) {
-                    startActivity(new Intent(PostInfoActivity.this, MessageActivity.class));
+                    Intent intent = new Intent(PostInfoActivity.this, ChatDetailsActivity.class);
+                    intent.putExtra("postReference", modelClassPost.getPostReference());
+                    startActivity(intent);
                     return;
                 }
                 Toast.makeText(PostInfoActivity.this, "Please Login To Chat", Toast.LENGTH_SHORT).show();
