@@ -110,7 +110,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 binding.swipeRefreshLayout.setRefreshing(true);
-                recreate();
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(getIntent());
+                overridePendingTransition(0, 0);
                 binding.swipeRefreshLayout.setRefreshing(false);
             }
         });
