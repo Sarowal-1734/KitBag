@@ -10,6 +10,7 @@ public class UserModel {
     private String district;
     private String userType;
     private String lastMessage;
+    private String productTitle;
 
     public UserModel() {
         // Must Needed empty constructor
@@ -85,5 +86,12 @@ public class UserModel {
 
     public void setLastMessage(String lastMessage) {
         this.lastMessage = lastMessage;
+    }
+    public String getProductTitle() {
+        return productTitle;
+    }
+
+    public void setProductTitle(String productTitle) {
+        this.productTitle = productTitle;
     }
 }
