@@ -8,17 +8,24 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.kitbag.MainActivity;
+import com.example.kitbag.MyCartActivity;
+import com.example.kitbag.MyPostActivity;
 import com.example.kitbag.R;
+import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityForgotPasswordBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -70,6 +77,34 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
         }
+
+        // On drawer menu item clicked
+        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_login:
+                        onBackPressed();
+                        break;
+                    case R.id.nav_language:
+                        Toast.makeText(ForgotPasswordActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_discover_kitbag:
+                        Toast.makeText(ForgotPasswordActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_terms_conditions:
+                        Toast.makeText(ForgotPasswordActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_contact:
+                        Toast.makeText(ForgotPasswordActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_about:
+                        Toast.makeText(ForgotPasswordActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                return false;
+            }
+        });
 
         // Open Drawer Layout
         binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {

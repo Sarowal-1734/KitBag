@@ -1,17 +1,30 @@
 package com.example.kitbag;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityNotificationsBinding;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -33,6 +46,10 @@ public class NotificationsActivity extends AppCompatActivity {
     // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+
+    // Dialog Declaration
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
 
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -130,6 +147,140 @@ public class NotificationsActivity extends AppCompatActivity {
             }
         });
 
+        // On Edit profile icon clicked
+        View view = binding.navigationView.getHeaderView(0);
+        ImageView imageView = view.findViewById(R.id.nav_edit_profile);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(NotificationsActivity.this, EditProfileActivity.class));
+            }
+        });
+
+        // On drawer menu item clicked
+        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_language:
+                        Toast.makeText(NotificationsActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_discover_kitbag:
+                        Toast.makeText(NotificationsActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_terms_conditions:
+                        Toast.makeText(NotificationsActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_contact:
+                        Toast.makeText(NotificationsActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_about:
+                        Toast.makeText(NotificationsActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_chat:
+                        startActivity(new Intent(NotificationsActivity.this, MessageActivity.class));
+                        break;
+                    case R.id.nav_my_post:
+                        startActivity(new Intent(NotificationsActivity.this, MyPostActivity.class));
+                        break;
+                    case R.id.nav_my_cart:
+                        startActivity(new Intent(NotificationsActivity.this, MyCartActivity.class));
+                        break;
+                    case R.id.nav_change_password:
+                        validationUpdatePassword();
+                        break;
+                    case R.id.nav_logout:
+                        mAuth.signOut();
+                        Toast.makeText(NotificationsActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(NotificationsActivity.this, MainActivity.class));
+                        finish();
+                        break;
+                }
+                return false;
+            }
+        });
+
+    }
+
+    // validation for update password and create popup dialog
+    private void validationUpdatePassword() {
+        // inflate custom layout
+        View view = LayoutInflater.from(NotificationsActivity.this).inflate(R.layout.dialog_change_password,null);
+        // Getting view form custom dialog layout
+        EditText editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
+        EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);
+        EditText editTextConformNewPassword = view.findViewById(R.id.editTextConformNewPassword);
+        Button buttonUpdatePassword = view.findViewById(R.id.button_update_password);
+
+        builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+
+        buttonUpdatePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // getting value from user edit text
+                String oldPassword = editTextOldPassword.getText().toString().trim();
+                String newPassword = editTextNewPassword.getText().toString().trim();
+                String conformNewPassword = editTextConformNewPassword.getText().toString().toString();
+
+                if(TextUtils.isEmpty(oldPassword)){
+                    editTextOldPassword.setError("Enter Your Old Password");
+                }
+                if(TextUtils.isEmpty(newPassword)){
+                    editTextNewPassword.setError("Enter New Password");
+                }
+                if(TextUtils.isEmpty(conformNewPassword)){
+                    editTextConformNewPassword.setError("Conform New Password");
+                }
+                if(!newPassword.equals(conformNewPassword)){
+                    Toast.makeText(NotificationsActivity.this, "Conform Password Again", Toast.LENGTH_SHORT).show();
+                }
+                if(newPassword.length() < 6){
+                    editTextNewPassword.setError("Length must be 6 or more");
+                }
+                if(conformNewPassword.length() < 6){
+                    editTextNewPassword.setError("Length must be 6 or more");
+                }
+                if(!TextUtils.isEmpty(newPassword) && !TextUtils.isEmpty(conformNewPassword) &&
+                        newPassword.equals(conformNewPassword) && newPassword.length() >= 8 && conformNewPassword.length() >=8){
+                    updatePassword(oldPassword,newPassword);
+                }
+            }
+        });
+    }
+
+    // Update password
+    private void updatePassword(String oldPassword, String newPassword) {
+        // before updating password we have to re-authenticate our user
+        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(),oldPassword);
+        currentUser.reauthenticate(authCredential).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                // re-authentication successful
+                currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        // Password update successfully
+                        dialog.dismiss();
+                        Toast.makeText(NotificationsActivity.this, "Password Update Successfully", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // password update failed
+                        Toast.makeText(NotificationsActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                //re-authentication failed
+                Toast.makeText(NotificationsActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // Close Drawer on back pressed
