@@ -83,11 +83,10 @@ public class ChatDetailsActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-        userId = currentUser.toString();
 
         // getting value from Post Details Activity for chatting
-        userId = getIntent().getStringExtra("userId");
-        postId = getIntent().getStringExtra("postId");
+        userId = currentUser.getUid();
+        postId = getIntent().getStringExtra("postReference");
 
 
         // SetUp toolbar for chat Details Activity
@@ -171,7 +170,6 @@ public class ChatDetailsActivity extends AppCompatActivity {
 
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     ChatModel chatModel = dataSnapshot.getValue(ChatModel.class);
-
                     if(chatModel.getSender().equals(userId) && chatModel.getReceiver().equals(postId)
                     || chatModel.getSender().equals(postId) && chatModel.getReceiver().equals(userId) ){
                         chatModelList.add(chatModel);

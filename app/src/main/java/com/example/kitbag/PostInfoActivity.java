@@ -344,11 +344,8 @@ public class PostInfoActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (currentUser != null) {
                     Intent intent = new Intent(PostInfoActivity.this, ChatDetailsActivity.class);
-                    intent.putExtra("postReference", modelClassPost.getPostReference());
-
-                    // sending id User Id and Post Id for Chatting
-                    intent.putExtra("userId",currentUser.getUid());
-                    intent.putExtra("postId",modelClassPost.getPostReference());
+                    // sending Post Id for Chatting
+                    intent.putExtra("postReference",modelClassPost.getPostReference());
                     startActivity(intent);
                     return;
                 }

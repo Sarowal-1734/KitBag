@@ -23,6 +23,11 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHolder> {
+
+    //for use onItemClickListener from MainActivity
+    private PostAdapter.OnItemClickListener listener;
+    private int position;
+
     private Context context;
     private List<ModelClassPost> modelClassPostList = new ArrayList<>();
     private String postId;
@@ -44,7 +49,7 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
         ModelClassPost postModelClass  = modelClassPostList.get(position);
 
         Picasso.get().load(postModelClass.getImageUrl()).placeholder(R.drawable.logo).fit().into(holder.circleImageViewSampleUserChat);
-        holder.textViewSampleUserNameChat.setText(postModelClass.getUserName());
+        holder.textViewSampleUserNameChat.setText("Posted by "+postModelClass.getUserName());
         holder.textViewSampleProductTitle.setText(postModelClass.getTitle());
 
     }
@@ -54,11 +59,11 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
         return modelClassPostList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private CircleImageView circleImageViewSampleUserChat;
-        private TextView textViewSampleUserNameChat;
-        private TextView textViewSampleLastMessageChat;
-        private TextView textViewSampleProductTitle;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        CircleImageView circleImageViewSampleUserChat;
+        TextView textViewSampleUserNameChat;
+        TextView textViewSampleLastMessageChat;
+        TextView textViewSampleProductTitle;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -66,22 +71,25 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
             textViewSampleUserNameChat = itemView.findViewById(R.id.textViewSampleUsernameChat);
             textViewSampleLastMessageChat = itemView.findViewById(R.id.textViewSampleLastMessageChat);
             textViewSampleProductTitle = itemView.findViewById(R.id.textViewUserTitle);
-            itemView.setOnClickListener(this);
-        }
 
-        @Override
-        public void onClick(View v) {
-            ModelClassPost postModelClass = modelClassPostList.get(getAdapterPosition());
-            postId = postModelClass.getPostReference();
-            Intent intent = new Intent(context,ChatDetailsActivity.class);
-            intent.putExtra("fromUserList","fromUserList");
-            intent.putExtra("postId",postId);
-            Toast.makeText(context, postId, Toast.LENGTH_SHORT).show();
-            intent.putExtra("userName",postModelClass.getUserName());
-            intent.putExtra("imageUrl",postModelClass.getImageUrl());
-            intent.putExtra("postTitle",postModelClass.getTitle());
-            context.startActivity(intent);
-
+            //for use onItemClickListener from MainActivity
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    position = getAdapterPosition();
+                    if (listener != null && position != -1) {
+                        listener.onItemClick(modelClassPostList.get(position));
+                    }
+                }
+            });
         }
+    }
+    //for use onItemClickListener from MainActivity
+    public interface OnItemClickListener {
+        void onItemClick(ModelClassPost post);
+    }
+
+    public void setOnItemClickListener(PostAdapter.OnItemClickListener listener) {
+        this.listener = listener;
     }
 }
