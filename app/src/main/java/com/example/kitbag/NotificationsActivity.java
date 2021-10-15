@@ -1,5 +1,6 @@
 package com.example.kitbag;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -43,13 +44,19 @@ public class NotificationsActivity extends AppCompatActivity {
     // Swipe to back
     private SlidrInterface slidrInterface;
 
-    // For Authentication
-    private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
+    // Show Progress Dialog
+    private ProgressDialog progressDialog;
 
     // Dialog Declaration
     private AlertDialog.Builder builder;
     private AlertDialog dialog;
+
+    // For Changing Password
+    private EditText editTextOldPassword;
+
+    // For Authentication
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -207,9 +214,9 @@ public class NotificationsActivity extends AppCompatActivity {
         // inflate custom layout
         View view = LayoutInflater.from(NotificationsActivity.this).inflate(R.layout.dialog_change_password,null);
         // Getting view form custom dialog layout
-        EditText editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
+        editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
         EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);
-        EditText editTextConformNewPassword = view.findViewById(R.id.editTextConformNewPassword);
+        EditText editTextConfirmNewPassword = view.findViewById(R.id.editTextConfirmNewPassword);
         Button buttonUpdatePassword = view.findViewById(R.id.button_update_password);
 
         builder = new AlertDialog.Builder(this);
@@ -223,33 +230,49 @@ public class NotificationsActivity extends AppCompatActivity {
                 // getting value from user edit text
                 String oldPassword = editTextOldPassword.getText().toString().trim();
                 String newPassword = editTextNewPassword.getText().toString().trim();
-                String conformNewPassword = editTextConformNewPassword.getText().toString().toString();
+                String conformNewPassword = editTextConfirmNewPassword.getText().toString().toString();
 
-                if(TextUtils.isEmpty(oldPassword)){
-                    editTextOldPassword.setError("Enter Your Old Password");
+                if (TextUtils.isEmpty(oldPassword)) {
+                    editTextOldPassword.setError("Required!");
+                    editTextOldPassword.requestFocus();
+                    return;
                 }
-                if(TextUtils.isEmpty(newPassword)){
-                    editTextNewPassword.setError("Enter New Password");
+                if (TextUtils.isEmpty(newPassword)) {
+                    editTextNewPassword.setError("Required!");
+                    editTextNewPassword.requestFocus();
+                    return;
                 }
-                if(TextUtils.isEmpty(conformNewPassword)){
-                    editTextConformNewPassword.setError("Conform New Password");
+                if (TextUtils.isEmpty(conformNewPassword)) {
+                    editTextConfirmNewPassword.setError("Required!");
+                    editTextConfirmNewPassword.requestFocus();
+                    return;
                 }
-                if(!newPassword.equals(conformNewPassword)){
-                    Toast.makeText(NotificationsActivity.this, "Conform Password Again", Toast.LENGTH_SHORT).show();
+                if (newPassword.length() < 6) {
+                    editTextNewPassword.setError("Length 6 or more");
+                    editTextNewPassword.requestFocus();
+                    return;
                 }
-                if(newPassword.length() < 6){
-                    editTextNewPassword.setError("Length must be 6 or more");
+                if (conformNewPassword.length() < 6) {
+                    editTextConfirmNewPassword.setError("Length 6 or more");
+                    editTextConfirmNewPassword.requestFocus();
+                    return;
                 }
-                if(conformNewPassword.length() < 6){
-                    editTextNewPassword.setError("Length must be 6 or more");
+                if (!newPassword.equals(conformNewPassword)) {
+                    editTextConfirmNewPassword.setError("Confirm Password Didn't Match");
+                    editTextConfirmNewPassword.requestFocus();
+                    return;
                 }
-                if(!TextUtils.isEmpty(newPassword) && !TextUtils.isEmpty(conformNewPassword) &&
-                        newPassword.equals(conformNewPassword) && newPassword.length() >= 8 && conformNewPassword.length() >=8){
-                    updatePassword(oldPassword,newPassword);
-                }
+                // Show progressBar
+                progressDialog = new ProgressDialog(NotificationsActivity.this);
+                progressDialog.show();
+                progressDialog.setContentView(R.layout.progress_dialog);
+                progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                progressDialog.setCancelable(false);
+                updatePassword(oldPassword, newPassword);
             }
         });
     }
+
 
     // Update password
     private void updatePassword(String oldPassword, String newPassword) {
@@ -264,12 +287,13 @@ public class NotificationsActivity extends AppCompatActivity {
                     public void onSuccess(Void unused) {
                         // Password update successfully
                         dialog.dismiss();
-                        Toast.makeText(NotificationsActivity.this, "Password Update Successfully", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                        Toast.makeText(NotificationsActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        // password update failed
+                        progressDialog.dismiss();
                         Toast.makeText(NotificationsActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
                     }
                 });
@@ -277,8 +301,10 @@ public class NotificationsActivity extends AppCompatActivity {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                //re-authentication failed
-                Toast.makeText(NotificationsActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                // re-authentication failed
+                progressDialog.dismiss();
+                editTextOldPassword.setError("Wrong Password!");
+                editTextOldPassword.requestFocus();
             }
         });
     }

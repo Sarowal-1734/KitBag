@@ -17,11 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.example.kitbag.MainActivity;
-import com.example.kitbag.MyCartActivity;
-import com.example.kitbag.MyPostActivity;
 import com.example.kitbag.R;
-import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityForgotPasswordBinding;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
