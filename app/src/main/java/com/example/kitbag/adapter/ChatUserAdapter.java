@@ -24,12 +24,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHolder> {
     private Context context;
-    private List<ModelClassPost> modelClassPostListUser = new ArrayList<>();
-    private String friendId;
+    private List<ModelClassPost> modelClassPostList = new ArrayList<>();
+    private String postId;
 
     public ChatUserAdapter(Context context, List<ModelClassPost> modelClassPostListUser) {
         this.context = context;
-        this.modelClassPostListUser = modelClassPostListUser;
+        this.modelClassPostList = modelClassPostListUser;
     }
 
     @NonNull
@@ -41,7 +41,7 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ModelClassPost postModelClass  = modelClassPostListUser.get(position);
+        ModelClassPost postModelClass  = modelClassPostList.get(position);
 
         Picasso.get().load(postModelClass.getImageUrl()).placeholder(R.drawable.logo).fit().into(holder.circleImageViewSampleUserChat);
         holder.textViewSampleUserNameChat.setText(postModelClass.getUserName());
@@ -51,7 +51,7 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return modelClassPostListUser.size();
+        return modelClassPostList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -71,14 +71,17 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
 
         @Override
         public void onClick(View v) {
-            ModelClassPost postModelClass = modelClassPostListUser.get(getAdapterPosition());
-            friendId = postModelClass.getUserId();
+            ModelClassPost postModelClass = modelClassPostList.get(getAdapterPosition());
+            postId = postModelClass.getPostReference();
             Intent intent = new Intent(context,ChatDetailsActivity.class);
-            intent.putExtra("friendId",friendId);
-            Toast.makeText(context, friendId, Toast.LENGTH_SHORT).show();
+            intent.putExtra("fromUserList","fromUserList");
+            intent.putExtra("postId",postId);
+            Toast.makeText(context, postId, Toast.LENGTH_SHORT).show();
             intent.putExtra("userName",postModelClass.getUserName());
             intent.putExtra("imageUrl",postModelClass.getImageUrl());
+            intent.putExtra("postTitle",postModelClass.getTitle());
             context.startActivity(intent);
+
         }
     }
 }
