@@ -5,17 +5,15 @@
     android:background="@drawable/background_receiver_chat"
     android:maxHeight="400dp"
     android:padding="5dp"
-    android:layout_marginLeft="10dp"
+    android:layout_marginStart="10dp"
     android:layout_marginTop="10dp"
-    android:minHeight="30dp"
     android:maxWidth="300dp">
 
     <TextView
         android:id="@+id/showMessage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="5dp"
-        android:textSize="20sp"
+        android:padding="8dp"
         android:layout_marginStart="10dp"
         android:textColor="@color/white"
         android:text="Receiver Text" />
