@@ -1,17 +1,13 @@
 package com.example.kitbag.chat;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
-import com.example.kitbag.MainActivity;
-import com.example.kitbag.PostInfoActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.example.kitbag.R;
 import com.example.kitbag.adapter.ChatUserAdapter;
 import com.example.kitbag.adapter.PostAdapter;
@@ -44,7 +40,6 @@ public class MessageActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     private String postReference;
-    private String userId;
 
     // Show progressBar
     private ProgressDialog progressDialog;
@@ -53,7 +48,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private boolean repeatPostId = false;
 
-    private List<ModelClassPost> modelClassPostListUser = new ArrayList<>();
+    private List<ModelClassPost> modelClassPostUserList = new ArrayList<>();
     private ChatUserAdapter adapter;
 
     @Override
@@ -86,7 +81,7 @@ public class MessageActivity extends AppCompatActivity {
         // setting up adapter
         binding.recyclerViewUser.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerViewUser.setHasFixedSize(true);
-        adapter = new ChatUserAdapter(MessageActivity.this, modelClassPostListUser);
+        adapter = new ChatUserAdapter(MessageActivity.this, modelClassPostUserList);
         binding.recyclerViewUser.setAdapter(adapter);
 
         // Show progressBar
@@ -96,38 +91,42 @@ public class MessageActivity extends AppCompatActivity {
         progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         progressDialog.setCancelable(false);
 
-        // For Firebase
+        // Get my chat list from Firebase and fireStore and set to the recyclerView
         databaseReference = FirebaseDatabase.getInstance().getReference("Chats");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                modelClassPostUserList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    ChatModel chatModel = dataSnapshot.getValue(ChatModel.class);
-                    postReference = chatModel.getReceiver();
-                    userId = chatModel.getSender();
-                    if (userId.equals(currentUser.getUid())) {
-                        db.collection("All_Post")
-                                .whereEqualTo("postReference", postReference)
-                                .get()
-                                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                            modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
-                                            modelClassPostListUser.add(modelClassPost);
+                    for (DataSnapshot snapshot1 : dataSnapshot.getChildren()) {
+                        ChatModel chatModel = snapshot1.getValue(ChatModel.class);
+                        if (chatModel.getSender().equals(currentUser.getUid()) || chatModel.getReceiver().equals(currentUser.getUid())) {
+                            postReference = dataSnapshot.getKey();
+                            db.collection("All_Post")
+                                    .whereEqualTo("postReference", postReference)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                                modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
+                                                modelClassPostUserList.add(modelClassPost);
+                                            }
+                                            adapter.notifyDataSetChanged();
                                         }
-                                        adapter.notifyDataSetChanged();
-                                    }
-                                });
-                        // On recycler item click listener
-                        adapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(ModelClassPost post) {
-                                Intent intent = new Intent(MessageActivity.this, ChatDetailsActivity.class);
-                                intent.putExtra("postReference", post.getPostReference());
-                                startActivity(intent);
-                            }
-                        });
+                                    });
+                            // On recycler item click listener
+                            adapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(ModelClassPost post) {
+                                    Intent intent = new Intent(MessageActivity.this, ChatDetailsActivity.class);
+                                    intent.putExtra("postReference", post.getPostReference());
+                                    intent.putExtra("userId", post.getUserId());
+                                    startActivity(intent);
+                                }
+                            });
+                            break;
+                        }
                     }
                 }
                 progressDialog.dismiss();
