@@ -66,6 +66,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="10"
+        android:padding="8dp"
         android:layout_alignParentBottom="true"
         >
 

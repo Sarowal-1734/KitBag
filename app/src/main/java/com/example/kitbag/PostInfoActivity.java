@@ -67,6 +67,9 @@ public class PostInfoActivity extends AppCompatActivity {
 
     private ModelClassPost modelClassPost;
 
+    private String userId;
+    private String postId;
+
 
     // Swipe to back
     private SlidrInterface slidrInterface;
@@ -342,6 +345,10 @@ public class PostInfoActivity extends AppCompatActivity {
                 if (currentUser != null) {
                     Intent intent = new Intent(PostInfoActivity.this, ChatDetailsActivity.class);
                     intent.putExtra("postReference", modelClassPost.getPostReference());
+
+                    // sending id User Id and Post Id for Chatting
+                    intent.putExtra("userId",currentUser.getUid());
+                    intent.putExtra("postId",modelClassPost.getPostReference());
                     startActivity(intent);
                     return;
                 }
