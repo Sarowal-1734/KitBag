@@ -37,7 +37,7 @@
     <string name="update_password">Update Password</string>
     <string name="old_password">Enter Old Password</string>
     <string name="new_password">Enter New Password</string>
-    <string name="conform_new_password">Conform New Password</string>
+    <string name="conform_new_password">Confirm New Password</string>
 
     <string-array name="Districts">
         <item>Bagerhat</item>

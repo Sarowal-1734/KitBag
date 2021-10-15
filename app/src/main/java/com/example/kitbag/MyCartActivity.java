@@ -1,5 +1,6 @@
 package com.example.kitbag;
 
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -23,13 +25,17 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.kitbag.adapter.PostAdapter;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityMyCartBinding;
 import com.example.kitbag.model.ModelClassPost;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -53,16 +59,28 @@ public class MyCartActivity extends AppCompatActivity {
     private ActivityMyCartBinding binding;
     private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
 
-    // For Authentication
-    private FirebaseAuth mAuth;
-    private FirebaseUser currentUser;
-
     // Swipe to back
     private SlidrInterface slidrInterface;
 
     // Dialog Declaration
     private AlertDialog.Builder builder;
     private AlertDialog dialog;
+
+    // Show Progress Diaglog
+    private ProgressDialog progressDialog;
+
+    // For Changing Password
+    private EditText editTextOldPassword;
+
+    // For Pagination
+    private boolean isScrolling = false;
+    private boolean isLastItemReached = false;
+    private DocumentSnapshot lastVisible;
+    ArrayList<ModelClassPost> postList = new ArrayList<>();
+
+    // For Authentication
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -152,35 +170,110 @@ public class MyCartActivity extends AppCompatActivity {
             }
         });
 
-        // get data from fireStore and set to the recyclerView
-        ArrayList<ModelClassPost> postList = new ArrayList<>();
+        // Swipe from up to bottom to refresh the recyclerView
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                binding.swipeRefreshLayout.setRefreshing(true);
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(getIntent());
+                overridePendingTransition(0, 0);
+                binding.swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+        // Get data from fireStore and set to the recyclerView
+        PostAdapter postAdapter = new PostAdapter(MyCartActivity.this, postList);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(MyCartActivity.this, 2, GridLayoutManager.VERTICAL, false);
+        binding.recyclerViewPostLists.setLayoutManager(gridLayoutManager);
+        binding.recyclerViewPostLists.setAdapter(postAdapter);
+
+        // Show progressBar
+        progressDialog = new ProgressDialog(MyCartActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
+
         db.collection("My_Cart").document(currentUser.getUid())
                 .collection("Cart_Lists")
                 .orderBy("timeAdded", Query.Direction.DESCENDING)
+                .limit(8)
                 .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            ModelClassPost modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
-                            postList.add(modelClassPost);
-                        }
-                        PostAdapter postAdapter = new PostAdapter(MyCartActivity.this, postList);
-                        GridLayoutManager gridLayoutManager = new GridLayoutManager(MyCartActivity.this, 2, GridLayoutManager.VERTICAL, false);
-                        binding.recyclerViewPostLists.setLayoutManager(gridLayoutManager);
-                        binding.recyclerViewPostLists.setAdapter(postAdapter);
-                        // On recycler item click listener
-                        postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(ModelClassPost post) {
-                                Intent intent = new Intent(MyCartActivity.this, PostInfoActivity.class);
-                                intent.putExtra("userId", post.getUserId());
-                                intent.putExtra("postReference", post.getPostReference());
-                                intent.putExtra("documentReference", post.getDocumentReference());
-                                intent.putExtra("fromActivity", "MyCartActivity");
-                                startActivity(intent);
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                ModelClassPost modelClassPost = document.toObject(ModelClassPost.class);
+                                postList.add(modelClassPost);
                             }
-                        });
+                            progressDialog.dismiss();
+                            postAdapter.notifyDataSetChanged();
+                            if (task.getResult().size() > 0) {
+                                lastVisible = task.getResult().getDocuments().get(task.getResult().size() - 1);
+                            }
+                            // On recycler item click listener
+                            postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(ModelClassPost post) {
+                                    Intent intent = new Intent(MyCartActivity.this, PostInfoActivity.class);
+                                    intent.putExtra("userId", post.getUserId());
+                                    intent.putExtra("postReference", post.getPostReference());
+                                    intent.putExtra("documentReference", post.getDocumentReference());
+                                    intent.putExtra("fromActivity", "MyCartActivity");
+                                    startActivity(intent);
+                                }
+                            });
+
+                            RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+                                @Override
+                                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                                    super.onScrollStateChanged(recyclerView, newState);
+                                    if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                                        isScrolling = true;
+                                    }
+                                }
+
+                                @Override
+                                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                    super.onScrolled(recyclerView, dx, dy);
+
+                                    GridLayoutManager gridLayoutManager1 = ((GridLayoutManager) recyclerView.getLayoutManager());
+                                    int firstVisibleItemPosition = gridLayoutManager1.findFirstVisibleItemPosition();
+                                    int visibleItemCount = gridLayoutManager1.getChildCount();
+                                    int totalItemCount = gridLayoutManager1.getItemCount();
+
+                                    if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
+                                        isScrolling = false;
+                                        Query nextQuery = db.collection("My_Cart").document(currentUser.getUid())
+                                                .collection("Cart_Lists")
+                                                .orderBy("timeAdded", Query.Direction.DESCENDING).startAfter(lastVisible).limit(8);
+                                        nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> t) {
+                                                if (t.isSuccessful()) {
+                                                    for (DocumentSnapshot d : t.getResult()) {
+                                                        ModelClassPost modelClassPost = d.toObject(ModelClassPost.class);
+                                                        postList.add(modelClassPost);
+                                                    }
+                                                    postAdapter.notifyDataSetChanged();
+                                                    if (t.getResult().size() > 0) {
+                                                        lastVisible = t.getResult().getDocuments().get(t.getResult().size() - 1);
+                                                    }
+
+                                                    if (t.getResult().size() < 8) {
+                                                        isLastItemReached = true;
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            };
+                            binding.recyclerViewPostLists.addOnScrollListener(onScrollListener);
+                        }
                     }
                 });
 
@@ -315,9 +408,9 @@ public class MyCartActivity extends AppCompatActivity {
         // inflate custom layout
         View view = LayoutInflater.from(MyCartActivity.this).inflate(R.layout.dialog_change_password,null);
         // Getting view form custom dialog layout
-        EditText editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
+        editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
         EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);
-        EditText editTextConformNewPassword = view.findViewById(R.id.editTextConformNewPassword);
+        EditText editTextConfirmNewPassword = view.findViewById(R.id.editTextConfirmNewPassword);
         Button buttonUpdatePassword = view.findViewById(R.id.button_update_password);
 
         builder = new AlertDialog.Builder(this);
@@ -331,35 +424,50 @@ public class MyCartActivity extends AppCompatActivity {
                 // getting value from user edit text
                 String oldPassword = editTextOldPassword.getText().toString().trim();
                 String newPassword = editTextNewPassword.getText().toString().trim();
-                String conformNewPassword = editTextConformNewPassword.getText().toString().toString();
+                String conformNewPassword = editTextConfirmNewPassword.getText().toString().toString();
 
-                if(TextUtils.isEmpty(oldPassword)){
-                    editTextOldPassword.setError("Enter Your Old Password");
+                if (TextUtils.isEmpty(oldPassword)) {
+                    editTextOldPassword.setError("Required!");
+                    editTextOldPassword.requestFocus();
+                    return;
                 }
-                if(TextUtils.isEmpty(newPassword)){
-                    editTextNewPassword.setError("Enter New Password");
+                if (TextUtils.isEmpty(newPassword)) {
+                    editTextNewPassword.setError("Required!");
+                    editTextNewPassword.requestFocus();
+                    return;
                 }
-                if(TextUtils.isEmpty(conformNewPassword)){
-                    editTextConformNewPassword.setError("Conform New Password");
-                }
-                if (!newPassword.equals(conformNewPassword)) {
-                    Toast.makeText(MyCartActivity.this, "Conform Password Again", Toast.LENGTH_SHORT).show();
+                if (TextUtils.isEmpty(conformNewPassword)) {
+                    editTextConfirmNewPassword.setError("Required!");
+                    editTextConfirmNewPassword.requestFocus();
+                    return;
                 }
                 if (newPassword.length() < 6) {
-                    editTextNewPassword.setError("Length must be 6 or more");
+                    editTextNewPassword.setError("Length 6 or more");
+                    editTextNewPassword.requestFocus();
+                    return;
                 }
                 if (conformNewPassword.length() < 6) {
-                    editTextNewPassword.setError("Length must be 6 or more");
+                    editTextConfirmNewPassword.setError("Length 6 or more");
+                    editTextConfirmNewPassword.requestFocus();
+                    return;
                 }
-                if (!TextUtils.isEmpty(newPassword) && !TextUtils.isEmpty(conformNewPassword) &&
-                        newPassword.equals(conformNewPassword) && newPassword.length() >= 8 && conformNewPassword.length() >= 8) {
-                    updatePassword(oldPassword, newPassword);
+                if (!newPassword.equals(conformNewPassword)) {
+                    editTextConfirmNewPassword.setError("Confirm Password Didn't Match");
+                    editTextConfirmNewPassword.requestFocus();
+                    return;
                 }
+                // Show progressBar
+                progressDialog = new ProgressDialog(MyCartActivity.this);
+                progressDialog.show();
+                progressDialog.setContentView(R.layout.progress_dialog);
+                progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                progressDialog.setCancelable(false);
+                updatePassword(oldPassword, newPassword);
             }
         });
     }
 
-    // Update password
+    // Update Password
     private void updatePassword(String oldPassword, String newPassword) {
         // before updating password we have to re-authenticate our user
         AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(),oldPassword);
@@ -372,12 +480,13 @@ public class MyCartActivity extends AppCompatActivity {
                     public void onSuccess(Void unused) {
                         // Password update successfully
                         dialog.dismiss();
-                        Toast.makeText(MyCartActivity.this, "Password Update Successfully", Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
+                        Toast.makeText(MyCartActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        // password update failed
+                        progressDialog.dismiss();
                         Toast.makeText(MyCartActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
                     }
                 });
@@ -385,8 +494,10 @@ public class MyCartActivity extends AppCompatActivity {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                //re-authentication failed
-                Toast.makeText(MyCartActivity.this, e.getMessage().toString(), Toast.LENGTH_SHORT).show();
+                // re-authentication failed
+                progressDialog.dismiss();
+                editTextOldPassword.setError("Wrong Password!");
+                editTextOldPassword.requestFocus();
             }
         });
     }

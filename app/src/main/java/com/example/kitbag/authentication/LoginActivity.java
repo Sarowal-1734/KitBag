@@ -184,17 +184,19 @@ public class LoginActivity extends AppCompatActivity {
                     .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
                         @Override
                         public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
-                            boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
-                            if (isNewUser) {
-                                // Hide progressBar
-                                progressDialog.dismiss();
-                                //binding.progressBar.setVisibility(View.GONE);
+                            if (task.isSuccessful()) {
+                                boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
+                                if (isNewUser) {
+                                    // Hide progressBar
+                                    progressDialog.dismiss();
+                                    //binding.progressBar.setVisibility(View.GONE);
 
-                                binding.EditTextContact.setError("User Not Found!");
-                                binding.EditTextContact.requestFocus();
-                            } else {
-                                // Sign in with email and password
-                                SignIn(fakeEmail, password);
+                                    binding.EditTextContact.setError("User Not Found!");
+                                    binding.EditTextContact.requestFocus();
+                                } else {
+                                    // Sign in with email and password
+                                    SignIn(fakeEmail, password);
+                                }
                             }
                         }
                     });
