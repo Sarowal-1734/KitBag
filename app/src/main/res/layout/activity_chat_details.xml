@@ -7,16 +7,27 @@
     android:orientation="vertical"
     tools:context=".chat.ChatDetailsActivity">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/toolbarChatDetail"
         android:background="@color/app_bar"
         android:layout_width="match_parent"
+        android:layout_marginBottom="1dp"
+        android:padding="8dp"
         android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageViewBackArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/ic_arrow_back"
+                android:padding="20dp" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/circularImageViewToolbarItemPhotoChat"
@@ -25,13 +36,19 @@
                 android:src="@drawable/logo"
                 app:civ_border_color="@color/app_bar"
                 app:civ_border_width="1dp"
-                android:layout_marginLeft="5dp"
-                android:padding="5dp"/>
+                android:layout_marginStart="5dp"
+                android:padding="5dp" />
+
             <LinearLayout
+                android:id="@+id/textViewPost"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:orientation="vertical">
+
                 <TextView
                     android:id="@+id/textViewToolbarItemTitleChat"
                     android:layout_width="wrap_content"
@@ -41,23 +58,22 @@
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     />
+
                 <TextView
                     android:id="@+id/textViewToolbarUsernameChat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="User Name"
                     android:textSize="12sp"
-                    android:textColor="@color/white"
-                    />
+                    android:textColor="@color/white" />
             </LinearLayout>
         </LinearLayout>
-    </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewChatDetails"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="8dp"
         android:layout_above="@+id/linearLayoutMessage"
         android:layout_below="@id/toolbarChatDetail" />
 
@@ -75,18 +91,20 @@
             android:id="@+id/editTextSendText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="8"
+            android:layout_weight="8.5"
             android:hint="Enter Message"
-            android:layout_marginLeft="10dp"
             />
+
         <ImageView
             android:id="@+id/buttonSendMessage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_send"
-            android:layout_weight="2"
             android:layout_gravity="center"
-            />
+            android:layout_weight="1.5"
+            android:background="?attr/selectableItemBackground"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp" />
 
     </LinearLayout>
 

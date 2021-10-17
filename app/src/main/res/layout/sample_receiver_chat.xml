@@ -3,19 +3,19 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@drawable/background_receiver_chat"
-    android:maxHeight="400dp"
-    android:padding="5dp"
-    android:layout_marginStart="10dp"
-    android:layout_marginTop="10dp"
-    android:maxWidth="300dp">
+    android:paddingEnd="8dp"
+    android:paddingStart="8dp"
+    android:layout_marginTop="8dp">
 
     <TextView
         android:id="@+id/showMessage"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:gravity="start"
+        android:maxWidth="250dp"
         android:padding="8dp"
-        android:layout_marginStart="10dp"
-        android:textColor="@color/white"
-        android:text="Receiver Text" />
+        android:text="Send Text"
+        android:textColor="@color/white" />
 
 </LinearLayout>

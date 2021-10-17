@@ -247,6 +247,7 @@ public class MyCartActivity extends AppCompatActivity {
 
                                     if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
                                         isScrolling = false;
+                                        binding.progressBar.setVisibility(View.VISIBLE);
                                         Query nextQuery = db.collection("My_Cart").document(currentUser.getUid())
                                                 .collection("Cart_Lists")
                                                 .orderBy("timeAdded", Query.Direction.DESCENDING).startAfter(lastVisible).limit(8);
@@ -258,6 +259,7 @@ public class MyCartActivity extends AppCompatActivity {
                                                         ModelClassPost modelClassPost = d.toObject(ModelClassPost.class);
                                                         postList.add(modelClassPost);
                                                     }
+                                                    binding.progressBar.setVisibility(View.GONE);
                                                     postAdapter.notifyDataSetChanged();
                                                     if (t.getResult().size() > 0) {
                                                         lastVisible = t.getResult().getDocuments().get(t.getResult().size() - 1);

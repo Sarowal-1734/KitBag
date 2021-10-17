@@ -67,10 +67,6 @@ public class PostInfoActivity extends AppCompatActivity {
 
     private ModelClassPost modelClassPost;
 
-    private String userId;
-    private String postId;
-
-
     // Swipe to back
     private SlidrInterface slidrInterface;
 
@@ -270,13 +266,6 @@ public class PostInfoActivity extends AppCompatActivity {
                                 binding.TextViewMail.setText(modelClassPost.getEmail());
                             }
 
-                            // Disable Call, Chat and Mail with yourself
-                            if (currentUser != null && currentUser.getUid().equals(modelClassPost.getUserId())) {
-                                binding.call.setEnabled(false);
-                                binding.chat.setEnabled(false);
-                                binding.imageIconMail.setEnabled(false);
-                            }
-
                             // Stop the shimmer effect and display data
                             binding.shimmerContainer.stopShimmer();
                             binding.shimmerContainer.setVisibility(View.GONE);
@@ -325,7 +314,10 @@ public class PostInfoActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
-                if (currentUser != null) {
+                if (currentUser != null && currentUser.getUid().equals(modelClassPost.getUserId())) {
+                    Toast.makeText(PostInfoActivity.this, "Can't Call", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (currentUser != null) {
                     Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + modelClassPost.getPhoneNumber()));
                     if (ContextCompat.checkSelfPermission(getApplicationContext(), CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                         startActivity(intent);
@@ -342,10 +334,15 @@ public class PostInfoActivity extends AppCompatActivity {
         binding.chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentUser != null) {
+                if (currentUser != null && currentUser.getUid().equals(modelClassPost.getUserId())) {
+                    Toast.makeText(PostInfoActivity.this, "Can't Chat With Yourself", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (currentUser != null) {
                     Intent intent = new Intent(PostInfoActivity.this, ChatDetailsActivity.class);
                     // sending Post Id for Chatting
                     intent.putExtra("postReference",modelClassPost.getPostReference());
+                    intent.putExtra("userId",modelClassPost.getUserId());
+                    intent.putExtra("childKeyUserId",currentUser.getUid());
                     startActivity(intent);
                     return;
                 }
@@ -357,7 +354,10 @@ public class PostInfoActivity extends AppCompatActivity {
         binding.imageIconMail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentUser != null) {
+                if (currentUser != null && currentUser.getUid().equals(modelClassPost.getUserId())) {
+                    Toast.makeText(PostInfoActivity.this, "Can't Mail", Toast.LENGTH_SHORT).show();
+                    return;
+                } else if (currentUser != null) {
                     String subject = "Providing Delivery Service In KitBag";
                     String body = "Hi! I am a deliveryman. I found that you are going to deliver a product. Here as deliveryman," +
                             " I can deliver your product. If you are interested then please check the inbox in KitBag Chat option.";

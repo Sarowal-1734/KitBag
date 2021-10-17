@@ -11,20 +11,67 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.kitbag.R;
 import com.example.kitbag.model.ChatModel;
-import com.example.kitbag.model.ModelClassPost;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.MyViewHolder> {
+
     private Context context;
-    private List<ChatModel> chatModelList = new ArrayList<>();
-    public static final int MESSAGE_RECEIVER = 0;
-    public static final int MESSAGE_SENDER = 1;
+    private ArrayList<ChatModel> chatList;
 
-    public ChatAdapter(Context context, List<ChatModel> chatModelList) {
+    public ChatAdapter(Context context, ArrayList<ChatModel> chatList) {
+        this.context = context;
+        this.chatList = chatList;
+    }
+
+    @NonNull
+    @Override
+    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(context);
+        if (viewType == 1) {
+            View view = layoutInflater.inflate(R.layout.sample_sender_chat, parent, false);
+            MyViewHolder myViewHolder = new MyViewHolder(view);
+            return myViewHolder;
+        } else {
+            View view = layoutInflater.inflate(R.layout.sample_receiver_chat, parent, false);
+            MyViewHolder myViewHolder = new MyViewHolder(view);
+            return myViewHolder;
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+        ChatModel chatModel = chatList.get(position);
+        holder.textViewMessage.setText(chatModel.getMessage());
+    }
+
+    @Override
+    public int getItemCount() {
+        return chatList.size();
+    }
+
+    public class MyViewHolder extends RecyclerView.ViewHolder {
+        private TextView textViewMessage;
+
+        public MyViewHolder(@NonNull View itemView) {
+            super(itemView);
+            textViewMessage = itemView.findViewById(R.id.showMessage);
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        ChatModel chatModel = chatList.get(position);
+        String currenUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        if (currenUserId.equals(chatModel.getSender())) {
+            return 1;
+        }
+        return 0;
+    }
+}
+
+    /*public ChatAdapter(Context context, List<ChatModel> chatModelList) {
         this.context = context;
         this.chatModelList = chatModelList;
     }
@@ -59,15 +106,4 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
             super(itemView);
             textViewMessage = itemView.findViewById(R.id.showMessage);
         }
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if(chatModelList.get(position).equals(user.getUid())){
-            return MESSAGE_SENDER;
-        }else
-            return MESSAGE_RECEIVER;
-    }
-}
+    }*/
