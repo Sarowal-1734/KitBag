@@ -1,5 +1,6 @@
 package com.example.kitbag.chat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -8,8 +9,8 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.kitbag.PostInfoActivity;
 import com.example.kitbag.R;
 import com.example.kitbag.adapter.ChatAdapter;
 import com.example.kitbag.databinding.ActivityChatDetailsBinding;
@@ -26,17 +27,17 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ChatDetailsActivity extends AppCompatActivity {
 
     private ActivityChatDetailsBinding binding;
-    private RecyclerView recyclerView;
     private ChatAdapter chatAdapter;
-    private List<ChatModel> chatModelList = new ArrayList<>();
+    private ArrayList<ChatModel> chatModelList = new ArrayList<>();
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -45,14 +46,16 @@ public class ChatDetailsActivity extends AppCompatActivity {
     //firebase database For storing message
     DatabaseReference databaseReference;
 
+    // Swipe to back
+    private SlidrInterface slidrInterface;
+
     // For message
     private String message;
     private String postReference;
 
     // id for chat
-    String receiverId, postedBy;
-    boolean gotUserId = true;
-
+    String receiverId, postedBy, childKeyUserId;
+    ModelClassPost modelClassPost;
 
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -63,26 +66,32 @@ public class ChatDetailsActivity extends AppCompatActivity {
         binding = ActivityChatDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Swipe to back
+        slidrInterface = Slidr.attach(this);
+
         // Get post reference from intent
         postReference = getIntent().getStringExtra("postReference");
         postedBy = getIntent().getStringExtra("userId");
+        childKeyUserId = getIntent().getStringExtra("childKeyUserId");
 
         // Setting Up Recycler view for showing message
-        recyclerView = findViewById(R.id.recyclerViewChatDetails);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+        binding.recyclerViewChatDetails.setLayoutManager(layoutManager);
         layoutManager.setStackFromEnd(true);
-        recyclerView.setHasFixedSize(true);
+        binding.recyclerViewChatDetails.setHasFixedSize(true);
         chatAdapter = new ChatAdapter(ChatDetailsActivity.this, chatModelList);
-        recyclerView.setAdapter(chatAdapter);
+        binding.recyclerViewChatDetails.setAdapter(chatAdapter);
 
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
         // SetUp toolbar for chat Details Activity
-        setSupportActionBar(binding.toolbarChatDetail);
-        getSupportActionBar().setTitle("Chats");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        binding.imageViewBackArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         // Initially disable the send button
         binding.buttonSendMessage.setEnabled(false);
@@ -94,7 +103,7 @@ public class ChatDetailsActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        ModelClassPost modelClassPost = new ModelClassPost();
+                        modelClassPost = new ModelClassPost();
                         for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
                             Picasso.get().load(modelClassPost.getImageUrl()).fit().placeholder(R.drawable.logo)
@@ -104,6 +113,17 @@ public class ChatDetailsActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        // On click the tootbar title to see the post info
+        binding.textViewPost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChatDetailsActivity.this, PostInfoActivity.class);
+                intent.putExtra("postReference", postReference);
+                intent.putExtra("userId", modelClassPost.getUserId());
+                startActivity(intent);
+            }
+        });
 
 
         // Enable and disable send Button
@@ -135,6 +155,8 @@ public class ChatDetailsActivity extends AppCompatActivity {
                 // Select the receiver user id
                 if (!currentUser.getUid().equals(postedBy)) {
                     receiverId = postedBy;
+                } else {
+                    receiverId = childKeyUserId;
                 }
                 sendMessage(currentUser.getUid(), receiverId, message);
                 binding.editTextSendText.setText("");
@@ -152,24 +174,29 @@ public class ChatDetailsActivity extends AppCompatActivity {
         chatModel.setSender(userId);
         chatModel.setReceiver(receiverId);
         chatModel.setMessage(message);
-        databaseReference.child("Chats").child(postReference).push().setValue(chatModel);
+        //Toast.makeText(ChatDetailsActivity.this, postReference+"\n" +receiverId, Toast.LENGTH_LONG).show();
+        if (userId.equals(postedBy)) {
+            databaseReference.child("Chats").child(postReference).child(receiverId).push().setValue(chatModel);
+        } else {
+            databaseReference.child("Chats").child(postReference).child(userId).push().setValue(chatModel);
+        }
     }
 
     private void showMessage() {
-        databaseReference = FirebaseDatabase.getInstance().getReference("Chats").child(postReference);
+        databaseReference = FirebaseDatabase.getInstance().getReference("Chats").child(postReference).child(childKeyUserId);
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 chatModelList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     ChatModel chatModel = dataSnapshot.getValue(ChatModel.class);
-                    if (!chatModel.getSender().equals(currentUser.getUid()) && gotUserId) {
-                        done(chatModel.getSender());
-                    }
                     if (chatModel.getSender().equals(currentUser.getUid()) && chatModel.getReceiver().equals(receiverId)) {
                         chatModelList.add(chatModel);
                     } else if (chatModel.getReceiver().equals(currentUser.getUid()) && chatModel.getSender().equals(receiverId)) {
                         chatModelList.add(chatModel);
+                    }
+                    if (chatAdapter.getItemCount() > 0) {
+                        binding.recyclerViewChatDetails.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
                     }
                     chatAdapter.notifyDataSetChanged();
                 }
@@ -179,10 +206,5 @@ public class ChatDetailsActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
             }
         });
-    }
-
-    private void done(String sender) {
-        receiverId = sender;
-        gotUserId = false;
     }
 }

@@ -85,7 +85,9 @@ public class MainActivity extends AppCompatActivity {
     // For Pagination
     private boolean isScrolling = false;
     private boolean isLastItemReached = false;
+    private int limit = 8;
     private DocumentSnapshot lastVisible;
+
     ArrayList<ModelClassPost> postList = new ArrayList<>();
 
     @Override
@@ -187,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
         db.collection("All_Post")
                 .orderBy("timeAdded", Query.Direction.DESCENDING)
-                .limit(8)
+                .limit(limit)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -234,8 +236,9 @@ public class MainActivity extends AppCompatActivity {
 
                                     if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
                                         isScrolling = false;
+                                        binding.progressBar.setVisibility(View.VISIBLE);
                                         Query nextQuery = db.collection("All_Post")
-                                                .orderBy("timeAdded", Query.Direction.DESCENDING).startAfter(lastVisible).limit(8);
+                                                .orderBy("timeAdded", Query.Direction.DESCENDING).startAfter(lastVisible).limit(limit);
                                         nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                             @Override
                                             public void onComplete(@NonNull Task<QuerySnapshot> t) {
@@ -244,12 +247,13 @@ public class MainActivity extends AppCompatActivity {
                                                         ModelClassPost modelClassPost = d.toObject(ModelClassPost.class);
                                                         postList.add(modelClassPost);
                                                     }
+                                                    binding.progressBar.setVisibility(View.GONE);
                                                     postAdapter.notifyDataSetChanged();
                                                     if (t.getResult().size() > 0) {
                                                         lastVisible = t.getResult().getDocuments().get(t.getResult().size() - 1);
                                                     }
 
-                                                    if (t.getResult().size() < 8) {
+                                                    if (t.getResult().size() < limit) {
                                                         isLastItemReached = true;
                                                     }
                                                 }

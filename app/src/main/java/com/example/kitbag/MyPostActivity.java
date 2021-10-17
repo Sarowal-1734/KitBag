@@ -246,6 +246,7 @@ public class MyPostActivity extends AppCompatActivity {
 
                                     if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
                                         isScrolling = false;
+                                        binding.progressBar.setVisibility(View.VISIBLE);
                                         Query nextQuery = db.collection("All_Post").startAfter(lastVisible).limit(8);
                                         nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                             @Override
@@ -255,6 +256,7 @@ public class MyPostActivity extends AppCompatActivity {
                                                         ModelClassPost modelClassPost = d.toObject(ModelClassPost.class);
                                                         postList.add(modelClassPost);
                                                     }
+                                                    binding.progressBar.setVisibility(View.GONE);
                                                     postAdapter.notifyDataSetChanged();
                                                     if (t.getResult().size() > 0) {
                                                         lastVisible = t.getResult().getDocuments().get(t.getResult().size() - 1);

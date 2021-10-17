@@ -183,7 +183,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                                 progressDialog.dismiss();
                                 Intent intent = new Intent(ForgotPasswordActivity.this, OtpVerificationActivity.class);
                                 intent.putExtra("whatToDo", "resetPassword");
-                                intent.putExtra("mobile", binding.cpp.getFullNumberWithPlus().trim());
+                                intent.putExtra("phoneNumber", binding.cpp.getFullNumberWithPlus().trim());
+                                //Toast.makeText(ForgotPasswordActivity.this, binding.cpp.getFullNumberWithPlus().trim(), Toast.LENGTH_SHORT).show();
                                 startActivity(intent);
                             }
                         }
