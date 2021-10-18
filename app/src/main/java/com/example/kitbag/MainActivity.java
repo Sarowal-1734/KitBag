@@ -745,11 +745,17 @@ public class MainActivity extends AppCompatActivity {
         //super.onBackPressed();
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
+        } else if (searching) {
+            showProgressDialog();
+            finish();
+            overridePendingTransition(0, 0);
+            startActivity(getIntent());
+            overridePendingTransition(0, 0);
+            progressDialog.dismiss();
         } else {
             if (backPressedTime + 2000 > System.currentTimeMillis()) {
                 moveTaskToBack(true);
-            }
-            else {
+            } else {
                 Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
             }
             backPressedTime = System.currentTimeMillis();
