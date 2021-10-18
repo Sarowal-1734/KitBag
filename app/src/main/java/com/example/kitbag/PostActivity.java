@@ -1,13 +1,17 @@
 package com.example.kitbag;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -23,6 +27,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -52,6 +58,7 @@ import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -79,7 +86,7 @@ public class PostActivity extends AppCompatActivity {
     private EditText editTextOldPassword;
 
     // Get image from gallery and set to the imageView
-    private static final int PICK_IMAGE = 1;
+    private static final int PICK_IMAGE = 100;
     private Uri imageUri;
 
     // For Authentication
@@ -266,33 +273,52 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
-        // Get image from gallery and set to the imageView
+        // Get image from camera and set to the imageView
         binding.imageViewAddPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // making implicit intent to pick photo from external gallery
-                Intent gallery = new Intent();
-                gallery.setType("image/*");
-                gallery.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(gallery, PICK_IMAGE);
+                // Request for camera and storage permissions
+                if (checkPermissions()) {
+                    startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), PICK_IMAGE);
+                } else {
+                    requestPermission();
+                }
             }
         });
-    }
 
-    // Picking photo from external storage
+    } // Ending onCreate
+
+    // Capture photo from camera only
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
-            imageUri = data.getData();
+            Bitmap captureImage = (Bitmap) data.getExtras().get("data");
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            captureImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(), captureImage, "Title", null);
+            imageUri = Uri.parse(path);
             binding.imageViewAddPhoto.setImageURI(imageUri);
         }
     }
 
+    // method to check for permissions
+    private boolean checkPermissions() {
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    // Request camera and storage permission
+    private void requestPermission() {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            },PICK_IMAGE);
+        }
+
     // validation for update password and create popup dialog
     private void validationUpdatePassword() {
         // inflate custom layout
-        View view = LayoutInflater.from(PostActivity.this).inflate(R.layout.dialog_change_password,null);
+        View view = LayoutInflater.from(PostActivity.this).inflate(R.layout.dialog_change_password, null);
         // Getting view form custom dialog layout
         editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
         EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);
