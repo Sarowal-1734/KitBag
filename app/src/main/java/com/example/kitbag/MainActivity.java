@@ -1,7 +1,6 @@
 package com.example.kitbag;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -88,7 +87,13 @@ public class MainActivity extends AppCompatActivity {
     private int limit = 8;
     private DocumentSnapshot lastVisible;
 
-    ArrayList<ModelClassPost> postList = new ArrayList<>();
+    // Check is searching or not
+    private boolean searching = false;
+
+    // get data from fireStore and set to the recyclerView
+    private PostAdapter postAdapter;
+
+    private ArrayList<ModelClassPost> postList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,16 +116,33 @@ public class MainActivity extends AppCompatActivity {
             overridePendingTransition(0, 0);
         }
 
-        // Swipe from up to bottom to refresh the recyclerView
-        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        // Click the appBar logo to refresh the layout
+        binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onRefresh() {
-                binding.swipeRefreshLayout.setRefreshing(true);
+            public void onClick(View v) {
+                showProgressDialog();
                 finish();
                 overridePendingTransition(0, 0);
                 startActivity(getIntent());
                 overridePendingTransition(0, 0);
-                binding.swipeRefreshLayout.setRefreshing(false);
+                progressDialog.dismiss();
+            }
+        });
+
+        // Swipe from up to bottom to refresh the recyclerView
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (searching) {
+                    binding.swipeRefreshLayout.setRefreshing(false);
+                } else {
+                    binding.swipeRefreshLayout.setRefreshing(true);
+                    finish();
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
+                    overridePendingTransition(0, 0);
+                    binding.swipeRefreshLayout.setRefreshing(false);
+                }
             }
         });
 
@@ -174,19 +196,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // get data from fireStore and set to the recyclerView
-        PostAdapter postAdapter = new PostAdapter(MainActivity.this, postList);
+        postAdapter = new PostAdapter(MainActivity.this, postList);
         //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, 2, GridLayoutManager.VERTICAL, false);
         binding.recyclerViewPostLists.setLayoutManager(gridLayoutManager);
         binding.recyclerViewPostLists.setAdapter(postAdapter);
-
         // Show progressBar
-        progressDialog = new ProgressDialog(MainActivity.this);
-        progressDialog.show();
-        progressDialog.setContentView(R.layout.progress_dialog);
-        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        progressDialog.setCancelable(false);
-
+        showProgressDialog();
+        // get data from fireStore and set to the recyclerView
         db.collection("All_Post")
                 .orderBy("timeAdded", Query.Direction.DESCENDING)
                 .limit(limit)
@@ -356,39 +373,57 @@ public class MainActivity extends AppCompatActivity {
         binding.customAppBar.appbarImageviewSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // Inflate Custom layout for searching
-                LayoutInflater inflater = MainActivity.this.getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.custom_search_dialog, null);
-
-                // Create Dialog Builder
-                AlertDialog.Builder ab = new AlertDialog.Builder(MainActivity.this);
-
-                // Init the editText of the custom dialog box
-                editTextFromDistrict = dialogView.findViewById(R.id.EditTextFromDistrict);
-                editTextFromUpazila = dialogView.findViewById(R.id.EditTextFromUpazila);
-                editTextToDistrict = dialogView.findViewById(R.id.EditTextToDistrict);
-                editTextToUpazila = dialogView.findViewById(R.id.EditTextToUpazila);
-
+                // inflate custom layout
+                View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.custom_search_dialog, null);
+                // Getting view form custom dialog layout
+                editTextFromDistrict = view.findViewById(R.id.EditTextFromDistrict);
+                editTextFromUpazila = view.findViewById(R.id.EditTextFromUpazila);
+                editTextToDistrict = view.findViewById(R.id.EditTextToDistrict);
+                editTextToUpazila = view.findViewById(R.id.EditTextToUpazila);
+                Button buttonSearch = view.findViewById(R.id.buttonSearch);
                 //setAdapter on District and Upazila
                 setDistrictUpazilaOnEditText();
-
-                //Setting positive "Ok" Button
-                ab.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Write your code here...
+                // Dialog Builder
+                builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setView(view);
+                dialog = builder.create();
+                dialog.show();
+                // On click the search button
+                buttonSearch.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        // Getting value from user edit text
+                        String fromDistrict = editTextFromDistrict.getText().toString().trim();
+                        String fromUpazila = editTextFromUpazila.getText().toString().trim();
+                        String toDistrict = editTextToDistrict.getText().toString().trim();
+                        String toUpazila = editTextToUpazila.getText().toString().trim();
+                        // Check validation
+                        if (TextUtils.isEmpty(fromDistrict)) {
+                            editTextFromDistrict.setError("Required");
+                            editTextFromDistrict.requestFocus();
+                            return;
+                        }
+                        if (TextUtils.isEmpty(fromUpazila)) {
+                            editTextFromUpazila.setError("Required");
+                            editTextFromUpazila.requestFocus();
+                            return;
+                        }
+                        if (TextUtils.isEmpty(toDistrict)) {
+                            editTextToDistrict.setError("Required");
+                            editTextToDistrict.requestFocus();
+                            return;
+                        }
+                        if (TextUtils.isEmpty(toUpazila)) {
+                            editTextToUpazila.setError("Required");
+                            editTextToUpazila.requestFocus();
+                            return;
+                        }
+                        dialog.dismiss();
+                        postList.clear();
+                        postAdapter.notifyDataSetChanged();
+                        filterPostInAdapter(fromDistrict, fromUpazila, toDistrict, toUpazila);
                     }
                 });
-                //Setting Negative "Cancel" Button
-                ab.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Write your code here to execute after dialog
-                        dialog.cancel();
-                    }
-                });
-                ab.setCancelable(false);
-                ab.setView(dialogView);
-                ab.show();
             }
         });
 
@@ -415,10 +450,203 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    // Show progress Dialog
+    private void showProgressDialog() {
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
+    }
+
+    // Get Searched data from fireStore and set to the recyclerView
+    private void filterPostInAdapter(String fromDistrict, String fromUpazila, String toDistrict, String toUpazila) {
+        binding.textViewSearchResult.setVisibility(View.VISIBLE);
+        binding.textViewSearchResult.setText("Filter by: from " + fromUpazila + ", " + fromDistrict + " to " + toUpazila + ", " + toDistrict);
+        searching = true;
+        binding.customAppBar.appbarTitle.setText("Search");
+        binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
+        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+        binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
+        binding.fab.setVisibility(View.GONE);
+        // Show progressBar
+        showProgressDialog();
+        db.collection("All_Post")
+                .whereEqualTo("fromDistrict", fromDistrict)
+                .whereEqualTo("fromUpazilla", fromUpazila)
+                .whereEqualTo("toDistrict", toDistrict)
+                .whereEqualTo("toUpazilla", toUpazila)
+                .limit(limit)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                ModelClassPost modelClassPost = document.toObject(ModelClassPost.class);
+                                postList.add(modelClassPost);
+                            }
+                            progressDialog.dismiss();
+                            postAdapter.notifyDataSetChanged();
+                            if (task.getResult().size() > 0) {
+                                lastVisible = task.getResult().getDocuments().get(task.getResult().size() - 1);
+                            }
+                            // On recycler item click listener
+                            postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(ModelClassPost post) {
+                                    Intent intent = new Intent(MainActivity.this, PostInfoActivity.class);
+                                    intent.putExtra("userId", post.getUserId());
+                                    intent.putExtra("postReference", post.getPostReference());
+                                    intent.putExtra("fromActivity", "MainActivity");
+                                    startActivity(intent);
+                                }
+                            });
+
+                            RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+                                @Override
+                                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                                    super.onScrollStateChanged(recyclerView, newState);
+                                    if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                                        isScrolling = true;
+                                    }
+                                }
+
+                                @Override
+                                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                    super.onScrolled(recyclerView, dx, dy);
+
+                                    GridLayoutManager gridLayoutManager1 = ((GridLayoutManager) recyclerView.getLayoutManager());
+                                    int firstVisibleItemPosition = gridLayoutManager1.findFirstVisibleItemPosition();
+                                    int visibleItemCount = gridLayoutManager1.getChildCount();
+                                    int totalItemCount = gridLayoutManager1.getItemCount();
+
+                                    if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
+                                        isScrolling = false;
+                                        binding.progressBar.setVisibility(View.VISIBLE);
+                                        Query nextQuery = db.collection("All_Post")
+                                                .orderBy("timeAdded", Query.Direction.DESCENDING).startAfter(lastVisible).limit(limit);
+                                        nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> t) {
+                                                if (t.isSuccessful()) {
+                                                    for (DocumentSnapshot d : t.getResult()) {
+                                                        ModelClassPost modelClassPost = d.toObject(ModelClassPost.class);
+                                                        postList.add(modelClassPost);
+                                                    }
+                                                    binding.progressBar.setVisibility(View.GONE);
+                                                    postAdapter.notifyDataSetChanged();
+                                                    if (t.getResult().size() > 0) {
+                                                        lastVisible = t.getResult().getDocuments().get(t.getResult().size() - 1);
+                                                    }
+
+                                                    if (t.getResult().size() < limit) {
+                                                        isLastItemReached = true;
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            };
+                            binding.recyclerViewPostLists.addOnScrollListener(onScrollListener);
+                        }
+                    }
+                });
+        // Later show data matched with district also
+        db.collection("All_Post")
+                .whereEqualTo("fromDistrict", fromDistrict)
+                .whereEqualTo("toDistrict", toDistrict)
+                .limit(limit)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                ModelClassPost modelClassPost = document.toObject(ModelClassPost.class);
+                                // Don't repeat post
+                                if (!modelClassPost.getFromUpazilla().equals(fromUpazila) && !modelClassPost.getToUpazilla().equals(toUpazila)) {
+                                    postList.add(modelClassPost);
+                                }
+                            }
+                            if (postList.isEmpty()) {
+                                binding.textViewNotFoundMessage.setVisibility(View.VISIBLE);
+                            }
+                            progressDialog.dismiss();
+                            postAdapter.notifyDataSetChanged();
+                            if (task.getResult().size() > 0) {
+                                lastVisible = task.getResult().getDocuments().get(task.getResult().size() - 1);
+                            }
+                            // On recycler item click listener
+                            postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(ModelClassPost post) {
+                                    Intent intent = new Intent(MainActivity.this, PostInfoActivity.class);
+                                    intent.putExtra("userId", post.getUserId());
+                                    intent.putExtra("postReference", post.getPostReference());
+                                    intent.putExtra("fromActivity", "MainActivity");
+                                    startActivity(intent);
+                                }
+                            });
+
+                            RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+                                @Override
+                                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                                    super.onScrollStateChanged(recyclerView, newState);
+                                    if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                                        isScrolling = true;
+                                    }
+                                }
+
+                                @Override
+                                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                    super.onScrolled(recyclerView, dx, dy);
+
+                                    GridLayoutManager gridLayoutManager1 = ((GridLayoutManager) recyclerView.getLayoutManager());
+                                    int firstVisibleItemPosition = gridLayoutManager1.findFirstVisibleItemPosition();
+                                    int visibleItemCount = gridLayoutManager1.getChildCount();
+                                    int totalItemCount = gridLayoutManager1.getItemCount();
+
+                                    if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
+                                        isScrolling = false;
+                                        binding.progressBar.setVisibility(View.VISIBLE);
+                                        Query nextQuery = db.collection("All_Post")
+                                                .orderBy("timeAdded", Query.Direction.DESCENDING).startAfter(lastVisible).limit(limit);
+                                        nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> t) {
+                                                if (t.isSuccessful()) {
+                                                    for (DocumentSnapshot d : t.getResult()) {
+                                                        ModelClassPost modelClassPost = d.toObject(ModelClassPost.class);
+                                                        postList.add(modelClassPost);
+                                                    }
+                                                    binding.progressBar.setVisibility(View.GONE);
+                                                    postAdapter.notifyDataSetChanged();
+                                                    if (t.getResult().size() > 0) {
+                                                        lastVisible = t.getResult().getDocuments().get(t.getResult().size() - 1);
+                                                    }
+
+                                                    if (t.getResult().size() < limit) {
+                                                        isLastItemReached = true;
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            };
+                            binding.recyclerViewPostLists.addOnScrollListener(onScrollListener);
+                        }
+                        progressDialog.dismiss();
+                    }
+                });
+    }
+
     // validation for update password and create popup dialog
     private void validationUpdatePassword() {
         // inflate custom layout
-        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_change_password,null);
+        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_change_password, null);
         // Getting view form custom dialog layout
         editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
         EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);
@@ -469,11 +697,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 // Show progressBar
-                progressDialog = new ProgressDialog(MainActivity.this);
-                progressDialog.show();
-                progressDialog.setContentView(R.layout.progress_dialog);
-                progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                progressDialog.setCancelable(false);
+                showProgressDialog();
                 updatePassword(oldPassword, newPassword);
             }
         });
