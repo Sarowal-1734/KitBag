@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:focusableInTouchMode="true"
-    tools:context=".PostActivity">
+    tools:context=".ui.PostActivity">
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
@@ -198,6 +198,75 @@
                             android:padding="8dp" />
                     </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:orientation="horizontal"
+                        android:weightSum="6">
+
+                        <com.hbb20.CountryCodePicker
+                            android:id="@+id/cppReceiverPhoneNumber"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:gravity="center"
+                            app:ccp_autoDetectCountry="true"
+                            app:ccp_showNameCode="true"
+                            app:ccp_textSize="14sp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:endIconMode="clear_text">
+
+                            <EditText
+                                android:id="@+id/EditTextReceiverPhoneNumber"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:hint="Receiver Contact"
+                                android:inputType="numberDecimal" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/layoutPreferredDeliveryman"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:orientation="horizontal"
+                        android:weightSum="6">
+
+                        <com.hbb20.CountryCodePicker
+                            android:id="@+id/cppPreferredDeliveryman"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginTop="5dp"
+                            android:gravity="center"
+                            app:ccp_autoDetectCountry="true"
+                            app:ccp_showNameCode="true"
+                            app:ccp_textSize="14sp" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:endIconMode="clear_text">
+
+                            <EditText
+                                android:id="@+id/EditTextPreferredDeliveryman"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:hint="Deliveryman (Optional)"
+                                android:inputType="numberDecimal" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
 
                     <Button
                         android:id="@+id/buttonAddToCart"

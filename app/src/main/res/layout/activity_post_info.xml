@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:focusableInTouchMode="true"
-    tools:context=".PostInfoActivity">
+    tools:context=".ui.PostInfoActivity">
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
@@ -125,6 +125,10 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/textViewStatus"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -315,7 +319,7 @@
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
                         android:onClick="onAddToCartButtonClick"
-                        android:text="Add to cart"
+                        android:text="Add to Cart"
                         android:textAllCaps="false" />
 
                     <Button
@@ -323,10 +327,30 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginBottom="16dp"
                         android:backgroundTint="@color/red"
                         android:onClick="onDeletePostButtonClick"
                         android:text="Delete Post"
+                        android:textAllCaps="false"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/buttonRequestDelivery"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="@color/app_bar"
+                        android:onClick="onRequestDeliveryButtonClick"
+                        android:text="Request For Delivery"
+                        android:textAllCaps="false" />
+
+                    <Button
+                        android:id="@+id/buttonProductHandover"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="@color/app_bar"
+                        android:onClick="onProductHandoverButtonClick"
+                        android:text="Product Handover Process"
                         android:textAllCaps="false"
                         android:visibility="gone" />
 
@@ -350,13 +374,14 @@
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:visibility="gone"
         android:background="@color/white" />
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmerContainer"
+        android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-
         <include layout="@layout/shimmer_effect_layout_post_info" />
     </com.facebook.shimmer.ShimmerFrameLayout>
 

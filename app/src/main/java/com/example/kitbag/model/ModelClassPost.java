@@ -13,29 +13,71 @@ public class ModelClassPost {
     private String toUpazilla;
     private Timestamp timeAdded;
     private String userId;
-    private String userName;
     private String phoneNumber;
-    private String email;
-    private String userType;
     private String postReference;
     private String documentReference;
-    private String status;
-    private String lastMessage;
+    private String receiverPhoneNumber;
+    private String preferredDeliveryman;
+    private String statusCurrent;
+    private String statusPrimaryAgent;
+    private String statusDeliveryman;
+    private String statusFinalAgent;
+    private String statusDelivered;
 
-    public String getLastMessage() {
-        return lastMessage;
+    public String getStatusPrimaryAgent() {
+        return statusPrimaryAgent;
     }
 
-    public void setLastMessage(String lastMessage) {
-        this.lastMessage = lastMessage;
+    public void setStatusPrimaryAgent(String statusPrimaryAgent) {
+        this.statusPrimaryAgent = statusPrimaryAgent;
     }
 
-    public String getStatus() {
-        return status;
+    public String getStatusDeliveryman() {
+        return statusDeliveryman;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setStatusDeliveryman(String statusDeliveryman) {
+        this.statusDeliveryman = statusDeliveryman;
+    }
+
+    public String getStatusFinalAgent() {
+        return statusFinalAgent;
+    }
+
+    public void setStatusFinalAgent(String statusFinalAgent) {
+        this.statusFinalAgent = statusFinalAgent;
+    }
+
+    public String getStatusDelivered() {
+        return statusDelivered;
+    }
+
+    public void setStatusDelivered(String statusDelivered) {
+        this.statusDelivered = statusDelivered;
+    }
+
+    public String getPreferredDeliveryman() {
+        return preferredDeliveryman;
+    }
+
+    public void setPreferredDeliveryman(String preferredDeliveryman) {
+        this.preferredDeliveryman = preferredDeliveryman;
+    }
+
+    public String getReceiverPhoneNumber() {
+        return receiverPhoneNumber;
+    }
+
+    public void setReceiverPhoneNumber(String receiverPhoneNumber) {
+        this.receiverPhoneNumber = receiverPhoneNumber;
+    }
+
+    public String getStatusCurrent() {
+        return statusCurrent;
+    }
+
+    public void setStatusCurrent(String statusCurrent) {
+        this.statusCurrent = statusCurrent;
     }
 
     public String getPostReference() {
@@ -129,14 +171,6 @@ public class ModelClassPost {
         this.userId = userId;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public Timestamp getTimeAdded() {
         return timeAdded;
     }
@@ -151,21 +185,5 @@ public class ModelClassPost {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUserType() {
-        return userType;
-    }
-
-    public void setUserType(String userType) {
-        this.userType = userType;
     }
 }

@@ -1,4 +1,7 @@
-package com.example.kitbag;
+package com.example.kitbag.ui;
+
+import static com.example.kitbag.ui.MainActivity.fromMyPostActivity;
+import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -28,9 +31,10 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.kitbag.R;
 import com.example.kitbag.adapter.PostAdapter;
 import com.example.kitbag.chat.MessageActivity;
-import com.example.kitbag.databinding.ActivityMyCartBinding;
+import com.example.kitbag.databinding.ActivityMyPostBinding;
 import com.example.kitbag.model.ModelClassPost;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -54,29 +58,29 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MyCartActivity extends AppCompatActivity {
+public class MyPostActivity extends AppCompatActivity {
 
-    private ActivityMyCartBinding binding;
+    private ActivityMyPostBinding binding;
     private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
 
+    // Show progress dialog
+    private ProgressDialog progressDialog;
+
     // Dialog Declaration
     private AlertDialog.Builder builder;
     private AlertDialog dialog;
-
-    // Show Progress Diaglog
-    private ProgressDialog progressDialog;
-
-    // For Changing Password
-    private EditText editTextOldPassword;
 
     // For Pagination
     private boolean isScrolling = false;
     private boolean isLastItemReached = false;
     private DocumentSnapshot lastVisible;
     ArrayList<ModelClassPost> postList = new ArrayList<>();
+
+    // For Changing Password
+    private EditText editTextOldPassword;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -89,7 +93,7 @@ public class MyCartActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMyCartBinding.inflate(getLayoutInflater());
+        binding = ActivityMyPostBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // For Authentication
@@ -97,7 +101,7 @@ public class MyCartActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
 
         // Change appBar title
-        binding.customAppBar.appbarTitle.setText("My Cart");
+        binding.customAppBar.appbarTitle.setText("My Posts");
 
         // Swipe to back
         slidrInterface = Slidr.attach(this);
@@ -153,9 +157,9 @@ public class MyCartActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (switchDarkMode.isChecked()) {
-                    Toast.makeText(MyCartActivity.this, "Dark Mode Enabled!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyPostActivity.this, "Dark Mode Enabled!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MyCartActivity.this, "Dark Mode Disabled!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyPostActivity.this, "Dark Mode Disabled!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -166,7 +170,7 @@ public class MyCartActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MyCartActivity.this, EditProfileActivity.class));
+                startActivity(new Intent(MyPostActivity.this, EditProfileActivity.class));
             }
         });
 
@@ -184,21 +188,21 @@ public class MyCartActivity extends AppCompatActivity {
         });
 
         // Get data from fireStore and set to the recyclerView
-        PostAdapter postAdapter = new PostAdapter(MyCartActivity.this, postList);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(MyCartActivity.this, 2, GridLayoutManager.VERTICAL, false);
+        PostAdapter postAdapter = new PostAdapter(MyPostActivity.this, postList);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(MyPostActivity.this, 2, GridLayoutManager.VERTICAL, false);
         binding.recyclerViewPostLists.setLayoutManager(gridLayoutManager);
         binding.recyclerViewPostLists.setAdapter(postAdapter);
 
         // Show progressBar
-        progressDialog = new ProgressDialog(MyCartActivity.this);
+        progressDialog = new ProgressDialog(MyPostActivity.this);
         progressDialog.show();
         progressDialog.setContentView(R.layout.progress_dialog);
         progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         progressDialog.setCancelable(false);
 
-        db.collection("My_Cart").document(currentUser.getUid())
-                .collection("Cart_Lists")
-                .orderBy("timeAdded", Query.Direction.DESCENDING)
+        db.collection("All_Post")
+                .whereEqualTo("userId", currentUser.getUid())
+                //.orderBy("timeAdded", Query.Direction.DESCENDING)  // This won't work
                 .limit(8)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -218,11 +222,10 @@ public class MyCartActivity extends AppCompatActivity {
                             postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(ModelClassPost post) {
-                                    Intent intent = new Intent(MyCartActivity.this, PostInfoActivity.class);
+                                    Intent intent = new Intent(MyPostActivity.this, PostInfoActivity.class);
                                     intent.putExtra("userId", post.getUserId());
                                     intent.putExtra("postReference", post.getPostReference());
-                                    intent.putExtra("documentReference", post.getDocumentReference());
-                                    intent.putExtra("fromActivity", "MyCartActivity");
+                                    intent.putExtra(getOpenFromActivity, fromMyPostActivity);
                                     startActivity(intent);
                                 }
                             });
@@ -248,9 +251,7 @@ public class MyCartActivity extends AppCompatActivity {
                                     if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
                                         isScrolling = false;
                                         binding.progressBar.setVisibility(View.VISIBLE);
-                                        Query nextQuery = db.collection("My_Cart").document(currentUser.getUid())
-                                                .collection("Cart_Lists")
-                                                .orderBy("timeAdded", Query.Direction.DESCENDING).startAfter(lastVisible).limit(8);
+                                        Query nextQuery = db.collection("All_Post").startAfter(lastVisible).limit(8);
                                         nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                             @Override
                                             public void onComplete(@NonNull Task<QuerySnapshot> t) {
@@ -275,6 +276,9 @@ public class MyCartActivity extends AppCompatActivity {
                                 }
                             };
                             binding.recyclerViewPostLists.addOnScrollListener(onScrollListener);
+                        } else {
+                            progressDialog.dismiss();
+                            Toast.makeText(MyPostActivity.this, "Error while loading", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -283,7 +287,7 @@ public class MyCartActivity extends AppCompatActivity {
         findViewById(R.id.appbar_notification_icon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MyCartActivity.this, NotificationsActivity.class));
+                startActivity(new Intent(MyPostActivity.this, NotificationsActivity.class));
             }
         });
 
@@ -301,7 +305,7 @@ public class MyCartActivity extends AppCompatActivity {
         imageView1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MyCartActivity.this, EditProfileActivity.class));
+                startActivity(new Intent(MyPostActivity.this, EditProfileActivity.class));
             }
         });
 
@@ -312,8 +316,8 @@ public class MyCartActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.nav_logout:
                         mAuth.signOut();
-                        Toast.makeText(MyCartActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(MyCartActivity.this, MainActivity.class));
+                        Toast.makeText(MyPostActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MyPostActivity.this, MainActivity.class));
                         finish();
                         break;
                 }
@@ -327,11 +331,11 @@ public class MyCartActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 // Inflate Custom layout for searching
-                LayoutInflater inflater = MyCartActivity.this.getLayoutInflater();
+                LayoutInflater inflater = MyPostActivity.this.getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.custom_search_dialog, null);
 
                 // Create Dialog Builder
-                AlertDialog.Builder ab = new AlertDialog.Builder(MyCartActivity.this);
+                AlertDialog.Builder ab = new AlertDialog.Builder(MyPostActivity.this);
 
                 // Init the editText of the custom dialog box
                 editTextFromDistrict = dialogView.findViewById(R.id.EditTextFromDistrict);
@@ -367,48 +371,49 @@ public class MyCartActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav_language:
-                        Toast.makeText(MyCartActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyPostActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_discover_kitbag:
-                        Toast.makeText(MyCartActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyPostActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_terms_conditions:
-                        Toast.makeText(MyCartActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyPostActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_contact:
-                        Toast.makeText(MyCartActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyPostActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_about:
-                        Toast.makeText(MyCartActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyPostActivity.this, "About Us", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_chat:
-                        startActivity(new Intent(MyCartActivity.this, MessageActivity.class));
+                        startActivity(new Intent(MyPostActivity.this, MessageActivity.class));
                         break;
                     case R.id.nav_my_post:
-                        startActivity(new Intent(MyCartActivity.this, MyPostActivity.class));
+                        binding.drawerLayout.closeDrawer(GravityCompat.END);
                         break;
                     case R.id.nav_my_cart:
-                        binding.drawerLayout.closeDrawer(GravityCompat.END);
+                        startActivity(new Intent(MyPostActivity.this, MyCartActivity.class));
                         break;
                     case R.id.nav_change_password:
                         validationUpdatePassword();
                         break;
                     case R.id.nav_logout:
                         mAuth.signOut();
-                        Toast.makeText(MyCartActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(MyCartActivity.this, MainActivity.class));
+                        Toast.makeText(MyPostActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MyPostActivity.this, MainActivity.class));
                         finish();
                         break;
                 }
                 return false;
             }
         });
+
     }
 
     // validation for update password and create popup dialog
     private void validationUpdatePassword() {
         // inflate custom layout
-        View view = LayoutInflater.from(MyCartActivity.this).inflate(R.layout.dialog_change_password,null);
+        View view = LayoutInflater.from(MyPostActivity.this).inflate(R.layout.dialog_change_password,null);
         // Getting view form custom dialog layout
         editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
         EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);
@@ -459,7 +464,7 @@ public class MyCartActivity extends AppCompatActivity {
                     return;
                 }
                 // Show progressBar
-                progressDialog = new ProgressDialog(MyCartActivity.this);
+                progressDialog = new ProgressDialog(MyPostActivity.this);
                 progressDialog.show();
                 progressDialog.setContentView(R.layout.progress_dialog);
                 progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -469,7 +474,8 @@ public class MyCartActivity extends AppCompatActivity {
         });
     }
 
-    // Update Password
+
+    // Update password
     private void updatePassword(String oldPassword, String newPassword) {
         // before updating password we have to re-authenticate our user
         AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(),oldPassword);
@@ -483,13 +489,13 @@ public class MyCartActivity extends AppCompatActivity {
                         // Password update successfully
                         dialog.dismiss();
                         progressDialog.dismiss();
-                        Toast.makeText(MyCartActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyPostActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         progressDialog.dismiss();
-                        Toast.makeText(MyCartActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(MyPostActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -504,7 +510,7 @@ public class MyCartActivity extends AppCompatActivity {
         });
     }
 
-    // On back pressed
+    // Exit app on back pressed
     @Override
     public void onBackPressed() {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
@@ -518,7 +524,7 @@ public class MyCartActivity extends AppCompatActivity {
     private void setDistrictUpazilaOnEditText() {
         // District Recommendation
         String[] districts = getResources().getStringArray(R.array.Districts);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(MyCartActivity.this, android.R.layout.simple_list_item_1, districts);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(MyPostActivity.this, android.R.layout.simple_list_item_1, districts);
         editTextFromDistrict.setAdapter(adapter);  // District
         editTextToDistrict.setAdapter(adapter);    // District
 
@@ -658,7 +664,7 @@ public class MyCartActivity extends AppCompatActivity {
                     upazilas = getResources().getStringArray(R.array.Thakurgaon);
                 }
                 if (upazilas != null) {
-                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MyCartActivity.this, android.R.layout.simple_list_item_1, upazilas);
+                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MyPostActivity.this, android.R.layout.simple_list_item_1, upazilas);
                     editTextFromUpazila.setAdapter(adapterUpazila);  // Define Upazilas
                 }
             }
@@ -800,7 +806,7 @@ public class MyCartActivity extends AppCompatActivity {
                     upazilas = getResources().getStringArray(R.array.Thakurgaon);
                 }
                 if (upazilas != null) {
-                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MyCartActivity.this, android.R.layout.simple_list_item_1, upazilas);
+                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MyPostActivity.this, android.R.layout.simple_list_item_1, upazilas);
                     editTextToUpazila.setAdapter(adapterUpazila);  // Define Upazilas
                 }
             }

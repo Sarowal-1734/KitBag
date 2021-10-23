@@ -23,10 +23,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.example.kitbag.EditProfileActivity;
-import com.example.kitbag.MyCartActivity;
-import com.example.kitbag.MyPostActivity;
-import com.example.kitbag.NotificationsActivity;
+import com.example.kitbag.ui.EditProfileActivity;
+import com.example.kitbag.ui.MyCartActivity;
+import com.example.kitbag.ui.MyPostActivity;
+import com.example.kitbag.ui.NotificationsActivity;
 import com.example.kitbag.R;
 import com.example.kitbag.adapter.ChatUserAdapter;
 import com.example.kitbag.adapter.PostAdapter;

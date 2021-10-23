@@ -31,7 +31,7 @@
     <string name="nav_log_out">Log out</string>
     <string name="nav_login">Login</string>
     <string name="app_name">KitBag</string>
-    <string name="send_otp_message">One Time Password (OTP) has been sent to your mobile number</string>
+    <string name="send_otp_message">One Time Password (OTP) has been sent to </string>
     <string name="number_hint">+8801XXXXXXXX</string>
     <string name="didnt_get_otp">Didn\'t get OTP?</string>
     <string name="update_password">Update Password</string>
