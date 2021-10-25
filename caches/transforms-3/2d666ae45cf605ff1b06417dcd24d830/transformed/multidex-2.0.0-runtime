@@ -1,0 +1,15 @@
+androidx.multidex.BuildConfig
+androidx.multidex.MultiDex
+androidx.multidex.MultiDex$V14
+androidx.multidex.MultiDex$V14$ElementConstructor
+androidx.multidex.MultiDex$V14$ICSElementConstructor
+androidx.multidex.MultiDex$V14$JBMR11ElementConstructor
+androidx.multidex.MultiDex$V14$JBMR2ElementConstructor
+androidx.multidex.MultiDex$V19
+androidx.multidex.MultiDex$V4
+androidx.multidex.MultiDexApplication
+androidx.multidex.MultiDexExtractor
+androidx.multidex.MultiDexExtractor$1
+androidx.multidex.MultiDexExtractor$ExtractedDex
+androidx.multidex.ZipUtil
+androidx.multidex.ZipUtil$CentralDirectory

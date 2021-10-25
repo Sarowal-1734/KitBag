@@ -1,0 +1,3 @@
+com.r0adkll.slidr
+id slidable_content
+id slidable_panel

@@ -1,0 +1,4 @@
+com.google.firebase.ktx.BuildConfig
+com.google.firebase.ktx.Firebase
+com.google.firebase.ktx.FirebaseCommonKtxRegistrar
+com.google.firebase.ktx.FirebaseKt
