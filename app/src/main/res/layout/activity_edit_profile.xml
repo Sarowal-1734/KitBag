@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:focusableInTouchMode="true"
-    tools:context=".EditProfileActivity">
+    tools:context=".ui.EditProfileActivity">
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
@@ -148,10 +148,24 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
-                        android:layout_marginBottom="24dp"
+                        android:layout_marginBottom="8dp"
                         android:onClick="onUpdateProfileButtonClicked"
                         android:text="Update Profile"
                         android:textAllCaps="false" />
+
+                    <TextView
+                        android:id="@+id/textViewBecomeDeliveryman"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Become a Deliveryman"
+                        android:textStyle="bold"
+                        android:textColor="@color/app_bar"
+                        android:gravity="center"
+                        android:padding="16dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"/>
+
                 </LinearLayout>
             </ScrollView>
         </LinearLayout>

@@ -9,8 +9,6 @@ public class UserModel {
     private String imageUrl;
     private String district;
     private String userType;
-    private String lastMessage;
-    private String productTitle;
 
     public UserModel() {
         // Must Needed empty constructor
@@ -78,20 +76,5 @@ public class UserModel {
 
     public void setDistrict(String district) {
         this.district = district;
-    }
-
-    public String getLastMessage() {
-        return lastMessage;
-    }
-
-    public void setLastMessage(String lastMessage) {
-        this.lastMessage = lastMessage;
-    }
-    public String getProductTitle() {
-        return productTitle;
-    }
-
-    public void setProductTitle(String productTitle) {
-        this.productTitle = productTitle;
     }
 }

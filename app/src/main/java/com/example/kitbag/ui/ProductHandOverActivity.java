@@ -1,4 +1,4 @@
-package com.example.kitbag;
+package com.example.kitbag.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -10,17 +10,21 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.kitbag.R;
 import com.example.kitbag.chat.MessageActivity;
-import com.example.kitbag.databinding.ActivityNotificationsBinding;
+import com.example.kitbag.databinding.ActivityProductHandOverBinding;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -28,7 +32,6 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.r0adkll.slidr.Slidr;
@@ -37,22 +40,22 @@ import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class NotificationsActivity extends AppCompatActivity {
+public class ProductHandOverActivity extends AppCompatActivity {
 
-    private ActivityNotificationsBinding binding;
+    private ActivityProductHandOverBinding binding;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
 
-    // Show Progress Dialog
+    // Show Progress Diaglog
     private ProgressDialog progressDialog;
+
+    // For Changing Password
+    private EditText editTextOldPassword;
 
     // Dialog Declaration
     private AlertDialog.Builder builder;
     private AlertDialog dialog;
-
-    // For Changing Password
-    private EditText editTextOldPassword;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -60,58 +63,22 @@ public class NotificationsActivity extends AppCompatActivity {
 
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final CollectionReference collectionReference = db.collection("Users");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityNotificationsBinding.inflate(getLayoutInflater());
+        binding = ActivityProductHandOverBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
+        // Change appBar title
+        binding.customAppBar.appbarTitle.setText("Product Handover Process");
+
         // Swipe to back
         slidrInterface = Slidr.attach(this);
-
-        // Set drawer menu based on Login/Logout
-        if (currentUser != null) {
-            // User is signed in
-            binding.navigationView.getMenu().clear();
-            binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
-            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
-            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
-            // Get userName and image from database and set to the drawer
-            collectionReference.document(currentUser.getUid()).get()
-                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
-                            NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-                            View view = navigationView.getHeaderView(0);
-                            TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
-                            CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
-                            // set userName to the drawer
-                            userName.setText(documentSnapshot.getString("userName"));
-                            if (documentSnapshot.getString("imageUrl") != null) {
-                                // Picasso library for download & show image
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
-                            }
-                        }
-                    });
-        } else {
-            // No user is signed in
-            binding.navigationView.getMenu().clear();
-            binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
-            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
-            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
-        }
-
-        // remove search icon and notification icon from appBar
-        binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
-        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
         // Adding back arrow in the appBar
         binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
@@ -122,16 +89,42 @@ public class NotificationsActivity extends AppCompatActivity {
             }
         });
 
-        // Change the title of the appBar
-        binding.customAppBar.appbarTitle.setText("Notifications");
+        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+        binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
 
-        // Open Drawer Layout
-        binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.drawerLayout.openDrawer(GravityCompat.END);
-            }
-        });
+        // Set drawer menu based on Login/Logout
+        if (currentUser != null) {
+            // User is signed in
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            // Get userName and image from database and set to the drawer
+            db.collection("Users").document(currentUser.getUid()).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
+                            NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+                            View view = navigationView.getHeaderView(0);
+                            TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
+                            CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
+                            userName.setText(documentSnapshot.getString("userName"));
+                            if (documentSnapshot.getString("imageUrl") != null) {
+                                // Picasso library for download & show image
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
+                            }
+                        }
+                    });
+        } else {
+            // No user is signed in
+            binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+        }
 
         // Active Inactive Slider to back based on drawer
         binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
@@ -154,13 +147,67 @@ public class NotificationsActivity extends AppCompatActivity {
             }
         });
 
+        binding.radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.SendertoPrimary:
+                        binding.EditTextContact.setHint("Sender Contact");
+                        break;
+                    case R.id.PrimarytoDeliveryman:
+                        binding.EditTextContact.setHint("Deliveryman Contact");
+                        break;
+                    case R.id.DeliverymantoFinal:
+                        //binding.EditTextContact.setHint("Deliveryman Contact");
+                        binding.EditTextContact.setHint("Deliveryman Contact");
+                        break;
+                    case R.id.FinaltoReceiver:
+                        binding.EditTextContact.setHint("Receiver Contact");
+                        break;
+                }
+            }
+        });
+
+        // Initial view of dark mode button in drawer menu
+        SwitchCompat switchDarkMode = MenuItemCompat.getActionView(binding.navigationView.getMenu().findItem(R.id.nav_dark_mode)).findViewById(R.id.switch_dark_mode);
+        switchDarkMode.setChecked(true);
+        // Toggle dark mode button in drawer menu
+        switchDarkMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (switchDarkMode.isChecked()) {
+                    Toast.makeText(ProductHandOverActivity.this, "Dark Mode Enabled!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ProductHandOverActivity.this, "Dark Mode Disabled!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         // On Edit profile icon clicked
         View view = binding.navigationView.getHeaderView(0);
         ImageView imageView = view.findViewById(R.id.nav_edit_profile);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(NotificationsActivity.this, EditProfileActivity.class));
+                startActivity(new Intent(ProductHandOverActivity.this, EditProfileActivity.class));
+            }
+        });
+
+        // Click profile to open drawer
+        binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.drawerLayout.openDrawer(GravityCompat.END);
+            }
+        });
+
+        // On Edit profile icon clicked
+        View view1 = binding.navigationView.getHeaderView(0);
+        ImageView imageView1 = view1.findViewById(R.id.nav_edit_profile);
+        imageView1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ProductHandOverActivity.this, EditProfileActivity.class));
             }
         });
 
@@ -170,49 +217,53 @@ public class NotificationsActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav_language:
-                        Toast.makeText(NotificationsActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProductHandOverActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_discover_kitbag:
-                        Toast.makeText(NotificationsActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProductHandOverActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_terms_conditions:
-                        Toast.makeText(NotificationsActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProductHandOverActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_contact:
-                        Toast.makeText(NotificationsActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProductHandOverActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_about:
-                        Toast.makeText(NotificationsActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProductHandOverActivity.this, "About Us", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_chat:
-                        startActivity(new Intent(NotificationsActivity.this, MessageActivity.class));
+                        startActivity(new Intent(ProductHandOverActivity.this, MessageActivity.class));
                         break;
                     case R.id.nav_my_post:
-                        startActivity(new Intent(NotificationsActivity.this, MyPostActivity.class));
+                        startActivity(new Intent(ProductHandOverActivity.this, MyPostActivity.class));
                         break;
                     case R.id.nav_my_cart:
-                        startActivity(new Intent(NotificationsActivity.this, MyCartActivity.class));
+                        binding.drawerLayout.closeDrawer(GravityCompat.END);
                         break;
                     case R.id.nav_change_password:
                         validationUpdatePassword();
                         break;
                     case R.id.nav_logout:
                         mAuth.signOut();
-                        Toast.makeText(NotificationsActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(NotificationsActivity.this, MainActivity.class));
+                        Toast.makeText(ProductHandOverActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(ProductHandOverActivity.this, MainActivity.class));
                         finish();
                         break;
                 }
                 return false;
             }
         });
+    }
 
+    // on Verify Button Click
+    public void onVerifyButtonClick(View view) {
+        //todo
     }
 
     // validation for update password and create popup dialog
     private void validationUpdatePassword() {
         // inflate custom layout
-        View view = LayoutInflater.from(NotificationsActivity.this).inflate(R.layout.dialog_change_password,null);
+        View view = LayoutInflater.from(ProductHandOverActivity.this).inflate(R.layout.dialog_change_password, null);
         // Getting view form custom dialog layout
         editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
         EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);
@@ -263,7 +314,7 @@ public class NotificationsActivity extends AppCompatActivity {
                     return;
                 }
                 // Show progressBar
-                progressDialog = new ProgressDialog(NotificationsActivity.this);
+                progressDialog = new ProgressDialog(ProductHandOverActivity.this);
                 progressDialog.show();
                 progressDialog.setContentView(R.layout.progress_dialog);
                 progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -273,11 +324,10 @@ public class NotificationsActivity extends AppCompatActivity {
         });
     }
 
-
-    // Update password
+    // Update Password
     private void updatePassword(String oldPassword, String newPassword) {
         // before updating password we have to re-authenticate our user
-        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(),oldPassword);
+        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(), oldPassword);
         currentUser.reauthenticate(authCredential).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
@@ -288,13 +338,13 @@ public class NotificationsActivity extends AppCompatActivity {
                         // Password update successfully
                         dialog.dismiss();
                         progressDialog.dismiss();
-                        Toast.makeText(NotificationsActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProductHandOverActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         progressDialog.dismiss();
-                        Toast.makeText(NotificationsActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ProductHandOverActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -309,7 +359,7 @@ public class NotificationsActivity extends AppCompatActivity {
         });
     }
 
-    // Close Drawer on back pressed
+    // On back pressed
     @Override
     public void onBackPressed() {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
