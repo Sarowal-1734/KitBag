@@ -1,4 +1,7 @@
-package com.example.kitbag;
+package com.example.kitbag.ui;
+
+import static com.example.kitbag.ui.MainActivity.fromMyCartActivity;
+import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -24,16 +27,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.kitbag.R;
 import com.example.kitbag.adapter.PostAdapter;
-import com.example.kitbag.authentication.LoginActivity;
 import com.example.kitbag.chat.MessageActivity;
-import com.example.kitbag.data.SharedPreference;
-import com.example.kitbag.databinding.ActivityMainBinding;
+import com.example.kitbag.databinding.ActivityMyCartBinding;
 import com.example.kitbag.model.ModelClassPost;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -49,20 +50,37 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.r0adkll.slidr.Slidr;
+import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MainActivity extends AppCompatActivity {
+public class MyCartActivity extends AppCompatActivity {
 
-    // Binding our activity
-    private ActivityMainBinding binding;
+    private ActivityMyCartBinding binding;
     private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
 
-    // Exit app on back pressed again
-    private long backPressedTime;
+    // Swipe to back
+    private SlidrInterface slidrInterface;
+
+    // Dialog Declaration
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
+
+    // Show Progress Diaglog
+    private ProgressDialog progressDialog;
+
+    // For Changing Password
+    private EditText editTextOldPassword;
+
+    // For Pagination
+    private boolean isScrolling = false;
+    private boolean isLastItemReached = false;
+    private DocumentSnapshot lastVisible;
+    ArrayList<ModelClassPost> postList = new ArrayList<>();
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -72,55 +90,28 @@ public class MainActivity extends AppCompatActivity {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("Users");
 
-    // Dialog Declaration
-    private AlertDialog.Builder builder;
-    private AlertDialog dialog;
-
-    // Show progressBar
-    private ProgressDialog progressDialog;
-
-    // For Changing Password
-    private EditText editTextOldPassword;
-
-    // For Pagination
-    private boolean isScrolling = false;
-    private boolean isLastItemReached = false;
-    private int limit = 8;
-    private DocumentSnapshot lastVisible;
-
-    ArrayList<ModelClassPost> postList = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityMyCartBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
-        // Status to check that the password successfully resetted or not
-        if (!SharedPreference.getPasswordResettedValue(this)) {
-            // smoothly signOut activity
-            SharedPreference.setPasswordResettedValue(MainActivity.this, true);
-            mAuth.signOut();
-            finish();
-            overridePendingTransition(0, 0);
-            startActivity(getIntent());
-            overridePendingTransition(0, 0);
-        }
+        // Change appBar title
+        binding.customAppBar.appbarTitle.setText("My Cart");
 
-        // Swipe from up to bottom to refresh the recyclerView
-        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        // Swipe to back
+        slidrInterface = Slidr.attach(this);
+
+        // Adding back arrow in the appBar
+        binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
+        binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onRefresh() {
-                binding.swipeRefreshLayout.setRefreshing(true);
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(getIntent());
-                overridePendingTransition(0, 0);
-                binding.swipeRefreshLayout.setRefreshing(false);
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
 
@@ -166,30 +157,53 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (switchDarkMode.isChecked()) {
-                    Toast.makeText(MainActivity.this, "Dark Mode Enabled!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyCartActivity.this, "Dark Mode Enabled!", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MainActivity.this, "Dark Mode Disabled!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MyCartActivity.this, "Dark Mode Disabled!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        // get data from fireStore and set to the recyclerView
-        PostAdapter postAdapter = new PostAdapter(MainActivity.this, postList);
-        //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, 2, GridLayoutManager.VERTICAL, false);
+        // On Edit profile icon clicked
+        View view = binding.navigationView.getHeaderView(0);
+        ImageView imageView = view.findViewById(R.id.nav_edit_profile);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MyCartActivity.this, EditProfileActivity.class));
+            }
+        });
+
+        // Swipe from up to bottom to refresh the recyclerView
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                binding.swipeRefreshLayout.setRefreshing(true);
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(getIntent());
+                overridePendingTransition(0, 0);
+                binding.swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
+        // Get data from fireStore and set to the recyclerView
+        PostAdapter postAdapter = new PostAdapter(MyCartActivity.this, postList);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(MyCartActivity.this, 2, GridLayoutManager.VERTICAL, false);
         binding.recyclerViewPostLists.setLayoutManager(gridLayoutManager);
         binding.recyclerViewPostLists.setAdapter(postAdapter);
 
         // Show progressBar
-        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog = new ProgressDialog(MyCartActivity.this);
         progressDialog.show();
         progressDialog.setContentView(R.layout.progress_dialog);
         progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         progressDialog.setCancelable(false);
 
-        db.collection("All_Post")
+        db.collection("My_Cart").document(currentUser.getUid())
+                .collection("Cart_Lists")
                 .orderBy("timeAdded", Query.Direction.DESCENDING)
-                .limit(limit)
+                .limit(8)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -208,10 +222,11 @@ public class MainActivity extends AppCompatActivity {
                             postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(ModelClassPost post) {
-                                    Intent intent = new Intent(MainActivity.this, PostInfoActivity.class);
+                                    Intent intent = new Intent(MyCartActivity.this, PostInfoActivity.class);
                                     intent.putExtra("userId", post.getUserId());
                                     intent.putExtra("postReference", post.getPostReference());
-                                    intent.putExtra("fromActivity", "MainActivity");
+                                    intent.putExtra("documentReference", post.getDocumentReference());
+                                    intent.putExtra(getOpenFromActivity, fromMyCartActivity);
                                     startActivity(intent);
                                 }
                             });
@@ -237,8 +252,9 @@ public class MainActivity extends AppCompatActivity {
                                     if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
                                         isScrolling = false;
                                         binding.progressBar.setVisibility(View.VISIBLE);
-                                        Query nextQuery = db.collection("All_Post")
-                                                .orderBy("timeAdded", Query.Direction.DESCENDING).startAfter(lastVisible).limit(limit);
+                                        Query nextQuery = db.collection("My_Cart").document(currentUser.getUid())
+                                                .collection("Cart_Lists")
+                                                .orderBy("timeAdded", Query.Direction.DESCENDING).startAfter(lastVisible).limit(8);
                                         nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                             @Override
                                             public void onComplete(@NonNull Task<QuerySnapshot> t) {
@@ -253,7 +269,7 @@ public class MainActivity extends AppCompatActivity {
                                                         lastVisible = t.getResult().getDocuments().get(t.getResult().size() - 1);
                                                     }
 
-                                                    if (t.getResult().size() < limit) {
+                                                    if (t.getResult().size() < 8) {
                                                         isLastItemReached = true;
                                                     }
                                                 }
@@ -267,21 +283,11 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-        // Open post Activity
-        binding.fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, PostActivity.class);
-                intent.putExtra("whatToDo", "CreatePost");
-                startActivity(intent);
-            }
-        });
-
         // Open notifications Activity
         findViewById(R.id.appbar_notification_icon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, NotificationsActivity.class));
+                startActivity(new Intent(MyCartActivity.this, NotificationsActivity.class));
             }
         });
 
@@ -294,61 +300,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // On Edit profile icon clicked
-        View view = binding.navigationView.getHeaderView(0);
-        ImageView imageView = view.findViewById(R.id.nav_edit_profile);
-        imageView.setOnClickListener(new View.OnClickListener() {
+        View view1 = binding.navigationView.getHeaderView(0);
+        ImageView imageView1 = view1.findViewById(R.id.nav_edit_profile);
+        imageView1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
-            }
-        });
-
-        // On drawer menu item clicked
-        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nav_login:
-                        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                        break;
-                    case R.id.nav_language:
-                        Toast.makeText(MainActivity.this, "Language", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_discover_kitbag:
-                        Toast.makeText(MainActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_terms_conditions:
-                        Toast.makeText(MainActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_contact:
-                        Toast.makeText(MainActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_about:
-                        Toast.makeText(MainActivity.this, "About Us", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_chat:
-                        startActivity(new Intent(MainActivity.this, MessageActivity.class));
-                        break;
-                    case R.id.nav_my_post:
-                        startActivity(new Intent(MainActivity.this, MyPostActivity.class));
-                        break;
-                    case R.id.nav_my_cart:
-                        startActivity(new Intent(MainActivity.this, MyCartActivity.class));
-                        break;
-                    case R.id.nav_change_password:
-                        validationUpdatePassword();
-                        break;
-                    case R.id.nav_logout:
-                        mAuth.signOut();
-                        Toast.makeText(MainActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
-                        // smoothly reload activity
-                        finish();
-                        overridePendingTransition(0,0);
-                        startActivity(getIntent());
-                        overridePendingTransition(0,0);
-                        break;
-                }
-                return false;
+                startActivity(new Intent(MyCartActivity.this, EditProfileActivity.class));
             }
         });
 
@@ -358,11 +315,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 // Inflate Custom layout for searching
-                LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+                LayoutInflater inflater = MyCartActivity.this.getLayoutInflater();
                 View dialogView = inflater.inflate(R.layout.custom_search_dialog, null);
 
                 // Create Dialog Builder
-                AlertDialog.Builder ab = new AlertDialog.Builder(MainActivity.this);
+                AlertDialog.Builder ab = new AlertDialog.Builder(MyCartActivity.this);
 
                 // Init the editText of the custom dialog box
                 editTextFromDistrict = dialogView.findViewById(R.id.EditTextFromDistrict);
@@ -392,33 +349,54 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Show or Hide Floating Action Button
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+        // On drawer menu item clicked
+        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                binding.fab.hide();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                binding.fab.show();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_language:
+                        Toast.makeText(MyCartActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_discover_kitbag:
+                        Toast.makeText(MyCartActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_terms_conditions:
+                        Toast.makeText(MyCartActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_contact:
+                        Toast.makeText(MyCartActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_about:
+                        Toast.makeText(MyCartActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_chat:
+                        startActivity(new Intent(MyCartActivity.this, MessageActivity.class));
+                        break;
+                    case R.id.nav_my_post:
+                        startActivity(new Intent(MyCartActivity.this, MyPostActivity.class));
+                        break;
+                    case R.id.nav_my_cart:
+                        binding.drawerLayout.closeDrawer(GravityCompat.END);
+                        break;
+                    case R.id.nav_change_password:
+                        validationUpdatePassword();
+                        break;
+                    case R.id.nav_logout:
+                        mAuth.signOut();
+                        Toast.makeText(MyCartActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MyCartActivity.this, MainActivity.class));
+                        finish();
+                        break;
+                }
+                return false;
             }
         });
-
     }
 
     // validation for update password and create popup dialog
     private void validationUpdatePassword() {
         // inflate custom layout
-        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_change_password,null);
+        View view = LayoutInflater.from(MyCartActivity.this).inflate(R.layout.dialog_change_password,null);
         // Getting view form custom dialog layout
         editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
         EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);
@@ -469,7 +447,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
                 // Show progressBar
-                progressDialog = new ProgressDialog(MainActivity.this);
+                progressDialog = new ProgressDialog(MyCartActivity.this);
                 progressDialog.show();
                 progressDialog.setContentView(R.layout.progress_dialog);
                 progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -479,8 +457,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-    // Update password
+    // Update Password
     private void updatePassword(String oldPassword, String newPassword) {
         // before updating password we have to re-authenticate our user
         AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(),oldPassword);
@@ -494,13 +471,13 @@ public class MainActivity extends AppCompatActivity {
                         // Password update successfully
                         dialog.dismiss();
                         progressDialog.dismiss();
-                        Toast.makeText(MainActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyCartActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         progressDialog.dismiss();
-                        Toast.makeText(MainActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(MyCartActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -515,28 +492,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // Exit app on back pressed
+    // On back pressed
     @Override
     public void onBackPressed() {
-        //super.onBackPressed();
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
-        } else {
-            if (backPressedTime + 2000 > System.currentTimeMillis()) {
-                moveTaskToBack(true);
-            }
-            else {
-                Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
-            }
-            backPressedTime = System.currentTimeMillis();
+            return;
         }
+        super.onBackPressed();
     }
 
     // District and Upazila Recommendation
     private void setDistrictUpazilaOnEditText() {
         // District Recommendation
         String[] districts = getResources().getStringArray(R.array.Districts);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, districts);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(MyCartActivity.this, android.R.layout.simple_list_item_1, districts);
         editTextFromDistrict.setAdapter(adapter);  // District
         editTextToDistrict.setAdapter(adapter);    // District
 
@@ -676,7 +646,7 @@ public class MainActivity extends AppCompatActivity {
                     upazilas = getResources().getStringArray(R.array.Thakurgaon);
                 }
                 if (upazilas != null) {
-                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, upazilas);
+                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MyCartActivity.this, android.R.layout.simple_list_item_1, upazilas);
                     editTextFromUpazila.setAdapter(adapterUpazila);  // Define Upazilas
                 }
             }
@@ -818,7 +788,7 @@ public class MainActivity extends AppCompatActivity {
                     upazilas = getResources().getStringArray(R.array.Thakurgaon);
                 }
                 if (upazilas != null) {
-                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_list_item_1, upazilas);
+                    ArrayAdapter<String> adapterUpazila = new ArrayAdapter<>(MyCartActivity.this, android.R.layout.simple_list_item_1, upazilas);
                     editTextToUpazila.setAdapter(adapterUpazila);  // Define Upazilas
                 }
             }

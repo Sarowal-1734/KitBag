@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".MainActivity">
+    tools:context=".ui.MainActivity">
 
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
@@ -21,6 +21,14 @@
             <include
                 android:id="@+id/custom_app_bar"
                 layout="@layout/custom_app_bar" />
+
+            <TextView
+                android:id="@+id/textViewSearchResult"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone" />
 
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipeRefreshLayout"
@@ -60,6 +68,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="45dp" />
+
+    <TextView
+        android:id="@+id/textViewNotFoundMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Not Found!"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <ProgressBar
         android:id="@+id/progressBar"

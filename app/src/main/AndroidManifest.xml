@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -13,22 +16,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KitBag">
         <activity
+            android:name=".ui.ProductHandOverActivity"
+            android:exported="true" />
+        <activity
             android:name=".chat.ChatDetailsActivity"
             android:exported="true"
-            android:parentActivityName=".chat.MessageActivity"
-            />
+            android:parentActivityName=".chat.MessageActivity" />
         <activity
             android:name=".chat.MessageActivity"
             android:exported="true"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName=".ui.MainActivity" />
         <activity
-            android:name=".MyCartActivity"
+            android:name=".ui.MyCartActivity"
             android:exported="true" />
         <activity
-            android:name=".MyPostActivity"
+            android:name=".ui.MyPostActivity"
             android:exported="true" />
         <activity
-            android:name=".EditProfileActivity"
+            android:name=".ui.EditProfileActivity"
             android:exported="true" />
         <activity
             android:name=".authentication.ResetPasswordActivity"
@@ -44,16 +49,16 @@
             android:name=".authentication.OtpVerificationActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
-            android:name=".NotificationsActivity"
-            android:parentActivityName=".MainActivity"
+            android:name=".ui.NotificationsActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
-            android:name=".PostInfoActivity"
-            android:parentActivityName=".MainActivity"
+            android:name=".ui.PostInfoActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
-            android:name=".PostActivity"
-            android:parentActivityName=".MainActivity"
+            android:name=".ui.PostActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.SignUpActivity"
@@ -61,9 +66,9 @@
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.LoginActivity"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,5 +1,8 @@
 package com.example.kitbag.chat;
 
+import static com.example.kitbag.ui.MainActivity.fromChatDetailsActivity;
+import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.kitbag.PostInfoActivity;
+import com.example.kitbag.ui.PostInfoActivity;
 import com.example.kitbag.R;
 import com.example.kitbag.adapter.ChatAdapter;
 import com.example.kitbag.databinding.ActivityChatDetailsBinding;
@@ -109,7 +112,14 @@ public class ChatDetailsActivity extends AppCompatActivity {
                             Picasso.get().load(modelClassPost.getImageUrl()).fit().placeholder(R.drawable.logo)
                                     .into(binding.circularImageViewToolbarItemPhotoChat);
                             binding.textViewToolbarItemTitleChat.setText(modelClassPost.getTitle());
-                            binding.textViewToolbarUsernameChat.setText("Posted by " + modelClassPost.getUserName());
+                            db.collection("Users").document(postedBy)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            binding.textViewToolbarUsernameChat.setText("Posted by " + documentSnapshot.getString("userName"));
+                                        }
+                                    });
                         }
                     }
                 });
@@ -121,6 +131,7 @@ public class ChatDetailsActivity extends AppCompatActivity {
                 Intent intent = new Intent(ChatDetailsActivity.this, PostInfoActivity.class);
                 intent.putExtra("postReference", postReference);
                 intent.putExtra("userId", modelClassPost.getUserId());
+                intent.putExtra(getOpenFromActivity, fromChatDetailsActivity);
                 startActivity(intent);
             }
         });

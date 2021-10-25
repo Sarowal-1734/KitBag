@@ -1,4 +1,4 @@
-package com.example.kitbag;
+package com.example.kitbag.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.kitbag.R;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityEditProfileBinding;
 import com.example.kitbag.model.UserModel;
@@ -203,12 +204,16 @@ public class EditProfileActivity extends AppCompatActivity {
         binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
         binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
         binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
-        // Get userName and image from database and set to the drawer
+        // Get userName and image from database and set to the drawer and hide or visible the deliveryman text
         collectionReference.document(currentUser.getUid()).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         UserModel userModel = documentSnapshot.toObject(UserModel.class);
+                        // Hide or visible the deliveryman text
+                        if (userModel.getUserType().equals("Deliveryman") || userModel.getUserType().equals("Agent")) {
+                            binding.textViewBecomeDeliveryman.setVisibility(View.GONE);
+                        }
                         //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
                         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
                         View view = navigationView.getHeaderView(0);
@@ -248,6 +253,15 @@ public class EditProfileActivity extends AppCompatActivity {
                 gallery.setType("image/*");
                 gallery.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(gallery, PICK_IMAGE);
+            }
+        });
+        
+        // On Become Deliveryman text clicked
+        binding.textViewBecomeDeliveryman.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Go Registration of deliveryman activity
+                Toast.makeText(EditProfileActivity.this, "Let's Become a Deliveryman", Toast.LENGTH_SHORT).show();
             }
         });
     }

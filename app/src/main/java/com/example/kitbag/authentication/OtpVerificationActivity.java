@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.example.kitbag.EditProfileActivity;
+import com.example.kitbag.ui.MainActivity;
 import com.example.kitbag.R;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
@@ -359,7 +359,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                                 // Hide progressBar
                                                 progressDialog.dismiss();
                                                 Toast.makeText(OtpVerificationActivity.this, "Registration Success!", Toast.LENGTH_SHORT).show();
-                                                startActivity(new Intent(OtpVerificationActivity.this, EditProfileActivity.class));
+                                                startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
                                                 finish();
                                             }
                                         });

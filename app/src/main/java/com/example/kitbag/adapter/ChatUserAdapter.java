@@ -11,6 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.kitbag.R;
 import com.example.kitbag.model.ModelClassPost;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -42,10 +45,17 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ModelClassPost postModelClass  = modelClassPostList.get(position);
+        ModelClassPost postModelClass = modelClassPostList.get(position);
 
         Picasso.get().load(postModelClass.getImageUrl()).placeholder(R.drawable.logo).fit().into(holder.circleImageViewSampleUserChat);
-        holder.textViewSampleUserNameChat.setText("Posted by "+postModelClass.getUserName());
+        FirebaseFirestore.getInstance().collection("Users").document(postModelClass.getUserId())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        holder.textViewSampleUserNameChat.setText("Posted by " + documentSnapshot.getString("userName"));
+                    }
+                });
         holder.textViewSampleProductTitle.setText(postModelClass.getTitle());
 
     }

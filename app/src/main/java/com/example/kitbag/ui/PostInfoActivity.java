@@ -1,6 +1,11 @@
-package com.example.kitbag;
+package com.example.kitbag.ui;
 
 import static android.Manifest.permission.CALL_PHONE;
+import static com.example.kitbag.ui.MainActivity.fromChatDetailsActivity;
+import static com.example.kitbag.ui.MainActivity.fromMainActivity;
+import static com.example.kitbag.ui.MainActivity.fromMyCartActivity;
+import static com.example.kitbag.ui.MainActivity.fromMyPostActivity;
+import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -33,6 +38,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
+import com.example.kitbag.R;
 import com.example.kitbag.chat.ChatDetailsActivity;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
@@ -66,6 +72,7 @@ public class PostInfoActivity extends AppCompatActivity {
     private ActivityPostInfoBinding binding;
 
     private ModelClassPost modelClassPost;
+    private UserModel userModel;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
@@ -77,8 +84,8 @@ public class PostInfoActivity extends AppCompatActivity {
     private EditText editTextOldPassword;
 
     // Dialog Declaration
-    private androidx.appcompat.app.AlertDialog.Builder builder;
-    private androidx.appcompat.app.AlertDialog dialog;
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -119,6 +126,10 @@ public class PostInfoActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             UserModel user = documentSnapshot.toObject(UserModel.class);
+                            // Visibla the Product Handover Button if current user is an AGENT
+                            if (user.getUserType().equals("Agent")) {
+                                binding.buttonProductHandover.setVisibility(View.VISIBLE);
+                            }
                             //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
                             NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
                             View view = navigationView.getHeaderView(0);
@@ -140,6 +151,13 @@ public class PostInfoActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
             binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+            // Invisible Delivery Request Button
+            binding.buttonRequestDelivery.setVisibility(View.GONE);
+        }
+
+        // Invisible Delivery Request Button if My Post
+        if (currentUser != null && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
+            binding.buttonRequestDelivery.setVisibility(View.GONE);
         }
 
         // Adding back arrow in the appBar
@@ -245,27 +263,34 @@ public class PostInfoActivity extends AppCompatActivity {
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                             modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
-                            String postedUser, source, destination, chatWith;
-                            postedUser = "Posted by " + modelClassPost.getUserName();
+                            String source, destination;
                             source = modelClassPost.getFromUpazilla() + ", " + modelClassPost.getFromDistrict();
                             destination = modelClassPost.getToUpazilla() + ", " + modelClassPost.getToDistrict();
-                            chatWith = "Chat (" + modelClassPost.getUserName() + ")";
                             binding.textViewTitle.setText(modelClassPost.getTitle());
-                            binding.textViewUserTime.setText(postedUser);
                             binding.TextViewDescription.setText(modelClassPost.getDescription());
                             binding.TextViewWeight.setText(modelClassPost.getWeight());
-                            binding.TextViewStatus.setText(modelClassPost.getStatus());
+                            binding.TextViewStatus.setText(modelClassPost.getStatusCurrent());
                             binding.TextViewSource.setText(source);
                             binding.TextViewDestination.setText(destination);
-                            binding.TextViewUserType.setText(modelClassPost.getUserType());
-                            binding.TextViewChat.setText(chatWith);
                             binding.TextViewCall.setText(modelClassPost.getPhoneNumber());
-                            if (modelClassPost.getEmail().equals("")) {
-                                binding.imageIconMail.setVisibility(View.GONE);
-                            } else {
-                                binding.TextViewMail.setText(modelClassPost.getEmail());
-                            }
-
+                            db.collection("Users").document(modelClassPost.getUserId())
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            userModel = documentSnapshot.toObject(UserModel.class);
+                                            String postedUser = "Posted by " + userModel.getUserName();
+                                            String chatWith = "Chat (" + userModel.getUserName() + ")";
+                                            binding.TextViewChat.setText(chatWith);
+                                            binding.textViewUserTime.setText(postedUser);
+                                            binding.TextViewUserType.setText(userModel.getUserType());
+                                            if (userModel.getEmail().equals("")) {
+                                                binding.imageIconMail.setVisibility(View.GONE);
+                                            } else {
+                                                binding.TextViewMail.setText(userModel.getEmail());
+                                            }
+                                        }
+                                    });
                             // Stop the shimmer effect and display data
                             binding.shimmerContainer.stopShimmer();
                             binding.shimmerContainer.setVisibility(View.GONE);
@@ -308,6 +333,95 @@ public class PostInfoActivity extends AppCompatActivity {
                         binding.view.setVisibility(View.GONE);
                     }
                 });
+
+        // Set button text AddToCart or DeletePost or inactive AddToCartButton
+        if (currentUser != null) {
+            if (getIntent().getStringExtra(getOpenFromActivity).equals(fromMainActivity)
+                    || getIntent().getStringExtra(getOpenFromActivity).equals(fromChatDetailsActivity)) {
+                // Opened from mainActivity
+                // Checking this is my post or not
+                if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
+                    // This is my post so disable addToCart and remove delete button
+                    binding.buttonAddToCart.setEnabled(false);
+                    return;
+                }
+                // Checking already has this post in my cart or not
+                if (getIntent().getStringExtra(getOpenFromActivity).equals(fromMainActivity)) {
+                    db.collection("My_Cart").document(currentUser.getUid())
+                            .collection("Cart_Lists")
+                            .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
+                            .get()
+                            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                @Override
+                                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                        if (documentSnapshot != null) {
+                                            // Already has this post in my cart
+                                            binding.buttonAddToCart.setEnabled(false);
+                                        }
+                                    }
+                                }
+                            });
+                    return;
+                }
+            }
+            // This is my post and here came from my_post only. Now edit or delete post
+            if (getIntent().getStringExtra(getOpenFromActivity).equals(fromMyPostActivity)
+                    && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
+                binding.buttonAddToCart.setText("Edit Post");
+                binding.buttonDeleteItem.setVisibility(View.VISIBLE);
+                return;
+            }
+            // Here came from my_cart. Now remove the item from my cart
+            if (getIntent().getStringExtra(getOpenFromActivity).equals(fromMyCartActivity)) {
+                db.collection("My_Cart").document(currentUser.getUid())
+                        .collection("Cart_Lists")
+                        .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                                    if (documentSnapshot != null) {
+                                        binding.buttonAddToCart.setBackgroundColor(Color.RED);
+                                        binding.buttonAddToCart.setText("Remove from My Cart");
+                                        removeFromCart = true;
+                                    }
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(PostInfoActivity.this, "Error while loading!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                return;
+            }
+        }
+
+        // Adding onClickListener on Status text click
+        binding.textViewStatus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View view = LayoutInflater.from(PostInfoActivity.this).inflate(R.layout.product_status_track, null);
+                ImageView senderNode = view.findViewById(R.id.imageViewNodeSender);
+                ImageView primaryAgentNode = view.findViewById(R.id.imageViewNodePrimaryAgent);
+                senderNode.setColorFilter(Color.GREEN);
+                view.findViewById(R.id.viewSenderToPrimaryAgent).setBackgroundColor(Color.GREEN);
+                primaryAgentNode.setColorFilter(Color.GREEN);
+                view.findViewById(R.id.textViewDismiss).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+                builder = new AlertDialog.Builder(PostInfoActivity.this);
+                builder.setView(view);
+                dialog = builder.create();
+                dialog.show();
+            }
+        });
 
         // Adding onClickListener on Call text click
         binding.call.setOnClickListener(new View.OnClickListener() {
@@ -361,7 +475,7 @@ public class PostInfoActivity extends AppCompatActivity {
                     String subject = "Providing Delivery Service In KitBag";
                     String body = "Hi! I am a deliveryman. I found that you are going to deliver a product. Here as deliveryman," +
                             " I can deliver your product. If you are interested then please check the inbox in KitBag Chat option.";
-                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + modelClassPost.getEmail()));
+                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + userModel.getEmail()));
                     emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
                     emailIntent.putExtra(Intent.EXTRA_TEXT, body);
                     startActivity(Intent.createChooser(emailIntent, "KitBag Courier Service"));
@@ -371,60 +485,6 @@ public class PostInfoActivity extends AppCompatActivity {
             }
         });
 
-        // Set button text AddToCart or DeletePost or inactive AddToCartButton
-        if (currentUser != null) {
-            if (getIntent().getStringExtra("fromActivity") != null
-                    && getIntent().getStringExtra("fromActivity").equals("MainActivity")
-                    && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
-                binding.buttonAddToCart.setEnabled(false);
-                return;
-            }
-            if (getIntent().getStringExtra("fromActivity") != null
-                    && getIntent().getStringExtra("fromActivity").equals("MainActivity")) {
-                db.collection("My_Cart").document(currentUser.getUid())
-                        .collection("Cart_Lists")
-                        .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
-                        .get()
-                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                    if (documentSnapshot != null) {
-                                        binding.buttonAddToCart.setEnabled(false);
-                                    }
-                                }
-                            }
-                        });
-                return;
-            }
-            if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
-                binding.buttonAddToCart.setText("Edit Post");
-                binding.buttonDeleteItem.setVisibility(View.VISIBLE);
-            } else {
-                db.collection("My_Cart").document(currentUser.getUid())
-                        .collection("Cart_Lists")
-                        .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
-                        .get()
-                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                                    if (documentSnapshot != null) {
-                                        binding.buttonAddToCart.setBackgroundColor(Color.RED);
-                                        binding.buttonAddToCart.setText("Remove from My Cart");
-                                        removeFromCart = true;
-                                    }
-                                }
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(PostInfoActivity.this, "Error while loading!", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-            }
-        }
     }
 
     // validation for update password and create popup dialog
@@ -437,7 +497,7 @@ public class PostInfoActivity extends AppCompatActivity {
         EditText editTextConfirmNewPassword = view.findViewById(R.id.editTextConfirmNewPassword);
         Button buttonUpdatePassword = view.findViewById(R.id.button_update_password);
 
-        builder = new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder = new AlertDialog.Builder(this);
         builder.setView(view);
         dialog = builder.create();
         dialog.show();
@@ -661,6 +721,42 @@ public class PostInfoActivity extends AppCompatActivity {
             displayNoConnection();
         }
 
+    }
+
+    // On Request To delivery button clicked
+    public void onRequestDeliveryButtonClick(View view) {
+        if (isConnected()) {
+            if (currentUser != null) {
+                db.collection("Users").document(currentUser.getUid())
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                //model = documentSnapshot.toObject(UserModel.class);
+                                String userType = documentSnapshot.getString("userType");
+                                if (userType.equals("Deliveryman") || userType.equals("Agent")) {
+                                    //todo send a notification to the post owner
+                                    Toast.makeText(PostInfoActivity.this, "Delivery request sent to post owner", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    becomeDeliveryMan();
+                                }
+                            }
+                        });
+            }
+        } else {
+            displayNoConnection();
+        }
+    }
+
+    public void onProductHandoverButtonClick(View view) {
+        Intent intent = new Intent(PostInfoActivity.this, ProductHandOverActivity.class);
+        intent.putExtra("postReference", modelClassPost.getPostReference());
+        startActivity(intent);
+    }
+
+    private void becomeDeliveryMan() {
+        //todo displa popup and button to register to deliveryman
+        Toast.makeText(PostInfoActivity.this, "Please upgrade your account to deliveryman", Toast.LENGTH_SHORT).show();
     }
 
     // ProgressBar Setup

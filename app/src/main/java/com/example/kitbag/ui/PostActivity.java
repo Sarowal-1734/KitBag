@@ -1,13 +1,17 @@
-package com.example.kitbag;
+package com.example.kitbag.ui;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -23,15 +27,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.example.kitbag.R;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityPostBinding;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
@@ -52,6 +60,7 @@ import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Date;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -62,6 +71,8 @@ public class PostActivity extends AppCompatActivity {
 
     // Get from database and upload with post
     String userName, phoneNumber, userType, email;
+
+    private String receiverPhoneNumber, preferredDeliveryman;
 
     private ActivityPostBinding binding;
 
@@ -79,7 +90,7 @@ public class PostActivity extends AppCompatActivity {
     private EditText editTextOldPassword;
 
     // Get image from gallery and set to the imageView
-    private static final int PICK_IMAGE = 1;
+    private static final int PICK_IMAGE = 100;
     private Uri imageUri;
 
     // For Authentication
@@ -107,6 +118,15 @@ public class PostActivity extends AppCompatActivity {
         // Swipe to back
         slidrInterface = Slidr.attach(this);
 
+        // Attach full number from edittext with cpp
+        binding.cppReceiverPhoneNumber.registerCarrierNumberEditText(binding.EditTextReceiverPhoneNumber);
+        binding.cppPreferredDeliveryman.registerCarrierNumberEditText(binding.EditTextPreferredDeliveryman);
+
+        // Invisible the preferred deliveryman editText if get opened from create post
+        if (getIntent().getStringExtra("whatToDo").equals("CreatePost")) {
+            binding.layoutPreferredDeliveryman.setVisibility(View.GONE);
+        }
+
         // Change the title of the appBar according to Edit or Create post
         if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
             binding.customAppBar.appbarTitle.setText("Edit Post");
@@ -125,6 +145,13 @@ public class PostActivity extends AppCompatActivity {
                         binding.EditTextFromUpazila.setText(modelClassPost.getFromUpazilla());
                         binding.EditTextToDistrict.setText(modelClassPost.getToDistrict());
                         binding.EditTextToUpazila.setText(modelClassPost.getToUpazilla());
+                        String receiverPhone = modelClassPost.getReceiverPhoneNumber().substring(4);
+                        binding.EditTextReceiverPhoneNumber.setText(receiverPhone);
+                        String deliverymanPhone = modelClassPost.getPreferredDeliveryman();
+                        if (deliverymanPhone != null) {
+                            deliverymanPhone = modelClassPost.getPreferredDeliveryman().substring(4);
+                            binding.EditTextPreferredDeliveryman.setText(deliverymanPhone);
+                        }
                         Picasso.get().load(modelClassPost.getImageUrl()).placeholder(R.drawable.logo).fit().into(binding.imageViewAddPhoto);
                     }
                 }
@@ -266,33 +293,52 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
-        // Get image from gallery and set to the imageView
+        // Get image from camera and set to the imageView
         binding.imageViewAddPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // making implicit intent to pick photo from external gallery
-                Intent gallery = new Intent();
-                gallery.setType("image/*");
-                gallery.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(gallery, PICK_IMAGE);
+                // Request for camera and storage permissions
+                if (checkPermissions()) {
+                    startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), PICK_IMAGE);
+                } else {
+                    requestPermission();
+                }
             }
         });
-    }
 
-    // Picking photo from external storage
+    } // Ending onCreate
+
+    // Capture photo from camera only
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
-            imageUri = data.getData();
+            Bitmap captureImage = (Bitmap) data.getExtras().get("data");
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            captureImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(), captureImage, "Title", null);
+            imageUri = Uri.parse(path);
             binding.imageViewAddPhoto.setImageURI(imageUri);
         }
     }
 
+    // method to check for permissions
+    private boolean checkPermissions() {
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    // Request camera and storage permission
+    private void requestPermission() {
+            ActivityCompat.requestPermissions(this, new String[]{
+                    Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            },PICK_IMAGE);
+        }
+
     // validation for update password and create popup dialog
     private void validationUpdatePassword() {
         // inflate custom layout
-        View view = LayoutInflater.from(PostActivity.this).inflate(R.layout.dialog_change_password,null);
+        View view = LayoutInflater.from(PostActivity.this).inflate(R.layout.dialog_change_password, null);
         // Getting view form custom dialog layout
         editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
         EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);
@@ -404,11 +450,14 @@ public class PostActivity extends AppCompatActivity {
         if (valid()) {
             if (isConnected()) {
                 if (currentUser != null) {
+                    receiverPhoneNumber = binding.cppReceiverPhoneNumber.getFullNumberWithPlus().trim();
+                    preferredDeliveryman = binding.cppPreferredDeliveryman.getFullNumberWithPlus().trim();
                     if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
                         // Edit post here...
                         updatePost();
                     } else {
                         showProgressBar();
+                        // Get user input data
                         String title = binding.EditTextPostTitle.getText().toString().trim();
                         String weight = binding.EditTextPostWeight.getText().toString().trim();
                         String description = binding.EditTextPostDescription.getText().toString().trim();
@@ -449,13 +498,11 @@ public class PostActivity extends AppCompatActivity {
                                                 modelClassPost.setFromUpazilla(fromUpazilla);
                                                 modelClassPost.setToDistrict(toDistrict);
                                                 modelClassPost.setToUpazilla(toUpazilla);
+                                                modelClassPost.setReceiverPhoneNumber(receiverPhoneNumber);
                                                 modelClassPost.setTimeAdded(new Timestamp(new Date()));
                                                 modelClassPost.setUserId(currentUser.getUid());
-                                                modelClassPost.setUserName(userName);
                                                 modelClassPost.setPhoneNumber(phoneNumber);
-                                                modelClassPost.setEmail(email);
-                                                modelClassPost.setUserType(userType);
-                                                modelClassPost.setStatus("N/A");
+                                                modelClassPost.setStatusCurrent("N/A");
                                                 modelClassPost.setPostReference(null);
                                                 // Storing the post into All_Post Collection
                                                 db.collection("All_Post").add(modelClassPost)
@@ -508,44 +555,115 @@ public class PostActivity extends AppCompatActivity {
     }
 
     private void updatePost() {
-        // Show progressBar
-        showProgressBar();
-        // Store image to firebase
-        StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl(modelClassPost.getImageUrl());
-        reference.putFile(imageUri)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                // Update post info in Database
-                                db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
-                                        .update(
-                                                "imageUrl", uri.toString(),
-                                                "title", binding.EditTextPostTitle.getText().toString(),
-                                                "weight", binding.EditTextPostWeight.getText().toString(),
-                                                "description", binding.EditTextPostDescription.getText().toString(),
-                                                "fromDistrict", binding.EditTextFromDistrict.getText().toString(),
-                                                "fromUpazilla", binding.EditTextFromUpazila.getText().toString(),
-                                                "toDistrict", binding.EditTextToDistrict.getText().toString(),
-                                                "toUpazilla", binding.EditTextToUpazila.getText().toString()
-                                        );
-                                progressDialog.dismiss();
-                                Toast.makeText(PostActivity.this, "Post successfully updated", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(PostActivity.this, MainActivity.class));
-                                finish();
+        // If preferred deliveryman number empty then fine just update with null
+        if (binding.EditTextPreferredDeliveryman.getText().toString().isEmpty()) {
+            showProgressBar();
+            preferredDeliveryman = null;
+            // Store image to firebase
+            StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl(modelClassPost.getImageUrl());
+            reference.putFile(imageUri)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    // Update post info in Database
+                                    db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
+                                            .update(
+                                                    "imageUrl", uri.toString(),
+                                                    "title", binding.EditTextPostTitle.getText().toString(),
+                                                    "weight", binding.EditTextPostWeight.getText().toString(),
+                                                    "description", binding.EditTextPostDescription.getText().toString(),
+                                                    "fromDistrict", binding.EditTextFromDistrict.getText().toString(),
+                                                    "fromUpazilla", binding.EditTextFromUpazila.getText().toString(),
+                                                    "toDistrict", binding.EditTextToDistrict.getText().toString(),
+                                                    "toUpazilla", binding.EditTextToUpazila.getText().toString(),
+                                                    "receiverPhoneNumber", receiverPhoneNumber,
+                                                    "preferredDeliveryman", preferredDeliveryman
+                                            );
+                                    progressDialog.dismiss();
+                                    Toast.makeText(PostActivity.this, "Post successfully updated", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(PostActivity.this, MainActivity.class));
+                                    finish();
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(PostActivity.this, "Failed to update image", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        } else {
+            // If preferred deliveryman number is not empty then check the number validity
+            showProgressBar();
+            db.collection("Users")
+                    .whereEqualTo("phoneNumber", preferredDeliveryman)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                if (!task.getResult().getDocuments().isEmpty()) {
+                                    DocumentSnapshot snapshot = task.getResult().getDocuments().get(0);
+                                    if (snapshot.getString("userType").equals("Deliveryman")) {
+                                        // Store image to firebase
+                                        StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl(modelClassPost.getImageUrl());
+                                        reference.putFile(imageUri)
+                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                                    @Override
+                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                                        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                            @Override
+                                                            public void onSuccess(Uri uri) {
+                                                                // Update post info in Database
+                                                                db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
+                                                                        .update(
+                                                                                "imageUrl", uri.toString(),
+                                                                                "title", binding.EditTextPostTitle.getText().toString(),
+                                                                                "weight", binding.EditTextPostWeight.getText().toString(),
+                                                                                "description", binding.EditTextPostDescription.getText().toString(),
+                                                                                "fromDistrict", binding.EditTextFromDistrict.getText().toString(),
+                                                                                "fromUpazilla", binding.EditTextFromUpazila.getText().toString(),
+                                                                                "toDistrict", binding.EditTextToDistrict.getText().toString(),
+                                                                                "toUpazilla", binding.EditTextToUpazila.getText().toString(),
+                                                                                "receiverPhoneNumber", receiverPhoneNumber,
+                                                                                "preferredDeliveryman", preferredDeliveryman
+                                                                        );
+                                                                progressDialog.dismiss();
+                                                                Toast.makeText(PostActivity.this, "Post successfully updated", Toast.LENGTH_SHORT).show();
+                                                                startActivity(new Intent(PostActivity.this, MainActivity.class));
+                                                                finish();
+                                                            }
+                                                        });
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        progressDialog.dismiss();
+                                                        Toast.makeText(PostActivity.this, "Failed to update image", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                    } else {
+                                        // Not a deliveryman
+                                        binding.EditTextPreferredDeliveryman.setError("Deliveryman Not Found");
+                                        binding.EditTextPreferredDeliveryman.requestFocus();
+                                        progressDialog.dismiss();
+                                    }
+                                } else {
+                                    // Not a User
+                                    binding.EditTextPreferredDeliveryman.setError("Deliveryman Not Found");
+                                    binding.EditTextPreferredDeliveryman.requestFocus();
+                                    progressDialog.dismiss();
+                                }
                             }
-                        });
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(PostActivity.this, "Failed to update image", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        }
+                    });
+        }
     }
 
     // Check the internet connection
@@ -593,6 +711,11 @@ public class PostActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(binding.EditTextToUpazila.getText().toString())) {
             binding.EditTextToUpazila.setError("Required");
             binding.EditTextToUpazila.requestFocus();
+            return false;
+        }
+        if (TextUtils.isEmpty(binding.EditTextReceiverPhoneNumber.getText().toString())) {
+            binding.EditTextReceiverPhoneNumber.setError("Required");
+            binding.EditTextReceiverPhoneNumber.requestFocus();
             return false;
         }
         return true;
