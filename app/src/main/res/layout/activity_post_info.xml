@@ -351,8 +351,7 @@
                         android:backgroundTint="@color/app_bar"
                         android:onClick="onProductHandoverButtonClick"
                         android:text="Product Handover Process"
-                        android:textAllCaps="false"
-                        android:visibility="gone" />
+                        android:textAllCaps="false" />
 
                 </LinearLayout>
 
