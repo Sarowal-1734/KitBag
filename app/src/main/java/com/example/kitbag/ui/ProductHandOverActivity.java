@@ -152,14 +152,12 @@ public class ProductHandOverActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
                     case R.id.SendertoPrimary:
-                        binding.EditTextContact.setHint("Sender Contact");
-                        break;
-                    case R.id.PrimarytoDeliveryman:
-                        binding.EditTextContact.setHint("Deliveryman Contact");
-                        break;
                     case R.id.DeliverymantoFinal:
                         //binding.EditTextContact.setHint("Deliveryman Contact");
-                        binding.EditTextContact.setHint("Deliveryman Contact");
+                        binding.EditTextContact.setHint("Agent's Contact");
+                        break;
+                    case R.id.PrimarytoDeliveryman:
+                        binding.EditTextContact.setHint("Deliveryman's Contact");
                         break;
                     case R.id.FinaltoReceiver:
                         binding.EditTextContact.setHint("Receiver Contact");

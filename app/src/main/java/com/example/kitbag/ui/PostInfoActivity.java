@@ -39,6 +39,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.kitbag.R;
+import com.example.kitbag.authentication.LoginActivity;
 import com.example.kitbag.chat.ChatDetailsActivity;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
@@ -126,11 +127,12 @@ public class PostInfoActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             UserModel user = documentSnapshot.toObject(UserModel.class);
-                            // Visibla the Product Handover Button if current user is an AGENT
-                            if (user.getUserType().equals("Agent")) {
-                                binding.buttonProductHandover.setVisibility(View.VISIBLE);
-                            }
                             //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
+                            // Inactive the delivery button if the user is not an Agent or Deliveryman
+                            if (user.getUserType().equals("GENERAL_USER")) {
+                                binding.buttonRequestDelivery.setEnabled(false);
+                                binding.buttonRequestDelivery.setBackgroundColor(Color.GRAY);
+                            }
                             NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
                             View view = navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
@@ -151,13 +153,17 @@ public class PostInfoActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
             binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
-            // Invisible Delivery Request Button
-            binding.buttonRequestDelivery.setVisibility(View.GONE);
+            // Inactive Delivery Request & Product Handover Button
+            binding.buttonRequestDelivery.setEnabled(false);
+            binding.buttonRequestDelivery.setBackgroundColor(Color.GRAY);
+            binding.buttonProductHandover.setEnabled(false);
+            binding.buttonProductHandover.setBackgroundColor(Color.GRAY);
         }
 
-        // Invisible Delivery Request Button if My Post
+        // Inactive Delivery Request Button if My Post
         if (currentUser != null && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
-            binding.buttonRequestDelivery.setVisibility(View.GONE);
+            binding.buttonRequestDelivery.setEnabled(false);
+            binding.buttonRequestDelivery.setBackgroundColor(Color.GRAY);
         }
 
         // Adding back arrow in the appBar
@@ -216,6 +222,9 @@ public class PostInfoActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_login:
+                        startActivity(new Intent(PostInfoActivity.this, LoginActivity.class));
+                        break;
                     case R.id.nav_language:
                         Toast.makeText(PostInfoActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;
@@ -343,7 +352,6 @@ public class PostInfoActivity extends AppCompatActivity {
                 if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
                     // This is my post so disable addToCart and remove delete button
                     binding.buttonAddToCart.setEnabled(false);
-                    return;
                 }
                 // Checking already has this post in my cart or not
                 if (getIntent().getStringExtra(getOpenFromActivity).equals(fromMainActivity)) {
@@ -362,7 +370,6 @@ public class PostInfoActivity extends AppCompatActivity {
                                     }
                                 }
                             });
-                    return;
                 }
             }
             // This is my post and here came from my_post only. Now edit or delete post
@@ -370,7 +377,6 @@ public class PostInfoActivity extends AppCompatActivity {
                     && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
                 binding.buttonAddToCart.setText("Edit Post");
                 binding.buttonDeleteItem.setVisibility(View.VISIBLE);
-                return;
             }
             // Here came from my_cart. Now remove the item from my cart
             if (getIntent().getStringExtra(getOpenFromActivity).equals(fromMyCartActivity)) {
@@ -396,7 +402,6 @@ public class PostInfoActivity extends AppCompatActivity {
                                 Toast.makeText(PostInfoActivity.this, "Error while loading!", Toast.LENGTH_SHORT).show();
                             }
                         });
-                return;
             }
         }
 
@@ -428,19 +433,18 @@ public class PostInfoActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
-                if (currentUser != null && currentUser.getUid().equals(modelClassPost.getUserId())) {
-                    Toast.makeText(PostInfoActivity.this, "Can't Call", Toast.LENGTH_SHORT).show();
-                    return;
-                } else if (currentUser != null) {
+                if (currentUser == null) {
+                    Toast.makeText(PostInfoActivity.this, "Please Login To Call", Toast.LENGTH_SHORT).show();
+                } else if (currentUser.getUid().equals(modelClassPost.getUserId())) {
+                    Toast.makeText(PostInfoActivity.this, "Can't call with yourself", Toast.LENGTH_SHORT).show();
+                } else {
                     Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + modelClassPost.getPhoneNumber()));
                     if (ContextCompat.checkSelfPermission(getApplicationContext(), CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                         startActivity(intent);
                     } else {
                         requestPermissions(new String[]{CALL_PHONE}, 1);
                     }
-                    return;
                 }
-                Toast.makeText(PostInfoActivity.this, "Please Login To Call", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -448,19 +452,18 @@ public class PostInfoActivity extends AppCompatActivity {
         binding.chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentUser != null && currentUser.getUid().equals(modelClassPost.getUserId())) {
+                if (currentUser == null) {
+                    Toast.makeText(PostInfoActivity.this, "Please Login To Chat", Toast.LENGTH_SHORT).show();
+                } else if (currentUser.getUid().equals(modelClassPost.getUserId())) {
                     Toast.makeText(PostInfoActivity.this, "Can't Chat With Yourself", Toast.LENGTH_SHORT).show();
-                    return;
-                } else if (currentUser != null) {
+                } else {
                     Intent intent = new Intent(PostInfoActivity.this, ChatDetailsActivity.class);
                     // sending Post Id for Chatting
-                    intent.putExtra("postReference",modelClassPost.getPostReference());
-                    intent.putExtra("userId",modelClassPost.getUserId());
-                    intent.putExtra("childKeyUserId",currentUser.getUid());
+                    intent.putExtra("postReference", modelClassPost.getPostReference());
+                    intent.putExtra("userId", modelClassPost.getUserId());
+                    intent.putExtra("childKeyUserId", currentUser.getUid());
                     startActivity(intent);
-                    return;
                 }
-                Toast.makeText(PostInfoActivity.this, "Please Login To Chat", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -468,10 +471,11 @@ public class PostInfoActivity extends AppCompatActivity {
         binding.imageIconMail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (currentUser != null && currentUser.getUid().equals(modelClassPost.getUserId())) {
+                if (currentUser == null) {
+                    Toast.makeText(PostInfoActivity.this, "Please Login To Send Mail", Toast.LENGTH_SHORT).show();
+                } else if (currentUser.getUid().equals(modelClassPost.getUserId())) {
                     Toast.makeText(PostInfoActivity.this, "Can't Mail", Toast.LENGTH_SHORT).show();
-                    return;
-                } else if (currentUser != null) {
+                } else {
                     String subject = "Providing Delivery Service In KitBag";
                     String body = "Hi! I am a deliveryman. I found that you are going to deliver a product. Here as deliveryman," +
                             " I can deliver your product. If you are interested then please check the inbox in KitBag Chat option.";
@@ -479,9 +483,7 @@ public class PostInfoActivity extends AppCompatActivity {
                     emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
                     emailIntent.putExtra(Intent.EXTRA_TEXT, body);
                     startActivity(Intent.createChooser(emailIntent, "KitBag Courier Service"));
-                    return;
                 }
-                Toast.makeText(PostInfoActivity.this, "Please Login To Send Mail", Toast.LENGTH_SHORT).show();
             }
         });
 
