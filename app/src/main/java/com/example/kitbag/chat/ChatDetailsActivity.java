@@ -201,11 +201,7 @@ public class ChatDetailsActivity extends AppCompatActivity {
                 chatModelList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     ChatModel chatModel = dataSnapshot.getValue(ChatModel.class);
-                    if (chatModel.getSender().equals(currentUser.getUid()) && chatModel.getReceiver().equals(receiverId)) {
                         chatModelList.add(chatModel);
-                    } else if (chatModel.getReceiver().equals(currentUser.getUid()) && chatModel.getSender().equals(receiverId)) {
-                        chatModelList.add(chatModel);
-                    }
                     if (chatAdapter.getItemCount() > 0) {
                         binding.recyclerViewChatDetails.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
                     }
