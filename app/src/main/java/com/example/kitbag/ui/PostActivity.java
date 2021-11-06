@@ -362,16 +362,7 @@ public class PostActivity extends AppCompatActivity {
                 Toast.makeText(PostActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-
-
-
-
-
-
-
-    // Capture photo from camera only
+    }// Capture photo from camera only
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
