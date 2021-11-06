@@ -24,6 +24,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,12 +60,18 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.label.ImageLabel;
+import com.google.mlkit.vision.label.ImageLabeler;
+import com.google.mlkit.vision.label.ImageLabeling;
+import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -92,6 +102,9 @@ public class PostActivity extends AppCompatActivity {
     // Get image from gallery and set to the imageView
     private static final int PICK_IMAGE = 100;
     private Uri imageUri;
+
+    // For camera
+    private ActivityResultLauncher<Intent> activityResultLauncher;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -294,21 +307,62 @@ public class PostActivity extends AppCompatActivity {
         });
 
         // Get image from camera and set to the imageView
+
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            Bundle bundle = result.getData().getExtras();
+                            Bitmap bitmap = (Bitmap) bundle.get("data");
+                            binding.imageViewAddPhoto.setImageBitmap(bitmap);
+
+                            InputImage image = InputImage.fromBitmap(bitmap, 0);
+                            // Call custom label method to detect object from camera and label the object
+                            labelImage(image);
+                        }
+                    }
+                });
+        // set on button click lister on imageView of post
         binding.imageViewAddPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Request for camera and storage permissions
                 if (checkPermissions()) {
-                    startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), PICK_IMAGE);
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    activityResultLauncher.launch(intent);
                 } else {
                     requestPermission();
                 }
             }
         });
-
     } // Ending onCreate
 
-    // Capture photo from camera only
+
+    //Object detect and labeling need input image from bitmap
+    private void labelImage(InputImage image) {
+        // Using default options we can use custom options also
+        ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
+
+        // processing our getting image to label the image
+        labeler.process(image).addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {
+            @Override
+            public void onSuccess(@NonNull List<ImageLabel> imageLabels) {
+                for (ImageLabel label : imageLabels) {
+                    String objectNames = label.getText();
+                    Toast.makeText(PostActivity.this, "Your selected Item should be: " + objectNames + ", ", Toast.LENGTH_LONG).show();
+                    // getting the confidence of labeled image
+//                    float confidence = label.getConfidence();
+//                    int index = label.getIndex();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(PostActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }// Capture photo from camera only
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
