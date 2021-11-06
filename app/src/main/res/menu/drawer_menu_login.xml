@@ -5,6 +5,11 @@
     tools:showIn="navigation_view">
 
     <item
+        android:id="@+id/nav_deliveryman"
+        android:icon="@drawable/ic_traveller"
+        android:title="@string/become_a_deliveryman" />
+
+    <item
         android:id="@+id/nav_chat"
         android:icon="@drawable/ic_chat"
         android:title="@string/nav_chat" />

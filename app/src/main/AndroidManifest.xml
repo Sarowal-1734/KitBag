@@ -16,6 +16,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KitBag">
         <activity
+            android:name=".authentication.NidInformationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".authentication.DeliverymanRegistrationActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.ProductHandOverActivity"
             android:exported="true" />
         <activity
