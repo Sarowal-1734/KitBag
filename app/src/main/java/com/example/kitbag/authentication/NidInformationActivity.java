@@ -49,7 +49,7 @@ public class NidInformationActivity extends AppCompatActivity {
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
         // Change appBar title
-        binding.customAppBar.appbarTitle.setText("NID Information");
+        binding.customAppBar.appbarTitle.setText("Submit Information");
 
         // Swipe to back
         slidrInterface = Slidr.attach(this);
@@ -79,20 +79,23 @@ public class NidInformationActivity extends AppCompatActivity {
                     });
         }
 
+        // Get Intent Data
+        String UserFace = getIntent().getStringExtra("UserFace");
         String FrontNID = getIntent().getStringExtra("FrontNID");
         String BackNID = getIntent().getStringExtra("BackNID");
-
+        // String to Uri (Images)
+        Uri imageUriUserFace = Uri.parse(UserFace);
         Uri imageUriFrontNID = Uri.parse(FrontNID);
         Uri imageUriBackNID = Uri.parse(BackNID);
-
-        binding.imageView1.setImageURI(imageUriFrontNID);
-        binding.imageView2.setImageURI(imageUriBackNID);
-
-        binding.buttonNext.setOnClickListener(new View.OnClickListener() {
+        // Display Images
+        binding.imageView1.setImageURI(imageUriUserFace);
+        binding.imageView2.setImageURI(imageUriFrontNID);
+        binding.imageView3.setImageURI(imageUriBackNID);
+        // On Submit Button Clicked
+        binding.buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO startActivity(new Intent(NidInformationActivity.this, ));
-                Toast.makeText(NidInformationActivity.this, "Now take a photo of your face", Toast.LENGTH_LONG).show();
+                Toast.makeText(NidInformationActivity.this, "Submit Information", Toast.LENGTH_LONG).show();
             }
         });
     }

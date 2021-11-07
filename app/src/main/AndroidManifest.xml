@@ -3,6 +3,7 @@
     package="com.example.kitbag">
 
     <uses-feature android:name="android.hardware.camera.any" />
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -16,6 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.KitBag">
+        <activity
+            android:name=".authentication.TakeFacePhotoActivity"
+            android:exported="false" />
         <activity
             android:name=".authentication.NidInformationActivity"
             android:exported="false" />
@@ -81,9 +85,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-   <!--This is for object detection and labeling-->
+        </activity> <!-- This is for object detection and labeling -->
         <meta-data
             android:name="com.google.firebase.ml.vision.DEPENDENCIES"
             android:value="label" />
