@@ -117,5 +117,5 @@ public class NidInformationActivity extends AppCompatActivity {
                 });
             }
         });
-    }
+    } // Ending onCreate
 }
