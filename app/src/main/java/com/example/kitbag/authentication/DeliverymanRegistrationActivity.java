@@ -164,8 +164,8 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
 
     private void reStartCamera() {
         binding.imageViewPreviewImage.setImageURI(null);
-        binding.imageViewPreviewImage.setVisibility(View.GONE);
-        binding.previewView.setVisibility(View.VISIBLE);
+        binding.cardViewPreviewImage.setVisibility(View.GONE);
+        binding.cardViewPreviewView.setVisibility(View.VISIBLE);
         binding.imageViewCaptureImage.setEnabled(true);
         binding.imageViewCaptureImage.clearColorFilter();
         binding.textViewSubmit.setEnabled(false);
@@ -187,8 +187,8 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         imageUri = Uri.fromFile(photoFile);
-                        binding.previewView.setVisibility(View.GONE);
-                        binding.imageViewPreviewImage.setVisibility(View.VISIBLE);
+                        binding.cardViewPreviewView.setVisibility(View.GONE);
+                        binding.cardViewPreviewImage.setVisibility(View.VISIBLE);
                         binding.imageViewPreviewImage.setImageURI(imageUri);
                         binding.imageViewCaptureImage.setEnabled(false);
                         binding.imageViewCaptureImage.setColorFilter(Color.GRAY);
