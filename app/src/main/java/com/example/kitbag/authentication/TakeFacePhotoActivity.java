@@ -1,10 +1,6 @@
 package com.example.kitbag.authentication;
 
-import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,12 +15,11 @@ import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.example.kitbag.R;
-import com.example.kitbag.databinding.ActivityDeliverymanRegistrationBinding;
+import com.example.kitbag.databinding.ActivityTakeFacePhotoBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,10 +34,10 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
-public class DeliverymanRegistrationActivity extends AppCompatActivity {
+public class TakeFacePhotoActivity extends AppCompatActivity {
 
-    // Binding our activity
-    private ActivityDeliverymanRegistrationBinding binding;
+    private ActivityTakeFacePhotoBinding binding;
+
 
     // Swipe to back
     private SlidrInterface slidrInterface;
@@ -55,17 +50,13 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("Users");
 
-    private static final int REQUEST_CODE = 10;
-    private boolean mPermissions = false;
-
-    private int submitClicked = 0;
     private ImageCapture imageCapture;
-    private Uri imageUri, imageUriFrontNID, imageUriBackNID;
+    private Uri imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityDeliverymanRegistrationBinding.inflate(getLayoutInflater());
+        binding = ActivityTakeFacePhotoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // For Authentication
@@ -77,7 +68,7 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
         // Change appBar title
-        binding.customAppBar.appbarTitle.setText("Take NID Photo");
+        binding.customAppBar.appbarTitle.setText("Take Face Photo");
 
         // Swipe to back
         slidrInterface = Slidr.attach(this);
@@ -106,37 +97,18 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
                     });
         }
 
-        // Start Permissions checkup
-        init();
+        // Open the Camera Preview
+        startCamera();
 
         // On submit clicked
         binding.textViewSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitClicked++;
-                if (submitClicked == 1) {
-                    binding.textViewNID.setText("Back of NID");
-                    imageUriFrontNID = imageUri;
-                    AlertDialog.Builder builder1 = new AlertDialog.Builder(DeliverymanRegistrationActivity.this);
-                    builder1.setTitle("Great! Now please capture the back of your NID.");
-                    builder1.setCancelable(false);
-                    builder1.setPositiveButton(
-                            "Ok",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    dialog.cancel();
-                                }
-                            });
-                    AlertDialog alert11 = builder1.create();
-                    alert11.show();
-                    reStartCamera();
-                } else {
-                    imageUriBackNID = imageUri;
-                    Intent intent = new Intent(DeliverymanRegistrationActivity.this, TakeFacePhotoActivity.class);
-                    intent.putExtra("FrontNID", imageUriFrontNID.toString());
-                    intent.putExtra("BackNID", imageUriBackNID.toString());
-                    startActivity(intent);
-                }
+                Intent intent = new Intent(TakeFacePhotoActivity.this, NidInformationActivity.class);
+                intent.putExtra("UserFace", imageUri.toString());
+                intent.putExtra("FrontNID", getIntent().getStringExtra("FrontNID"));
+                intent.putExtra("BackNID", getIntent().getStringExtra("BackNID"));
+                startActivity(intent);
             }
         });
 
@@ -152,11 +124,7 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
         binding.imageViewCaptureImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mPermissions) {
-                    takePicture();
-                } else {
-                    init();
-                }
+                takePicture();
             }
         });
 
@@ -164,8 +132,8 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
 
     private void reStartCamera() {
         binding.imageViewPreviewImage.setImageURI(null);
-        binding.imageViewPreviewImage.setVisibility(View.GONE);
-        binding.previewView.setVisibility(View.VISIBLE);
+        binding.cardViewPreviewImage.setVisibility(View.GONE);
+        binding.cardViewPreviewView.setVisibility(View.VISIBLE);
         binding.imageViewCaptureImage.setEnabled(true);
         binding.imageViewCaptureImage.clearColorFilter();
         binding.textViewSubmit.setEnabled(false);
@@ -175,20 +143,15 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
     }
 
     private void takePicture() {
-        File photoFile;
-        if (submitClicked == 0) {
-            photoFile = new File(getCacheDir().getAbsolutePath(), "NIDFRONT.jpg");
-        } else {
-            photoFile = new File(getCacheDir().getAbsolutePath(), "NIDBACK.jpg");
-        }
+        File photoFile = new File(getCacheDir().getAbsolutePath(), "USERFACE.jpg");
         ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(photoFile).build();
-        imageCapture.takePicture(outputFileOptions, ContextCompat.getMainExecutor(DeliverymanRegistrationActivity.this),
+        imageCapture.takePicture(outputFileOptions, ContextCompat.getMainExecutor(TakeFacePhotoActivity.this),
                 new ImageCapture.OnImageSavedCallback() {
                     @Override
                     public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
                         imageUri = Uri.fromFile(photoFile);
-                        binding.previewView.setVisibility(View.GONE);
-                        binding.imageViewPreviewImage.setVisibility(View.VISIBLE);
+                        binding.cardViewPreviewView.setVisibility(View.GONE);
+                        binding.cardViewPreviewImage.setVisibility(View.VISIBLE);
                         binding.imageViewPreviewImage.setImageURI(imageUri);
                         binding.imageViewCaptureImage.setEnabled(false);
                         binding.imageViewCaptureImage.setColorFilter(Color.GRAY);
@@ -200,19 +163,10 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(@NonNull ImageCaptureException exception) {
-                        Toast.makeText(DeliverymanRegistrationActivity.this, "Failed to capture image!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(TakeFacePhotoActivity.this, "Failed to capture image!", Toast.LENGTH_SHORT).show();
                         exception.printStackTrace();
                     }
                 });
-    }
-
-    private void init() {
-        if (mPermissions) {
-            // Open the Camera Preview
-            startCamera();
-        } else {
-            verifyPermissions();
-        }
     }
 
     private void startCamera() {
@@ -230,41 +184,18 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
                     // Choose the camera Front or Back
                     CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
                     // Set image dimension according to the preview
-                    imageCapture.setCropAspectRatio(new Rational(350, 200));
+                    imageCapture.setCropAspectRatio(new Rational(200, 200));
                     // Connect the preview use case to the previewView
                     preview.setSurfaceProvider(binding.previewView.getSurfaceProvider());
                     // Unbind use cases before rebinding
                     cameraProvider.unbindAll();
                     // Bind use cases to camera
-                    cameraProvider.bindToLifecycle((LifecycleOwner) DeliverymanRegistrationActivity.this, cameraSelector, preview, imageCapture);
+                    cameraProvider.bindToLifecycle((LifecycleOwner) TakeFacePhotoActivity.this, cameraSelector, preview, imageCapture);
                 } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }, ContextCompat.getMainExecutor(this));
-    }
-
-    public void verifyPermissions() {
-        String[] permissions = {Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        if ((ContextCompat.checkSelfPermission(this.getApplicationContext(), permissions[0]) == PackageManager.PERMISSION_GRANTED) &&
-                (ContextCompat.checkSelfPermission(this.getApplicationContext(), permissions[1]) == PackageManager.PERMISSION_GRANTED)) {
-            mPermissions = true;
-            init();
-        } else {
-            ActivityCompat.requestPermissions(DeliverymanRegistrationActivity.this, permissions, REQUEST_CODE);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_CODE) {
-            if (mPermissions) {
-                init();
-            } else {
-                verifyPermissions();
-            }
-        }
     }
 
 }
