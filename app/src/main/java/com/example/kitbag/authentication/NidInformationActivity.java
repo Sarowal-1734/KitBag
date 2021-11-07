@@ -1,14 +1,18 @@
 package com.example.kitbag.authentication;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.Button;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.kitbag.R;
 import com.example.kitbag.databinding.ActivityNidInformationBinding;
+import com.example.kitbag.ui.MainActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,7 +53,7 @@ public class NidInformationActivity extends AppCompatActivity {
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
         // Change appBar title
-        binding.customAppBar.appbarTitle.setText("Submit Information");
+        binding.customAppBar.appbarTitle.setText("NID Information");
 
         // Swipe to back
         slidrInterface = Slidr.attach(this);
@@ -95,7 +99,22 @@ public class NidInformationActivity extends AppCompatActivity {
         binding.buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(NidInformationActivity.this, "Submit Information", Toast.LENGTH_LONG).show();
+                // inflate custom layout
+                View view = LayoutInflater.from(NidInformationActivity.this).inflate(R.layout.dialog_nid_submission, null);
+                Button buttonConfirm = view.findViewById(R.id.buttonConfirm);
+                AlertDialog.Builder builder = new AlertDialog.Builder(NidInformationActivity.this);
+                builder.setView(view);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                buttonConfirm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        //TODO Store Deliveryman Info To The Database and Show a dialog which includes further instructions
+                        startActivity(new Intent(NidInformationActivity.this, MainActivity.class));
+                        finish();
+                    }
+                });
             }
         });
     }

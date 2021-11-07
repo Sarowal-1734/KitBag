@@ -182,7 +182,7 @@ public class TakeFacePhotoActivity extends AppCompatActivity {
                     // Set up the capture use case to allow users to take photos
                     imageCapture = new ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY).build();
                     // Choose the camera Front or Back
-                    CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
+                    CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_FRONT).build();
                     // Set image dimension according to the preview
                     imageCapture.setCropAspectRatio(new Rational(200, 200));
                     // Connect the preview use case to the previewView
