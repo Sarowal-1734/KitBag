@@ -2,6 +2,7 @@ package com.example.kitbag.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -30,6 +31,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.kitbag.R;
 import com.example.kitbag.adapter.PostAdapter;
+import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.authentication.LoginActivity;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.data.SharedPreference;
@@ -335,6 +337,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_login:
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
                         break;
+                    case R.id.nav_deliveryman:
+                        registerAsDeliveryman();
+                        break;
                     case R.id.nav_language:
                         Toast.makeText(MainActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;
@@ -455,6 +460,38 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    // Registration as deliveryman
+    private void registerAsDeliveryman() {
+        // inflate custom layout
+        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
+        // Getting view form custom dialog layout
+        ImageView imageViewNode1 = view.findViewById(R.id.imageViewNode1);
+        ImageView imageViewNode2 = view.findViewById(R.id.imageViewNode2);
+        ImageView imageViewNode3 = view.findViewById(R.id.imageViewNode3);
+        Button buttonCancel = view.findViewById(R.id.buttonCancel);
+        Button buttonProceed = view.findViewById(R.id.buttonProceed);
+        imageViewNode1.setColorFilter(Color.parseColor("#1754B6")); // app_bar color
+        imageViewNode2.setColorFilter(Color.parseColor("#1754B6"));
+        imageViewNode3.setColorFilter(Color.parseColor("#1754B6"));
+        builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        buttonProceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, DeliverymanRegistrationActivity.class));
+            }
+        });
     }
 
     // Show progress Dialog
