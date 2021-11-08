@@ -83,18 +83,15 @@ public class NidInformationActivity extends AppCompatActivity {
                     });
         }
 
-        // Get Intent Data
+        /* Get Intent Data
         String UserFace = getIntent().getStringExtra("UserFace");
         String FrontNID = getIntent().getStringExtra("FrontNID");
         String BackNID = getIntent().getStringExtra("BackNID");
         // String to Uri (Images)
         Uri imageUriUserFace = Uri.parse(UserFace);
         Uri imageUriFrontNID = Uri.parse(FrontNID);
-        Uri imageUriBackNID = Uri.parse(BackNID);
-        // Display Images
-        binding.imageView1.setImageURI(imageUriUserFace);
-        binding.imageView2.setImageURI(imageUriFrontNID);
-        binding.imageView3.setImageURI(imageUriBackNID);
+        Uri imageUriBackNID = Uri.parse(BackNID);*/
+
         // On Submit Button Clicked
         binding.buttonSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
