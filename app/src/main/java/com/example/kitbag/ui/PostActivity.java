@@ -317,6 +317,9 @@ public class PostActivity extends AppCompatActivity {
                             Bitmap bitmap = (Bitmap) bundle.get("data");
                             binding.imageViewAddPhoto.setImageBitmap(bitmap);
 
+                            // Todo: have to get imageUri from bitmap or bundle or result
+                            //imageUri =
+
                             InputImage image = InputImage.fromBitmap(bitmap, 0);
                             // Call custom label method to detect object from camera and label the object
                             labelImage(image);
@@ -329,7 +332,6 @@ public class PostActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Request for camera and storage permissions
                 if (checkPermissions()) {
-                    Toast.makeText(PostActivity.this, "OK", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     activityResultLauncher.launch(intent);
                 } else {
