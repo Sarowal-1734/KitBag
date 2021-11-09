@@ -39,6 +39,12 @@ import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -63,6 +69,8 @@ public class NidInformationActivity extends AppCompatActivity {
 
     private ArrayList<Uri> imageUriLists = new ArrayList<>();
     private int i = -1;
+
+    private String phoneNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +109,7 @@ public class NidInformationActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            phoneNumber = documentSnapshot.getString("phoneNumber");
                             if (documentSnapshot.getString("imageUrl") != null) {
                                 // Picasso library for download & show image
                                 Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
@@ -238,6 +247,9 @@ public class NidInformationActivity extends AppCompatActivity {
     }
 
     private void showDialog() {
+        // Send a message to the user phone number
+        sendMessage();
+        // Show dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(NidInformationActivity.this);
         builder.setTitle("Submitted");
         builder.setMessage("Your application has been successfully submitted. \nNow please go to any of your nearest KitBag Agent to get approval of your application.");
@@ -253,6 +265,36 @@ public class NidInformationActivity extends AppCompatActivity {
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void sendMessage() {
+        String number = phoneNumber.substring(3, 14);
+        // Create a background thread to send OTP
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String apiKey = "api_key=" + "jWWu9013if833V1c503DYJs3k61VMDYT3yXy76J9";
+                    String message = "&msg=" + "Greate!\nYour application has been successfully submitted. Now please go to any of your nearest KitBag Agent to get approval of your application.\n";
+                    String numbers = "&to=" + number;
+                    String data = apiKey + message + numbers;
+                    HttpURLConnection conn = (HttpURLConnection) new URL("https://api.sms.net.bd/sendsms?").openConnection();
+                    conn.setDoOutput(true);
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Length", Integer.toString(data.length()));
+                    conn.getOutputStream().write(data.getBytes(StandardCharsets.UTF_8));
+                    final BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    final StringBuilder stringBuffer = new StringBuilder();
+                    String line;
+                    while ((line = rd.readLine()) != null) {
+                        stringBuffer.append(line);
+                    }
+                    rd.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     // Check the internet connection

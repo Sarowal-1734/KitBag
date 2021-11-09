@@ -28,15 +28,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthOptions;
-import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -44,7 +38,13 @@ import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
-import java.util.concurrent.TimeUnit;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -52,7 +52,9 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
     private ActivityOtpVerificationBinding binding;
 
-    private String otpId, password, pinViewOTP, whatToDo, phoneNumber, userName;
+    private String password, pinViewOTP, whatToDo, phoneNumber, userName;
+
+    private int OtpID;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
@@ -63,8 +65,6 @@ public class OtpVerificationActivity extends AppCompatActivity {
     // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    PhoneAuthProvider.ForceResendingToken mResendToken;
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks;
 
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -84,6 +84,9 @@ public class OtpVerificationActivity extends AppCompatActivity {
         password = getIntent().getStringExtra("password");
         userName = getIntent().getStringExtra("userName");
         phoneNumber = getIntent().getStringExtra("phoneNumber");
+
+        // Send OTP
+        sendOTP();
 
         if (whatToDo.equals("resetPassword")) {
             // Change the title of the appBar
@@ -208,35 +211,11 @@ public class OtpVerificationActivity extends AppCompatActivity {
         // Set the phone number in UI
         binding.textViewPhoneNumber.setText("" + phoneNumber);
 
-        // Initialize phone auth callbacks
-        mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            @Override
-            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
-                Toast.makeText(OtpVerificationActivity.this, "An OTP has been sent", Toast.LENGTH_SHORT).show();
-                signInWithPhoneAuthCredential(phoneAuthCredential);
-            }
-
-            @Override
-            public void onVerificationFailed(@NonNull FirebaseException e) {
-                Toast.makeText(OtpVerificationActivity.this, "Failed to sent OTP!", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCodeSent(@NonNull String s, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                Toast.makeText(OtpVerificationActivity.this, "An OTP has been sent", Toast.LENGTH_SHORT).show();
-                otpId = s;
-                mResendToken = forceResendingToken;
-            }
-        };
-
-        // Initialize phone number verification
-        manageOTP();
-
         // On resend OTP button clicked
         binding.textViewResendOTP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                resendVerificationCode();
+                sendOTP();
             }
         });
 
@@ -248,38 +227,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
                 pinViewOTP = pinview.getValue();
             }
         });
-    }
-
-    // Initialize phone number verification
-    public void manageOTP() {
-        if (isConnected()) {
-            PhoneAuthOptions options = PhoneAuthOptions.newBuilder(mAuth)
-                    .setPhoneNumber(phoneNumber)       // Phone number to verify
-                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                    .setActivity(this)                 // Activity (for callback binding)
-                    .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
-                    .build();
-            PhoneAuthProvider.verifyPhoneNumber(options);
-        } else {
-            showMessageNoConnection();
-        }
-    }
-
-    // On resend OTP button clicked
-    private void resendVerificationCode() {
-        if (isConnected()) {
-            PhoneAuthOptions options = PhoneAuthOptions.newBuilder(mAuth)
-                    .setPhoneNumber(phoneNumber)       // Phone number to verify
-                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                    .setActivity(this)                 // Activity (for callback binding)
-                    .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
-                    .setForceResendingToken(mResendToken)     // ForceResendingToken from callbacks
-                    .build();
-            PhoneAuthProvider.verifyPhoneNumber(options);
-        } else {
-            showMessageNoConnection();
-        }
-    }
+    } // Ending onCreate
 
     // On Sign in button clicked
     public void onSignInButtonClicked(View view) {
@@ -290,14 +238,97 @@ public class OtpVerificationActivity extends AppCompatActivity {
             progressDialog.setContentView(R.layout.progress_dialog);
             progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
             progressDialog.setCancelable(false);
-            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(otpId, pinViewOTP);
-            signInWithPhoneAuthCredential(credential);
+            String OTPID = String.valueOf(OtpID);
+            if (OTPID.equals(pinViewOTP)) {
+                if (whatToDo.equals("registration")) {
+                    registerUser();
+                } else if (whatToDo.equals("resetPassword")) {
+                    progressDialog.dismiss();
+                    // Status to check that the password successfully resetted or not
+                    //SharedPreference.setPasswordResettedValue(OtpVerificationActivity.this, false);
+                    // TODO To Many Things
+                    startActivity(new Intent(OtpVerificationActivity.this, ResetPasswordActivity.class));
+                    finish();
+                }
+            } else {
+                progressDialog.dismiss();
+                Toast.makeText(OtpVerificationActivity.this, "OTP doesn't match!", Toast.LENGTH_SHORT).show();
+            }
         } else {
             // Hide progressBar
             progressDialog.dismiss();
             showMessageNoConnection();
         }
+    }
 
+    private void sendOTP() {
+        String number = phoneNumber.substring(3, 14);
+        // Create a background thread to send OTP
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String apiKey = "api_key=" + "jWWu9013if833V1c503DYJs3k61VMDYT3yXy76J9";
+                    Random random = new Random();
+                    OtpID = random.nextInt(999999);
+                    String message = "&msg=" + "Your KitBag OTP is: " + OtpID + "\n";
+                    String numbers = "&to=" + number;
+                    String data = apiKey + message + numbers;
+                    HttpURLConnection conn = (HttpURLConnection) new URL("https://api.sms.net.bd/sendsms?").openConnection();
+                    conn.setDoOutput(true);
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Length", Integer.toString(data.length()));
+                    conn.getOutputStream().write(data.getBytes(StandardCharsets.UTF_8));
+                    final BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    final StringBuilder stringBuffer = new StringBuilder();
+                    String line;
+                    while ((line = rd.readLine()) != null) {
+                        stringBuffer.append(line);
+                    }
+                    rd.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private void registerUser() {
+        String subPhone = OtpVerificationActivity.this.phoneNumber.substring(1, 14);
+        String fakeEmail = subPhone + "@gmail.com";
+        mAuth.createUserWithEmailAndPassword(fakeEmail, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            currentUser = mAuth.getCurrentUser();
+                            // Store user info in Database
+                            UserModel userModel = new UserModel();
+                            userModel.setUserId(currentUser.getUid());
+                            userModel.setUserName(userName);
+                            userModel.setPhoneNumber(phoneNumber);
+                            userModel.setUserType("GENERAL_USER");
+                            userModel.setEmail(null);
+                            userModel.setDistrict(null);
+                            userModel.setUpazilla(null);
+                            userModel.setImageUrl(null);
+
+                            collectionReference.document(currentUser.getUid()).set(userModel)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+                                            // Hide progressBar
+                                            progressDialog.dismiss();
+                                            Toast.makeText(OtpVerificationActivity.this, "Registration Success!", Toast.LENGTH_SHORT).show();
+                                            startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
+                                            finish();
+                                        }
+                                    });
+                        } else {
+                            Toast.makeText(OtpVerificationActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     // Message no connection
@@ -316,61 +347,6 @@ public class OtpVerificationActivity extends AppCompatActivity {
         // add the custom snack bar layout to snackbar layout
         snackbarLayout.addView(customSnackView, 0);
         snackbar.show();
-    }
-
-    // sign_in_with_phone
-    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            if (whatToDo.equals("resetPassword")) {
-                                // Hide progressBar
-                                progressDialog.dismiss();
-                                // Status to check that the password successfully resetted or not
-                                SharedPreference.setPasswordResettedValue(OtpVerificationActivity.this, false);
-                                // send to Reset password activity
-                                startActivity(new Intent(OtpVerificationActivity.this, ResetPasswordActivity.class));
-                                finish();
-                            } else {
-                                // Register user
-                                currentUser = task.getResult().getUser();
-                                // Link phone number as fake email for login
-                                String subPhone = OtpVerificationActivity.this.phoneNumber.substring(1, 14);
-                                AuthCredential authCredential = EmailAuthProvider.getCredential(subPhone + "@gmail.com", password);
-                                currentUser.linkWithCredential(authCredential);
-
-                                // Store user info in Database
-                                UserModel userModel = new UserModel();
-                                userModel.setUserId(currentUser.getUid());
-                                userModel.setUserName(userName);
-                                userModel.setPhoneNumber(phoneNumber);
-                                userModel.setUserType("GENERAL_USER");
-                                userModel.setEmail(null);
-                                userModel.setDistrict(null);
-                                userModel.setUpazilla(null);
-                                userModel.setImageUrl(null);
-
-                                collectionReference.document(currentUser.getUid()).set(userModel)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void unused) {
-                                                // Hide progressBar
-                                                progressDialog.dismiss();
-                                                Toast.makeText(OtpVerificationActivity.this, "Registration Success!", Toast.LENGTH_SHORT).show();
-                                                startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
-                                                finish();
-                                            }
-                                        });
-                            }
-                        } else {
-                            // Hide progressBar
-                            progressDialog.dismiss();
-                            Toast.makeText(OtpVerificationActivity.this, "Wrong OTP!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
     }
 
     // Close Drawer on back pressed

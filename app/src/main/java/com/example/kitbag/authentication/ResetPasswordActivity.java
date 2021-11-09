@@ -17,10 +17,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.example.kitbag.ui.MainActivity;
 import com.example.kitbag.R;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityResetPasswordBinding;
+import com.example.kitbag.ui.MainActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -74,8 +74,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
         binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
-                mAuth.signOut();
                 onBackPressed();
             }
         });
@@ -121,8 +119,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav_login:
-                        Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
-                        mAuth.signOut();
                         startActivity(new Intent(ResetPasswordActivity.this, LoginActivity.class));
                         finish();
                         break;
@@ -149,15 +145,10 @@ public class ResetPasswordActivity extends AppCompatActivity {
     }
 
     public void onResetPasswordButtonClicked(View view) {
-        boolean valid = validation();
-        if (valid) {
-            if (isConnected()) {
-                // Show progressBar
-                progressDialog = new ProgressDialog(ResetPasswordActivity.this);
-                progressDialog.show();
-                progressDialog.setContentView(R.layout.progress_dialog);
-                progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                progressDialog.setCancelable(false);
+        if (isConnected()) {
+            if (validation()) {
+                showProgressBar();
+                // TODO
                 FirebaseUser currentUser = mAuth.getCurrentUser();
                 String newPassword = binding.editTextPassword.getText().toString();
                 currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -177,11 +168,19 @@ public class ResetPasswordActivity extends AppCompatActivity {
                         Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
                     }
                 });
-            } else {
-                progressDialog.dismiss();
-                showMessageNoConnection();
             }
+        } else {
+            progressDialog.dismiss();
+            showMessageNoConnection();
         }
+    }
+
+    private void showProgressBar() {
+        progressDialog = new ProgressDialog(ResetPasswordActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
     }
 
     private boolean validation() {

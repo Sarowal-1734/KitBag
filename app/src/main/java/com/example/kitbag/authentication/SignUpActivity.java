@@ -19,7 +19,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
 import com.example.kitbag.databinding.ActivitySignUpBinding;
-import com.example.kitbag.model.UserModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -33,8 +32,6 @@ import com.r0adkll.slidr.model.SlidrInterface;
 public class SignUpActivity extends AppCompatActivity {
 
     private ActivitySignUpBinding binding;
-
-    private UserModel userModel;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
@@ -51,8 +48,6 @@ public class SignUpActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySignUpBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        userModel = new UserModel();
 
         // Initialize FirebaseAuth
         mAuth = FirebaseAuth.getInstance();
@@ -164,17 +159,14 @@ public class SignUpActivity extends AppCompatActivity {
 
     // On get OTP button clicked
     public void onGetOTPButtonClicked(View view) {
-        boolean valid = validation();
-        if (valid) {
-            if (isConnected()) {
+        if (isConnected()) {
+            if (validation()) {
                 // Show progressBar
                 progressDialog = new ProgressDialog(SignUpActivity.this);
                 progressDialog.show();
                 progressDialog.setContentView(R.layout.progress_dialog);
                 progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
                 progressDialog.setCancelable(false);
-
-
                 // Check user already registered or not
                 String email = binding.cpp.getFullNumber().trim() + "@gmail.com";
                 mAuth.fetchSignInMethodsForEmail(email)
@@ -186,9 +178,9 @@ public class SignUpActivity extends AppCompatActivity {
                                     progressDialog.dismiss();
                                     Intent intent = new Intent(SignUpActivity.this, OtpVerificationActivity.class);
                                     intent.putExtra("whatToDo", "registration");
-                                    intent.putExtra("password",binding.editTextPassword.getText().toString());
-                                    intent.putExtra("userName",binding.editTextUsername.getText().toString());
-                                    intent.putExtra("phoneNumber",binding.cpp.getFullNumberWithPlus().trim());
+                                    intent.putExtra("password", binding.editTextPassword.getText().toString());
+                                    intent.putExtra("userName", binding.editTextUsername.getText().toString());
+                                    intent.putExtra("phoneNumber", binding.cpp.getFullNumberWithPlus().trim());
                                     startActivity(intent);
                                 } else {
                                     progressDialog.dismiss();
@@ -197,10 +189,9 @@ public class SignUpActivity extends AppCompatActivity {
                                 }
                             }
                         });
-            } else {
-                progressDialog.dismiss();
-                showMessageNoConnection();
             }
+        } else {
+            showMessageNoConnection();
         }
     }
 
