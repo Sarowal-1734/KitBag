@@ -62,6 +62,7 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextNameBangla"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -94,6 +95,7 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextNameEnglish"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -126,6 +128,7 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextFatherHusbandName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -158,6 +161,7 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextMotherName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -187,9 +191,11 @@
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
                     android:text="Date Of Birth"
+                    android:inputType="date"
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextDateOfBirth"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -222,12 +228,14 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextNidNumber"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="1234567889"
+                    android:inputType="numberDecimal"
                     android:textColor="@color/black"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -262,6 +270,7 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextPresentAddress"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -294,6 +303,7 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextPostCode"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -326,6 +336,7 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextPostOffice"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -358,6 +369,7 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextThana"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -390,6 +402,7 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextDistrict"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -422,6 +435,7 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextDivision"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -462,6 +476,7 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextGender"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -494,6 +509,7 @@
                     android:textColor="@color/black" />
 
                 <EditText
+                    android:id="@+id/editTextOccupation"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
