@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -70,6 +71,10 @@ import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -315,12 +320,28 @@ public class PostActivity extends AppCompatActivity {
                         if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                             Bundle bundle = result.getData().getExtras();
                             Bitmap bitmap = (Bitmap) bundle.get("data");
-                            binding.imageViewAddPhoto.setImageBitmap(bitmap);
-
-                            // Todo: have to get imageUri from bitmap or bundle or result
-                            //imageUri =
-
-                            InputImage image = InputImage.fromBitmap(bitmap, 0);
+                            // Convert Bitmap to Uri
+                            File tempDir= Environment.getExternalStorageDirectory();
+                            tempDir=new File(tempDir.getAbsolutePath()+"/.temp/");
+                            tempDir.mkdir();
+                            File tempFile = null;
+                            try {
+                                tempFile = File.createTempFile("pic", ".jpg", tempDir);
+                                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                                 byte[] bitmapData = bytes.toByteArray();
+                                //write the bytes in file
+                                 FileOutputStream fos = new FileOutputStream(tempFile);
+                                fos.write(bitmapData);
+                                fos.flush();
+                                fos.close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            imageUri = Uri.fromFile(tempFile);
+                            // Set Uri to the imageView
+                            binding.imageViewAddPhoto.setImageURI(imageUri);
+                            InputImage image = InputImage.fromBitmap(bitmap,0);
                             // Call custom label method to detect object from camera and label the object
                             labelImage(image);
                         }
@@ -341,12 +362,10 @@ public class PostActivity extends AppCompatActivity {
         });
     } // Ending onCreate
 
-
     //Object detect and labeling need input image from bitmap
     private void labelImage(InputImage image) {
         // Using default options we can use custom options also
         ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
-
         // processing our getting image to label the image
         labeler.process(image).addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {
             @Override
@@ -355,8 +374,8 @@ public class PostActivity extends AppCompatActivity {
                     String objectNames = label.getText();
                     Toast.makeText(PostActivity.this, "Your selected Item should be: " + objectNames + ", ", Toast.LENGTH_LONG).show();
                     // getting the confidence of labeled image
-//                    float confidence = label.getConfidence();
-//                    int index = label.getIndex();
+                    // float confidence = label.getConfidence();
+                    // int index = label.getIndex();
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
