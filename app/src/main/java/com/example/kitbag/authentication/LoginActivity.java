@@ -17,9 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.example.kitbag.ui.MainActivity;
 import com.example.kitbag.R;
 import com.example.kitbag.databinding.ActivityLoginBinding;
+import com.example.kitbag.ui.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -154,31 +154,23 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoginButtonClick(View view) {
-        if (TextUtils.isEmpty(binding.EditTextContact.getText().toString())) {
-            binding.EditTextContact.setError("Required");
-            binding.EditTextContact.requestFocus();
-            return;
-        }
-        if (TextUtils.isEmpty(binding.EditTextPassword.getText().toString())) {
-            binding.EditTextPassword.setError("Required");
-            binding.EditTextPassword.requestFocus();
-            return;
-        }
-        // Get user input data
-        String phone = binding.cpp.getFullNumber().trim();
-        String fakeEmail = phone + "@gmail.com";
-        String password = binding.EditTextPassword.getText().toString();
-
-        // Check the internet connection then do the background tasks
         if (isConnected()) {
-            // Connected
-            // Show progressBar
-            progressDialog = new ProgressDialog(LoginActivity.this);
-            progressDialog.show();
-            progressDialog.setContentView(R.layout.progress_dialog);
-            progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-            progressDialog.setCancelable(false);
-
+            // Validation
+            if (TextUtils.isEmpty(binding.EditTextContact.getText().toString())) {
+                binding.EditTextContact.setError("Required");
+                binding.EditTextContact.requestFocus();
+                return;
+            }
+            if (TextUtils.isEmpty(binding.EditTextPassword.getText().toString())) {
+                binding.EditTextPassword.setError("Required");
+                binding.EditTextPassword.requestFocus();
+                return;
+            }
+            // Get user input data
+            String phone = binding.cpp.getFullNumber().trim();
+            String fakeEmail = phone + "@gmail.com";
+            String password = binding.EditTextPassword.getText().toString();
+            showProgressBar();
             // Check user already registered or not
             mAuth.fetchSignInMethodsForEmail(fakeEmail)
                     .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
@@ -190,7 +182,6 @@ public class LoginActivity extends AppCompatActivity {
                                     // Hide progressBar
                                     progressDialog.dismiss();
                                     //binding.progressBar.setVisibility(View.GONE);
-
                                     binding.EditTextContact.setError("User Not Found!");
                                     binding.EditTextContact.requestFocus();
                                 } else {
@@ -201,21 +192,33 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     });
         } else {
-            View parentLayout = findViewById(R.id.snackBarContainer);
-            // create an instance of the snackBar
-            final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
-            // inflate the custom_snackBar_view created previously
-            View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
-            // set the background of the default snackBar as transparent
-            snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
-            // now change the layout of the snackBar
-            Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
-            // set padding of the all corners as 0
-            snackbarLayout.setPadding(0, 0, 0, 0);
-            // add the custom snack bar layout to snackbar layout
-            snackbarLayout.addView(customSnackView, 0);
-            snackbar.show();
+            displayNoConnection();
         }
+    }
+
+    private void showProgressBar() {
+        progressDialog = new ProgressDialog(LoginActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
+    }
+
+    private void displayNoConnection() {
+        View parentLayout = findViewById(R.id.snackBarContainer);
+        // create an instance of the snackBar
+        final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+        // inflate the custom_snackBar_view created previously
+        View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
+        // set the background of the default snackBar as transparent
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        // now change the layout of the snackBar
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        // set padding of the all corners as 0
+        snackbarLayout.setPadding(0, 0, 0, 0);
+        // add the custom snack bar layout to snackbar layout
+        snackbarLayout.addView(customSnackView, 0);
+        snackbar.show();
     }
 
     // Sign in with email and password
@@ -233,7 +236,7 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             // Hide progressBar
                             progressDialog.dismiss();
-                            binding.EditTextPassword.setError("Password Didn't Match!");
+                            binding.EditTextPassword.setError("Password doesn't match!");
                             binding.EditTextPassword.requestFocus();
                         }
                     }
