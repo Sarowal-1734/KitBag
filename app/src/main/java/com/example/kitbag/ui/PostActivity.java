@@ -329,6 +329,7 @@ public class PostActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Request for camera and storage permissions
                 if (checkPermissions()) {
+                    Toast.makeText(PostActivity.this, "OK", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     activityResultLauncher.launch(intent);
                 } else {
@@ -362,20 +363,7 @@ public class PostActivity extends AppCompatActivity {
                 Toast.makeText(PostActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }// Capture photo from camera only
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
-            Bitmap captureImage = (Bitmap) data.getExtras().get("data");
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-            captureImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(), captureImage, "Title", null);
-            imageUri = Uri.parse(path);
-            binding.imageViewAddPhoto.setImageURI(imageUri);
-        }
     }
-
     // method to check for permissions
     private boolean checkPermissions() {
         return ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
