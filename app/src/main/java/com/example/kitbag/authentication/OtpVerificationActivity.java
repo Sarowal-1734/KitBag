@@ -17,11 +17,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.example.kitbag.ui.MainActivity;
 import com.example.kitbag.R;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
 import com.example.kitbag.model.UserModel;
+import com.example.kitbag.ui.MainActivity;
 import com.goodiebag.pinview.Pinview;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
