@@ -19,6 +19,9 @@ public class ModelClassDeliveryman {
     private String imageUrlUserFace;
     private String imageUrlFrontNID;
     private String imageUrlBackNID;
+    private String applicationStatus;
+    private String approvedByAgent;
+    private String approvedByAdmin;
 
     public ModelClassDeliveryman() {
         // Must Needed empty constructor
@@ -166,5 +169,29 @@ public class ModelClassDeliveryman {
 
     public void setImageUrlBackNID(String imageUrlBackNID) {
         this.imageUrlBackNID = imageUrlBackNID;
+    }
+
+    public String getApplicationStatus() {
+        return applicationStatus;
+    }
+
+    public void setApplicationStatus(String applicationStatus) {
+        this.applicationStatus = applicationStatus;
+    }
+
+    public String getApprovedByAgent() {
+        return approvedByAgent;
+    }
+
+    public void setApprovedByAgent(String approvedByAgent) {
+        this.approvedByAgent = approvedByAgent;
+    }
+
+    public String getApprovedByAdmin() {
+        return approvedByAdmin;
+    }
+
+    public void setApprovedByAdmin(String approvedByAdmin) {
+        this.approvedByAdmin = approvedByAdmin;
     }
 }

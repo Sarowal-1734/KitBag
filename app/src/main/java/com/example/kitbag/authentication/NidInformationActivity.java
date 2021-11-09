@@ -180,6 +180,9 @@ public class NidInformationActivity extends AppCompatActivity {
         modelClassDeliveryman.setDivision(binding.editTextDivision.getText().toString());
         modelClassDeliveryman.setGender(binding.editTextGender.getText().toString());
         modelClassDeliveryman.setOccupation(binding.editTextOccupation.getText().toString());
+        modelClassDeliveryman.setApplicationStatus("Pending");
+        modelClassDeliveryman.setApprovedByAgent(null);
+        modelClassDeliveryman.setApprovedByAdmin(null);
         modelClassDeliveryman.setImageUrlUserFace(null);
         modelClassDeliveryman.setImageUrlFrontNID(null);
         modelClassDeliveryman.setImageUrlBackNID(null);
