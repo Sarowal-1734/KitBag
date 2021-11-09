@@ -2,6 +2,7 @@ package com.example.kitbag.authentication;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -61,7 +62,7 @@ public class NidInformationActivity extends AppCompatActivity {
     private final StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
     private ArrayList<Uri> imageUriLists = new ArrayList<>();
-    private int imageUriCount;
+    private int i = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -186,15 +187,16 @@ public class NidInformationActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        Toast.makeText(NidInformationActivity.this, "Uploading images...", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(NidInformationActivity.this, "Please wait uploading images...", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void storeDeliverymanImages(ArrayList<Uri> imageUriLists) {
         // Store image to firebase
-        StorageReference filepath = storageReference.child("deliveryman_images").child(currentUser.getUid() + new Timestamp(new Date()));
+        int imageUriCount;
         for (imageUriCount = 0; imageUriCount < imageUriLists.size(); imageUriCount++) {
+            StorageReference filepath = storageReference.child("deliveryman_images").child(currentUser.getUid() + new Timestamp(new Date()));
             filepath.putFile(imageUriLists.get(imageUriCount))
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -202,18 +204,22 @@ public class NidInformationActivity extends AppCompatActivity {
                             filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                 @Override
                                 public void onSuccess(Uri uri) {
+                                    i++;
                                     // Update user info in Database
-                                    if (imageUriCount == 0) {
+                                    if (i == 0) {
                                         db.collection("Deliveryman").document(currentUser.getUid()).update("imageUrlUserFace", uri.toString());
-                                    } else if (imageUriCount == 1) {
-                                        db.collection("Deliveryman").document(currentUser.getUid()).update("imageUrlFrontNID", uri.toString());
-                                    } else {
-                                        db.collection("Deliveryman").document(currentUser.getUid()).update("imageUrlBackNID", uri.toString());
+                                        Toast.makeText(NidInformationActivity.this, "Image: User Face Uploaded", Toast.LENGTH_SHORT).show();
                                     }
-                                    progressDialog.dismiss();
-                                    Toast.makeText(NidInformationActivity.this, "Application submitted!", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(NidInformationActivity.this, MainActivity.class));
-                                    finish();
+                                    if (i == 1) {
+                                        db.collection("Deliveryman").document(currentUser.getUid()).update("imageUrlFrontNID", uri.toString());
+                                        Toast.makeText(NidInformationActivity.this, "Image: Front NID Uploaded", Toast.LENGTH_SHORT).show();
+                                    }
+                                    if (i == 2) {
+                                        db.collection("Deliveryman").document(currentUser.getUid()).update("imageUrlBackNID", uri.toString());
+                                        progressDialog.dismiss();
+                                        Toast.makeText(NidInformationActivity.this, "Image: Back NID Uploaded", Toast.LENGTH_SHORT).show();
+                                        showDialog();
+                                    }
                                 }
                             });
                         }
@@ -226,6 +232,24 @@ public class NidInformationActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    private void showDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(NidInformationActivity.this);
+        builder.setTitle("Submitted");
+        builder.setMessage("Your application has been successfully submitted. \nNow please go to any of your nearest KitBag Agent to get approval of your application.");
+        builder.setCancelable(false);
+        builder.setPositiveButton(
+                "Got it",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        startActivity(new Intent(NidInformationActivity.this, MainActivity.class));
+                        finish();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     // Check the internet connection
