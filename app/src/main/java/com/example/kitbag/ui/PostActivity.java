@@ -52,7 +52,6 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.annotations.Nullable;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -72,7 +71,6 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
@@ -87,7 +85,7 @@ public class PostActivity extends AppCompatActivity {
     // Get from database and upload with post
     String userName, phoneNumber, userType, email;
 
-    private String receiverPhoneNumber, preferredDeliveryman;
+    private String receiverPhoneNumber, preferredDeliverymanContact;
 
     private ActivityPostBinding binding;
 
@@ -165,9 +163,9 @@ public class PostActivity extends AppCompatActivity {
                         binding.EditTextToUpazila.setText(modelClassPost.getToUpazilla());
                         String receiverPhone = modelClassPost.getReceiverPhoneNumber().substring(4);
                         binding.EditTextReceiverPhoneNumber.setText(receiverPhone);
-                        String deliverymanPhone = modelClassPost.getPreferredDeliveryman();
+                        String deliverymanPhone = modelClassPost.getPreferredDeliverymanContact();
                         if (deliverymanPhone != null) {
-                            deliverymanPhone = modelClassPost.getPreferredDeliveryman().substring(4);
+                            deliverymanPhone = modelClassPost.getPreferredDeliverymanContact().substring(4);
                             binding.EditTextPreferredDeliveryman.setText(deliverymanPhone);
                         }
                         Picasso.get().load(modelClassPost.getImageUrl()).placeholder(R.drawable.logo).fit().into(binding.imageViewAddPhoto);
@@ -514,7 +512,7 @@ public class PostActivity extends AppCompatActivity {
             if (isConnected()) {
                 if (currentUser != null) {
                     receiverPhoneNumber = binding.cppReceiverPhoneNumber.getFullNumberWithPlus().trim();
-                    preferredDeliveryman = binding.cppPreferredDeliveryman.getFullNumberWithPlus().trim();
+                    preferredDeliverymanContact = binding.cppPreferredDeliveryman.getFullNumberWithPlus().trim();
                     if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
                         // Edit post here...
                         updatePost();
@@ -621,7 +619,7 @@ public class PostActivity extends AppCompatActivity {
         // If preferred deliveryman number empty then fine just update with null
         if (binding.EditTextPreferredDeliveryman.getText().toString().isEmpty()) {
             showProgressBar();
-            preferredDeliveryman = null;
+            preferredDeliverymanContact = null;
             // Store image to firebase
             StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl(modelClassPost.getImageUrl());
             reference.putFile(imageUri)
@@ -643,7 +641,7 @@ public class PostActivity extends AppCompatActivity {
                                                     "toDistrict", binding.EditTextToDistrict.getText().toString(),
                                                     "toUpazilla", binding.EditTextToUpazila.getText().toString(),
                                                     "receiverPhoneNumber", receiverPhoneNumber,
-                                                    "preferredDeliveryman", preferredDeliveryman
+                                                    "preferredDeliverymanContact", preferredDeliverymanContact
                                             );
                                     progressDialog.dismiss();
                                     Toast.makeText(PostActivity.this, "Post successfully updated", Toast.LENGTH_SHORT).show();
@@ -664,7 +662,7 @@ public class PostActivity extends AppCompatActivity {
             // If preferred deliveryman number is not empty then check the number validity
             showProgressBar();
             db.collection("Users")
-                    .whereEqualTo("phoneNumber", preferredDeliveryman)
+                    .whereEqualTo("phoneNumber", preferredDeliverymanContact)
                     .get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -694,7 +692,7 @@ public class PostActivity extends AppCompatActivity {
                                                                                 "toDistrict", binding.EditTextToDistrict.getText().toString(),
                                                                                 "toUpazilla", binding.EditTextToUpazila.getText().toString(),
                                                                                 "receiverPhoneNumber", receiverPhoneNumber,
-                                                                                "preferredDeliveryman", preferredDeliveryman
+                                                                                "preferredDeliverymanContact", preferredDeliverymanContact
                                                                         );
                                                                 progressDialog.dismiss();
                                                                 Toast.makeText(PostActivity.this, "Post successfully updated", Toast.LENGTH_SHORT).show();

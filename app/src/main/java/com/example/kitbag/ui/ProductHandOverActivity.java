@@ -1,7 +1,11 @@
 package com.example.kitbag.ui;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -10,7 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,17 +26,23 @@ import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
+import com.example.kitbag.authentication.OtpVerificationActivity;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityProductHandOverBinding;
+import com.example.kitbag.model.ModelClassPost;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
@@ -47,7 +56,7 @@ public class ProductHandOverActivity extends AppCompatActivity {
     // Swipe to back
     private SlidrInterface slidrInterface;
 
-    // Show Progress Diaglog
+    // Show Progress Dialog
     private ProgressDialog progressDialog;
 
     // For Changing Password
@@ -64,6 +73,8 @@ public class ProductHandOverActivity extends AppCompatActivity {
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    private String receiverContact;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,7 +86,7 @@ public class ProductHandOverActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
 
         // Change appBar title
-        binding.customAppBar.appbarTitle.setText("Product Handover Process");
+        binding.customAppBar.appbarTitle.setText("Handover Product");
 
         // Swipe to back
         slidrInterface = Slidr.attach(this);
@@ -126,6 +137,9 @@ public class ProductHandOverActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
         }
 
+        // Get postStatus info from database and Set Hint On EditText
+        init();
+
         // Active Inactive Slider to back based on drawer
         binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
@@ -144,25 +158,6 @@ public class ProductHandOverActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerStateChanged(int newState) {
-            }
-        });
-
-        binding.radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.SendertoPrimary:
-                    case R.id.DeliverymantoFinal:
-                        //binding.EditTextContact.setHint("Deliveryman Contact");
-                        binding.EditTextContact.setHint("Agent's Contact");
-                        break;
-                    case R.id.PrimarytoDeliveryman:
-                        binding.EditTextContact.setHint("Deliveryman's Contact");
-                        break;
-                    case R.id.FinaltoReceiver:
-                        binding.EditTextContact.setHint("Receiver Contact");
-                        break;
-                }
             }
         });
 
@@ -199,13 +194,25 @@ public class ProductHandOverActivity extends AppCompatActivity {
             }
         });
 
-        // On Edit profile icon clicked
-        View view1 = binding.navigationView.getHeaderView(0);
-        ImageView imageView1 = view1.findViewById(R.id.nav_edit_profile);
-        imageView1.setOnClickListener(new View.OnClickListener() {
+        binding.buttonSendOTP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(ProductHandOverActivity.this, EditProfileActivity.class));
+                if (isConnected()) {
+                    if (valid()) {
+                        String phoneNumber = binding.cpp.getFullNumberWithPlus().trim();
+                        if (binding.SenderToPrimary.isChecked()) {
+                            SenderToPrimary(phoneNumber);
+                        } else if (binding.PrimaryToDeliveryman.isChecked()) {
+                            PrimaryToDeliveryman(phoneNumber);
+                        } else if (binding.DeliverymanToFinal.isChecked()) {
+                            DeliverymanToFinal(phoneNumber);
+                        } else if (binding.FinalToReceiver.isChecked()) {
+                            FinalToReceiver(phoneNumber);
+                        }
+                    }
+                } else {
+                    showMessageNoConnection();
+                }
             }
         });
 
@@ -251,11 +258,183 @@ public class ProductHandOverActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        // Attach full number from edittext with cpp
+        binding.cpp.registerCarrierNumberEditText(binding.EditTextContact);
+
+    } // Ending onCreate
+
+    private void FinalToReceiver(String phoneNumber) {
+        // Check receiver number
+        if (phoneNumber.equals(receiverContact)) {
+            // Send an OTP to the agent number and verify
+            Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
+            intent.putExtra("whatToDo", "verifyReceiver");
+            intent.putExtra("password", "");
+            intent.putExtra("userName", "");
+            intent.putExtra("phoneNumber", phoneNumber);
+            startActivity(intent);
+        } else {
+            binding.EditTextContact.setError("Receiver Contact Doesn't Match");
+            binding.EditTextContact.requestFocus();
+        }
     }
 
-    // on Verify Button Click
-    public void onVerifyButtonClick(View view) {
-        //todo
+    private void DeliverymanToFinal(String phoneNumber) {
+        showProgressBar();
+        // Checking the given number is an Agent or not
+        db.collection("Users")
+                .whereEqualTo("phoneNumber", phoneNumber)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (!task.getResult().getDocuments().isEmpty()) {
+                                DocumentSnapshot snapshot = task.getResult().getDocuments().get(0);
+                                if (snapshot.getString("userType").equals("Agent")) {
+                                    // Send an OTP to the agent number and verify
+                                    Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
+                                    intent.putExtra("whatToDo", "verifyFinalAgent");
+                                    intent.putExtra("password", "");
+                                    intent.putExtra("userName", "");
+                                    intent.putExtra("phoneNumber", phoneNumber);
+                                    startActivity(intent);
+                                } else {
+                                    // Not an Agent
+                                    binding.EditTextContact.setError("Agent Not Found");
+                                    binding.EditTextContact.requestFocus();
+                                    progressDialog.dismiss();
+                                }
+                            } else {
+                                // Not a User
+                                binding.EditTextContact.setError("Agent Not Found");
+                                binding.EditTextContact.requestFocus();
+                                progressDialog.dismiss();
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void PrimaryToDeliveryman(String phoneNumber) {
+        showProgressBar();
+        // Checking the given number is an Agent or not
+        db.collection("Users")
+                .whereEqualTo("phoneNumber", phoneNumber)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (!task.getResult().getDocuments().isEmpty()) {
+                                DocumentSnapshot snapshot = task.getResult().getDocuments().get(0);
+                                if (snapshot.getString("userType").equals("Deliveryman")) {
+                                    // Send an OTP to the deliveryman number and verify
+                                    Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
+                                    intent.putExtra("whatToDo", "verifyDeliveryman");
+                                    intent.putExtra("password", "");
+                                    intent.putExtra("userName", "");
+                                    intent.putExtra("phoneNumber", phoneNumber);
+                                    startActivity(intent);
+                                } else {
+                                    // Not an Deliveryman
+                                    binding.EditTextContact.setError("Deliveryman Not Found");
+                                    binding.EditTextContact.requestFocus();
+                                    progressDialog.dismiss();
+                                }
+                            } else {
+                                // Not a User
+                                binding.EditTextContact.setError("Deliveryman Not Found");
+                                binding.EditTextContact.requestFocus();
+                                progressDialog.dismiss();
+                            }
+                        }
+                    }
+                });
+    }
+
+    private void SenderToPrimary(String phoneNumber) {
+        showProgressBar();
+        // Checking the given number is an Agent or not
+        db.collection("Users")
+                .whereEqualTo("phoneNumber", phoneNumber)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if (!task.getResult().getDocuments().isEmpty()) {
+                                DocumentSnapshot snapshot = task.getResult().getDocuments().get(0);
+                                if (snapshot.getString("userType").equals("Agent")) {
+                                    // Send an OTP to the agent number and verify
+                                    Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
+                                    intent.putExtra("whatToDo", "verifyPrimaryAgent");
+                                    intent.putExtra("password", "");
+                                    intent.putExtra("userName", "");
+                                    intent.putExtra("phoneNumber", phoneNumber);
+                                    startActivity(intent);
+                                } else {
+                                    // Not an Agent
+                                    binding.EditTextContact.setError("Agent Not Found");
+                                    binding.EditTextContact.requestFocus();
+                                    progressDialog.dismiss();
+                                }
+                            } else {
+                                // Not a User
+                                binding.EditTextContact.setError("Agent Not Found");
+                                binding.EditTextContact.requestFocus();
+                                progressDialog.dismiss();
+                            }
+                        }
+                    }
+                });
+    }
+
+    private boolean valid() {
+        if (TextUtils.isEmpty(binding.EditTextContact.getText().toString())) {
+            return false;
+        }
+        return true;
+    }
+
+    private void init() {
+        db.collection("All_Post")
+                .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            ModelClassPost modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
+                            receiverContact = modelClassPost.getReceiverPhoneNumber();
+                            if (modelClassPost.getStatusCurrent().equals("N/A")) {
+                                binding.SenderToPrimary.setEnabled(true);
+                                binding.SenderToPrimary.setChecked(true);
+                                binding.EditTextContact.setHint("Agent's Contact");
+                            } else if (modelClassPost.getStatusCurrent().equals("Primary_Agent")) {
+                                binding.PrimaryToDeliveryman.setEnabled(true);
+                                binding.PrimaryToDeliveryman.setChecked(true);
+                                binding.EditTextContact.setHint("Deliveryman's Contact");
+                            } else if (modelClassPost.getStatusCurrent().equals("Deliveryman")) {
+                                binding.DeliverymanToFinal.setEnabled(true);
+                                binding.DeliverymanToFinal.setChecked(true);
+                                binding.EditTextContact.setHint("Agent's Contact");
+                            } else if (modelClassPost.getStatusCurrent().equals("Final_Agent")) {
+                                binding.FinalToReceiver.setEnabled(true);
+                                binding.FinalToReceiver.setChecked(true);
+                                String phone = receiverContact.substring(4, 14);
+                                binding.EditTextContact.setText(phone);
+                                binding.EditTextContact.setHint("Receiver Contact");
+                            }
+                            String phoneNumber = modelClassPost.getPreferredDeliverymanContact();
+                            if (!TextUtils.isEmpty(phoneNumber)) {
+                                String phone = phoneNumber.substring(4, 14);
+                                binding.EditTextContact.setText(phone);
+                            }
+                        }
+                    }
+                });
     }
 
     // validation for update password and create popup dialog
@@ -365,5 +544,38 @@ public class ProductHandOverActivity extends AppCompatActivity {
             return;
         }
         super.onBackPressed();
+    }
+
+    private void showProgressBar() {
+        progressDialog = new ProgressDialog(ProductHandOverActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
+    }
+
+    // Check the internet connection
+    public boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    // Message no connection
+    private void showMessageNoConnection() {
+        View parentLayout = findViewById(R.id.snackBarContainer);
+        // create an instance of the snackBar
+        final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+        // inflate the custom_snackBar_view created previously
+        View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
+        // set the background of the default snackBar as transparent
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        // now change the layout of the snackBar
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        // set padding of the all corners as 0
+        snackbarLayout.setPadding(0, 0, 0, 0);
+        // add the custom snack bar layout to snackbar layout
+        snackbarLayout.addView(customSnackView, 0);
+        snackbar.show();
     }
 }

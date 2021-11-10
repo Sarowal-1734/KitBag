@@ -17,12 +17,11 @@ public class ModelClassPost {
     private String postReference;
     private String documentReference;
     private String receiverPhoneNumber;
-    private String preferredDeliveryman;
+    private String preferredDeliverymanContact;
     private String statusCurrent;
     private String statusPrimaryAgent;
     private String statusDeliveryman;
     private String statusFinalAgent;
-    private String statusDelivered;
 
     public String getStatusPrimaryAgent() {
         return statusPrimaryAgent;
@@ -48,20 +47,12 @@ public class ModelClassPost {
         this.statusFinalAgent = statusFinalAgent;
     }
 
-    public String getStatusDelivered() {
-        return statusDelivered;
+    public String getPreferredDeliverymanContact() {
+        return preferredDeliverymanContact;
     }
 
-    public void setStatusDelivered(String statusDelivered) {
-        this.statusDelivered = statusDelivered;
-    }
-
-    public String getPreferredDeliveryman() {
-        return preferredDeliveryman;
-    }
-
-    public void setPreferredDeliveryman(String preferredDeliveryman) {
-        this.preferredDeliveryman = preferredDeliveryman;
+    public void setPreferredDeliverymanContact(String preferredDeliverymanContact) {
+        this.preferredDeliverymanContact = preferredDeliverymanContact;
     }
 
     public String getReceiverPhoneNumber() {
