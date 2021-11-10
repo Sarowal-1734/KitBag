@@ -18,7 +18,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
 import com.example.kitbag.model.UserModel;
 import com.example.kitbag.ui.MainActivity;
@@ -88,12 +87,20 @@ public class OtpVerificationActivity extends AppCompatActivity {
         // Send OTP
         sendOTP();
 
+        // Change the title of the appBar
         if (whatToDo.equals("resetPassword")) {
-            // Change the title of the appBar
             binding.customAppBar.appbarTitle.setText("Forgot Password");
             binding.buttonVerify.setText("Verify");
+        } else if (whatToDo.equals("verifyFinalAgent") || whatToDo.equals("verifyPrimaryAgent")) {
+            binding.customAppBar.appbarTitle.setText("Verify Agent");
+            binding.buttonVerify.setText("Verify");
+        } else if (whatToDo.equals("verifyDeliveryman")) {
+            binding.customAppBar.appbarTitle.setText("Verify Deliveryman");
+            binding.buttonVerify.setText("Verify");
+        } else if (whatToDo.equals("verifyReceiver")) {
+            binding.customAppBar.appbarTitle.setText("Verify Receiver");
+            binding.buttonVerify.setText("Verify");
         } else {
-            // Change the title of the appBar
             binding.customAppBar.appbarTitle.setText("Sign Up");
         }
 
@@ -249,6 +256,22 @@ public class OtpVerificationActivity extends AppCompatActivity {
                     // TODO To Many Things
                     startActivity(new Intent(OtpVerificationActivity.this, ResetPasswordActivity.class));
                     finish();
+                } else if (whatToDo.equals("verifyPrimaryAgent")) {
+                    progressDialog.dismiss();
+                    //todo (Agent)
+                    Toast.makeText(OtpVerificationActivity.this, "Primary_Agent Verified!", Toast.LENGTH_SHORT).show();
+                } else if (whatToDo.equals("verifyDeliveryman")) {
+                    progressDialog.dismiss();
+                    //todo (Deliveryman)
+                    Toast.makeText(OtpVerificationActivity.this, "Deliveryman Verified!", Toast.LENGTH_SHORT).show();
+                } else if (whatToDo.equals("verifyFinalAgent")) {
+                    progressDialog.dismiss();
+                    //todo (Agent)
+                    Toast.makeText(OtpVerificationActivity.this, "Final_Agent Verified!", Toast.LENGTH_SHORT).show();
+                } else if (whatToDo.equals("verifyReceiver")) {
+                    progressDialog.dismiss();
+                    //todo
+                    Toast.makeText(OtpVerificationActivity.this, "Receiver Verified!", Toast.LENGTH_SHORT).show();
                 }
             } else {
                 progressDialog.dismiss();

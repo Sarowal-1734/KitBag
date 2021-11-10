@@ -49,7 +49,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Select The Right Option:"
+                        android:text="Handover The Product From:"
                         android:textColor="@color/black"
                         android:textStyle="bold" />
 
@@ -59,27 +59,31 @@
                         android:layout_height="wrap_content">
 
                         <RadioButton
-                            android:id="@+id/SendertoPrimary"
+                            android:id="@+id/SenderToPrimary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:enabled="false"
                             android:text="Sender to Primary Agent" />
 
                         <RadioButton
-                            android:id="@+id/PrimarytoDeliveryman"
+                            android:id="@+id/PrimaryToDeliveryman"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:enabled="false"
                             android:text="Primary Agent to Deliveryman" />
 
                         <RadioButton
-                            android:id="@+id/DeliverymantoFinal"
+                            android:id="@+id/DeliverymanToFinal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:enabled="false"
                             android:text="Deliveryman to Final Agent" />
 
                         <RadioButton
-                            android:id="@+id/FinaltoReceiver"
+                            android:id="@+id/FinalToReceiver"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:enabled="false"
                             android:text="Final Agent to Receiver" />
                     </RadioGroup>
 
@@ -89,7 +93,7 @@
                         android:layout_marginTop="24dp"
                         android:layout_marginBottom="4dp"
                         android:gravity="center"
-                        android:text="We will send an OTP to the given number. So please make sure that your phone is with you." />
+                        android:text="We will send an OTP to the given number. So please make sure that you are staying any of your nearest KitBag Agent." />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -99,7 +103,7 @@
                         android:weightSum="6">
 
                         <com.hbb20.CountryCodePicker
-                            android:id="@+id/cppPreferredDeliveryman"
+                            android:id="@+id/cpp"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginTop="5dp"
@@ -125,12 +129,11 @@
                     </LinearLayout>
 
                     <Button
-                        android:id="@+id/buttonAddToCart"
+                        android:id="@+id/buttonSendOTP"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="24dp"
-                        android:onClick="onVerifyButtonClick"
                         android:text="Send OTP"
                         android:textAllCaps="false" />
                 </LinearLayout>
