@@ -349,7 +349,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
-                        android:backgroundTint="@color/app_bar"
+                        android:backgroundTint="@color/silver"
+                        android:enabled="false"
                         android:onClick="onProductHandoverButtonClick"
                         android:text="Product Handover Process"
                         android:textAllCaps="false" />

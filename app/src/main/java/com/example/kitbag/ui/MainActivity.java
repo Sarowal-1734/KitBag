@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
@@ -37,6 +38,7 @@ import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityMainBinding;
 import com.example.kitbag.model.ModelClassPost;
+import com.example.kitbag.model.UserModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -167,13 +169,17 @@ public class MainActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
+                            UserModel user = documentSnapshot.toObject(UserModel.class);
                             NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+                            if (user.getUserType().equals("GENERAL_USER") || user.getUserType().equals("Agent")) {
+                                Menu navMenu = navigationView.getMenu();
+                                navMenu.findItem(R.id.nav_deliveryman).setVisible(false);
+                            }
                             View view = navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
-                            userName.setText(documentSnapshot.getString("userName"));
-                            if (documentSnapshot.getString("imageUrl") != null) {
+                            userName.setText(user.getUserName());
+                            if (user.getImageUrl() != null) {
                                 // Picasso library for download & show image
                                 Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
                                 Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);

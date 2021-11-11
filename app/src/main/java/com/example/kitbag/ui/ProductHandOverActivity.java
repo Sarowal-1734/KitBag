@@ -2,6 +2,7 @@ package com.example.kitbag.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -74,6 +75,7 @@ public class ProductHandOverActivity extends AppCompatActivity {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private String receiverContact;
+    private String preferredDeliverymanContact;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -270,10 +272,11 @@ public class ProductHandOverActivity extends AppCompatActivity {
             // Send an OTP to the agent number and verify
             Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
             intent.putExtra("whatToDo", "verifyReceiver");
-            intent.putExtra("password", "");
-            intent.putExtra("userName", "");
             intent.putExtra("phoneNumber", phoneNumber);
+            intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
+            progressDialog.dismiss();
             startActivity(intent);
+            finish();
         } else {
             binding.EditTextContact.setError("Receiver Contact Doesn't Match");
             binding.EditTextContact.requestFocus();
@@ -296,10 +299,11 @@ public class ProductHandOverActivity extends AppCompatActivity {
                                     // Send an OTP to the agent number and verify
                                     Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
                                     intent.putExtra("whatToDo", "verifyFinalAgent");
-                                    intent.putExtra("password", "");
-                                    intent.putExtra("userName", "");
                                     intent.putExtra("phoneNumber", phoneNumber);
+                                    intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
+                                    progressDialog.dismiss();
                                     startActivity(intent);
+                                    finish();
                                 } else {
                                     // Not an Agent
                                     binding.EditTextContact.setError("Agent Not Found");
@@ -318,6 +322,20 @@ public class ProductHandOverActivity extends AppCompatActivity {
     }
 
     private void PrimaryToDeliveryman(String phoneNumber) {
+        if (TextUtils.isEmpty(preferredDeliverymanContact)) {
+            ContinuePrimaryToDeliveryman(phoneNumber);
+        } else {
+            if (phoneNumber.equals(preferredDeliverymanContact)) {
+                ContinuePrimaryToDeliveryman(phoneNumber);
+            } else {
+                binding.EditTextContact.setError("Deliveryman Contact Doesn't Match");
+                binding.EditTextContact.requestFocus();
+                showDialog();
+            }
+        }
+    }
+
+    private void ContinuePrimaryToDeliveryman(String phoneNumber) {
         showProgressBar();
         // Checking the given number is an Agent or not
         db.collection("Users")
@@ -333,10 +351,11 @@ public class ProductHandOverActivity extends AppCompatActivity {
                                     // Send an OTP to the deliveryman number and verify
                                     Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
                                     intent.putExtra("whatToDo", "verifyDeliveryman");
-                                    intent.putExtra("password", "");
-                                    intent.putExtra("userName", "");
                                     intent.putExtra("phoneNumber", phoneNumber);
+                                    intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
+                                    progressDialog.dismiss();
                                     startActivity(intent);
+                                    finish();
                                 } else {
                                     // Not an Deliveryman
                                     binding.EditTextContact.setError("Deliveryman Not Found");
@@ -370,10 +389,11 @@ public class ProductHandOverActivity extends AppCompatActivity {
                                     // Send an OTP to the agent number and verify
                                     Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
                                     intent.putExtra("whatToDo", "verifyPrimaryAgent");
-                                    intent.putExtra("password", "");
-                                    intent.putExtra("userName", "");
                                     intent.putExtra("phoneNumber", phoneNumber);
+                                    intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
+                                    progressDialog.dismiss();
                                     startActivity(intent);
+                                    finish();
                                 } else {
                                     // Not an Agent
                                     binding.EditTextContact.setError("Agent Not Found");
@@ -389,6 +409,23 @@ public class ProductHandOverActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void showDialog() {
+        // Show dialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(ProductHandOverActivity.this);
+        builder.setTitle("Verification Failed!");
+        builder.setMessage("A deliveryman has been preferred by the post owner. Now if you want to deliver this product please request the owner to remove preferred deliveryman from this post or replace preferred deliveryman by you.\nThank you");
+        builder.setCancelable(false);
+        builder.setPositiveButton(
+                "Got it",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     private boolean valid() {
@@ -416,6 +453,11 @@ public class ProductHandOverActivity extends AppCompatActivity {
                                 binding.PrimaryToDeliveryman.setEnabled(true);
                                 binding.PrimaryToDeliveryman.setChecked(true);
                                 binding.EditTextContact.setHint("Deliveryman's Contact");
+                                preferredDeliverymanContact = modelClassPost.getPreferredDeliverymanContact();
+                                if (!TextUtils.isEmpty(preferredDeliverymanContact)) {
+                                    String phone = preferredDeliverymanContact.substring(4, 14);
+                                    binding.EditTextContact.setText(phone);
+                                }
                             } else if (modelClassPost.getStatusCurrent().equals("Deliveryman")) {
                                 binding.DeliverymanToFinal.setEnabled(true);
                                 binding.DeliverymanToFinal.setChecked(true);
@@ -426,11 +468,6 @@ public class ProductHandOverActivity extends AppCompatActivity {
                                 String phone = receiverContact.substring(4, 14);
                                 binding.EditTextContact.setText(phone);
                                 binding.EditTextContact.setHint("Receiver Contact");
-                            }
-                            String phoneNumber = modelClassPost.getPreferredDeliverymanContact();
-                            if (!TextUtils.isEmpty(phoneNumber)) {
-                                String phone = phoneNumber.substring(4, 14);
-                                binding.EditTextContact.setText(phone);
                             }
                         }
                     }

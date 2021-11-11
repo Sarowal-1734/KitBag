@@ -2,6 +2,7 @@ package com.example.kitbag.authentication;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -13,14 +14,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
+import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
 import com.example.kitbag.ui.MainActivity;
+import com.example.kitbag.ui.PostInfoActivity;
 import com.goodiebag.pinview.Pinview;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -51,7 +55,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
     private ActivityOtpVerificationBinding binding;
 
-    private String password, pinViewOTP, whatToDo, phoneNumber, userName;
+    private String pinViewOTP, whatToDo, phoneNumber;
 
     private int OtpID;
 
@@ -80,8 +84,6 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
         // Picking value which send from signUp activity
         whatToDo = getIntent().getStringExtra("whatToDo");
-        password = getIntent().getStringExtra("password");
-        userName = getIntent().getStringExtra("userName");
         phoneNumber = getIntent().getStringExtra("phoneNumber");
 
         // Send OTP
@@ -257,21 +259,25 @@ public class OtpVerificationActivity extends AppCompatActivity {
                     startActivity(new Intent(OtpVerificationActivity.this, ResetPasswordActivity.class));
                     finish();
                 } else if (whatToDo.equals("verifyPrimaryAgent")) {
-                    progressDialog.dismiss();
-                    //todo (Agent)
-                    Toast.makeText(OtpVerificationActivity.this, "Primary_Agent Verified!", Toast.LENGTH_SHORT).show();
+                    // Update status
+                    updatePostStatus("Primary_Agent", "statusPrimaryAgent");
+                    String message = "Agent successfully verified. Now please handover your item to the Agent.";
+                    showDialog(message);
                 } else if (whatToDo.equals("verifyDeliveryman")) {
-                    progressDialog.dismiss();
-                    //todo (Deliveryman)
-                    Toast.makeText(OtpVerificationActivity.this, "Deliveryman Verified!", Toast.LENGTH_SHORT).show();
+                    // Update status
+                    updatePostStatus("Deliveryman", "statusDeliveryman");
+                    String message = "Deliveryman successfully verified. Now please handover your item to the Deliveryman.";
+                    showDialog(message);
                 } else if (whatToDo.equals("verifyFinalAgent")) {
-                    progressDialog.dismiss();
-                    //todo (Agent)
-                    Toast.makeText(OtpVerificationActivity.this, "Final_Agent Verified!", Toast.LENGTH_SHORT).show();
+                    // Update status
+                    updatePostStatus("Final_Agent", "statusFinalAgent");
+                    String message = "Agent successfully verified. Now please handover your item to the Agent.";
+                    showDialog(message);
                 } else if (whatToDo.equals("verifyReceiver")) {
-                    progressDialog.dismiss();
-                    //todo
-                    Toast.makeText(OtpVerificationActivity.this, "Receiver Verified!", Toast.LENGTH_SHORT).show();
+                    // Update status
+                    updatePostStatus("Delivered", "receiverPhoneNumber");
+                    String message = "Receiver successfully verified. Now please deliver item to the receiver.";
+                    showDialog(message);
                 }
             } else {
                 progressDialog.dismiss();
@@ -282,6 +288,44 @@ public class OtpVerificationActivity extends AppCompatActivity {
             progressDialog.dismiss();
             showMessageNoConnection();
         }
+    }
+
+    private void updatePostStatus(String currentStatus, String statusDeliverymanOrAgentOrReceiver) {
+        db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
+                .update(
+                        "statusCurrent", currentStatus,
+                        statusDeliverymanOrAgentOrReceiver, phoneNumber
+                );
+    }
+
+    private void showDialog(String message) {
+        db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        progressDialog.dismiss();
+                        ModelClassPost post = documentSnapshot.toObject(ModelClassPost.class);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(OtpVerificationActivity.this);
+                        builder.setTitle("Verified!");
+                        builder.setMessage(message);
+                        builder.setCancelable(false);
+                        builder.setPositiveButton(
+                                "Got it",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int id) {
+                                        dialog.cancel();
+                                        Intent intent = new Intent(OtpVerificationActivity.this, PostInfoActivity.class);
+                                        intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
+                                        intent.putExtra("userId", post.getUserId());
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                });
     }
 
     private void sendOTP() {
@@ -319,7 +363,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
     private void registerUser() {
         String subPhone = OtpVerificationActivity.this.phoneNumber.substring(1, 14);
         String fakeEmail = subPhone + "@gmail.com";
-        mAuth.createUserWithEmailAndPassword(fakeEmail, password)
+        mAuth.createUserWithEmailAndPassword(fakeEmail, getIntent().getStringExtra("password"))
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -328,7 +372,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
                             // Store user info in Database
                             UserModel userModel = new UserModel();
                             userModel.setUserId(currentUser.getUid());
-                            userModel.setUserName(userName);
+                            userModel.setUserName(getIntent().getStringExtra("userName"));
                             userModel.setPhoneNumber(phoneNumber);
                             userModel.setUserType("GENERAL_USER");
                             userModel.setEmail(null);
