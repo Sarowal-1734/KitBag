@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -53,6 +54,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -67,6 +69,9 @@ import com.google.firebase.storage.StorageReference;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
+
+import java.util.Calendar;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -100,6 +105,17 @@ public class PostInfoActivity extends AppCompatActivity {
 
     private boolean removeFromCart = false;
 
+    // Status Details
+    private View viewStatusDetails;
+    // Time
+    private TextView senderTime, primaryAgentTime, deliverymanTime, finalAgentTime, receiverTime;
+    // Node
+    private ImageView senderNode, primaryAgentNode, deliverymanNode, finalAgentNode, receiverNode;
+    // TextView Status
+    private TextView sender, primaryAgent, deliveryman, finalAgent, receiver;
+    // TextView Description
+    private TextView senderDescription, primaryAgentDescription, deliverymanDescription, finalAgentDescription, receiverDescription;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +131,35 @@ public class PostInfoActivity extends AppCompatActivity {
 
         // Swipe to back
         slidrInterface = Slidr.attach(this);
+
+        viewStatusDetails = LayoutInflater.from(PostInfoActivity.this).inflate(R.layout.dialog_product_status_track, null);
+        builder = new AlertDialog.Builder(PostInfoActivity.this);
+        builder.setView(viewStatusDetails);
+        dialog = builder.create();
+        // Time
+        senderTime = viewStatusDetails.findViewById(R.id.textViewSenderTime);
+        primaryAgentTime = viewStatusDetails.findViewById(R.id.textViewPrimaryAgentTime);
+        deliverymanTime = viewStatusDetails.findViewById(R.id.textViewDeliverymanTime);
+        finalAgentTime = viewStatusDetails.findViewById(R.id.textViewFinalAgentTime);
+        receiverTime = viewStatusDetails.findViewById(R.id.textViewDeliveredTime);
+        // Node
+        senderNode = viewStatusDetails.findViewById(R.id.imageViewNodeSender);
+        primaryAgentNode = viewStatusDetails.findViewById(R.id.imageViewNodePrimaryAgent);
+        deliverymanNode = viewStatusDetails.findViewById(R.id.imageViewNodeDeliveryman);
+        finalAgentNode = viewStatusDetails.findViewById(R.id.imageViewNodeSecondaryAgent);
+        receiverNode = viewStatusDetails.findViewById(R.id.imageViewNodeReceiver);
+        // TextView Status
+        sender = viewStatusDetails.findViewById(R.id.textViewSender);
+        primaryAgent = viewStatusDetails.findViewById(R.id.textViewPrimaryAgent);
+        deliveryman = viewStatusDetails.findViewById(R.id.textViewDeliveryman);
+        finalAgent = viewStatusDetails.findViewById(R.id.textViewSecondaryAgent);
+        receiver = viewStatusDetails.findViewById(R.id.textViewReceiver);
+        // TextView Description
+        senderDescription = viewStatusDetails.findViewById(R.id.textViewSenderDescription);
+        primaryAgentDescription = viewStatusDetails.findViewById(R.id.textViewPrimaryAgentDescription);
+        deliverymanDescription = viewStatusDetails.findViewById(R.id.textViewDeliverymanDescription);
+        finalAgentDescription = viewStatusDetails.findViewById(R.id.textViewFinalAgentDescription);
+        receiverDescription = viewStatusDetails.findViewById(R.id.textViewDeliveredDescription);
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -340,24 +385,13 @@ public class PostInfoActivity extends AppCompatActivity {
         binding.textViewStatus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View view = LayoutInflater.from(PostInfoActivity.this).inflate(R.layout.product_status_track, null);
-                ImageView senderNode = view.findViewById(R.id.imageViewNodeSender);
-                ImageView primaryAgentNode = view.findViewById(R.id.imageViewNodePrimaryAgent);
-                senderNode.setColorFilter(Color.GREEN);
-                view.findViewById(R.id.viewSenderToPrimaryAgent).setBackgroundColor(Color.GREEN);
-                primaryAgentNode.setColorFilter(Color.GREEN);
-                view.findViewById(R.id.textViewDismiss).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                builder = new AlertDialog.Builder(PostInfoActivity.this);
-                builder.setView(view);
-                dialog = builder.create();
-                dialog.show();
+                showProgressBar();
+                // Update delivery status to the dialogView
+                updateStatusInfoInDialog();
+                progressDialog.dismiss();
             }
         });
+
 
         // Adding onClickListener on Call text click
         binding.call.setOnClickListener(new View.OnClickListener() {
@@ -499,6 +533,115 @@ public class PostInfoActivity extends AppCompatActivity {
                 });
 
     } // Ending onCreate
+
+    private void updateStatusInfoInDialog() {
+        if (getIntent().getStringExtra("statusCurrent").equals("N/A")) {
+            updateSenderInfo();
+        } else if (getIntent().getStringExtra("statusCurrent").equals("Primary_Agent")) {
+            updateSenderInfo();
+            updatePrimaryAgentInfo();
+        } else if (getIntent().getStringExtra("statusCurrent").equals("Deliveryman")) {
+            updateSenderInfo();
+            updatePrimaryAgentInfo();
+            updateDeliverymanInfo();
+        } else if (getIntent().getStringExtra("statusCurrent").equals("Final_Agent")) {
+            updateSenderInfo();
+            updatePrimaryAgentInfo();
+            updateDeliverymanInfo();
+            updateFinalAgentInfo();
+        } else if (getIntent().getStringExtra("statusCurrent").equals("Delivered")) {
+            updateSenderInfo();
+            updatePrimaryAgentInfo();
+            updateDeliverymanInfo();
+            updateFinalAgentInfo();
+            updateDeliveredInfo();
+        }
+        viewStatusDetails.findViewById(R.id.textViewDismiss).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
+    }
+
+    private void updateDeliveredInfo() {
+        viewStatusDetails.findViewById(R.id.viewTargetAgentToReceiver).setBackgroundColor(Color.parseColor("#1754B6"));
+        receiverNode.setColorFilter(Color.parseColor("#1754B6")); // app_bar_color
+        receiverTime.setText(getDateTimeFormat(modelClassPost.getStatusReceiverPhoneNumberTime()));
+        setName(receiver, "Delivered", modelClassPost.getReceiverPhoneNumber());
+        receiver.setTextColor(Color.parseColor("#1754B6"));
+        receiverDescription.setTextColor(Color.BLACK);
+    }
+
+    private void updateFinalAgentInfo() {
+        viewStatusDetails.findViewById(R.id.viewDeliverymanToTargetAgent).setBackgroundColor(Color.parseColor("#1754B6"));
+        finalAgentNode.setColorFilter(Color.parseColor("#1754B6")); // app_bar_color
+        finalAgentTime.setText(getDateTimeFormat(modelClassPost.getStatusFinalAgentTime()));
+        setName(finalAgent, "Final Agent", modelClassPost.getStatusFinalAgent());
+        finalAgent.setTextColor(Color.parseColor("#1754B6"));
+        finalAgentDescription.setTextColor(Color.BLACK);
+    }
+
+    private void updateDeliverymanInfo() {
+        viewStatusDetails.findViewById(R.id.viewPrimaryToDeliveryman).setBackgroundColor(Color.parseColor("#1754B6"));
+        deliverymanNode.setColorFilter(Color.parseColor("#1754B6")); // app_bar_color
+        deliverymanTime.setText(getDateTimeFormat(modelClassPost.getStatusDeliverymanTime()));
+        setName(deliveryman, "Deliveryman", modelClassPost.getStatusDeliveryman());
+        deliveryman.setTextColor(Color.parseColor("#1754B6"));
+        deliverymanDescription.setTextColor(Color.BLACK);
+    }
+
+    private void updatePrimaryAgentInfo() {
+        viewStatusDetails.findViewById(R.id.viewSenderToPrimaryAgent).setBackgroundColor(Color.parseColor("#1754B6"));
+        primaryAgentNode.setColorFilter(Color.parseColor("#1754B6")); // app_bar_color
+        primaryAgentTime.setText(getDateTimeFormat(modelClassPost.getStatusPrimaryAgentTime()));
+        setName(primaryAgent, "Primary Agent", modelClassPost.getStatusPrimaryAgent());
+        primaryAgent.setTextColor(Color.parseColor("#1754B6"));
+        primaryAgentDescription.setTextColor(Color.BLACK);
+    }
+
+    private void updateSenderInfo() {
+        senderTime.setText(getDateTimeFormat(modelClassPost.getTimeAdded()));
+        senderNode.setColorFilter(Color.parseColor("#1754B6")); // app_bar_color
+        sender.setText("Sender (" + userModel.getUserName() + ")");
+        setName(sender, "Sender", modelClassPost.getPhoneNumber());
+        sender.setTextColor(Color.parseColor("#1754B6"));
+        senderDescription.setTextColor(Color.BLACK);
+    }
+
+    private void setName(TextView textViewName, String statusName, String statusNumber) {
+        collectionReference.whereEqualTo("phoneNumber", statusNumber)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
+                            UserModel userModel = snapshot.toObject(UserModel.class);
+                            textViewName.setText(statusName + " (" + userModel.getUserName() + ")");
+                            textViewName.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (currentUser != null) {
+                                        Intent intent = new Intent(PostInfoActivity.this, EditProfileActivity.class);
+                                        intent.putExtra("userId", userModel.getUserId());
+                                        startActivity(intent);
+                                    } else {
+                                        Toast.makeText(PostInfoActivity.this, "Please login", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                            return;
+                        }
+                    }
+                });
+    }
+
+    private String getDateTimeFormat(Timestamp timeStamp) {
+        Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+        cal.setTimeInMillis(timeStamp.getSeconds() * 1000);
+        return DateFormat.format("dd MMM\nhh:mm", cal).toString();
+    }
 
     private void enableDisableHandoverButton(ModelClassPost modelClassPost) {
         if (modelClassPost.getStatusCurrent().equals("N/A")) {

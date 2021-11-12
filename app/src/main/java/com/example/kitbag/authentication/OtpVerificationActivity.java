@@ -34,6 +34,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,6 +51,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -263,22 +265,22 @@ public class OtpVerificationActivity extends AppCompatActivity {
                     finish();
                 } else if (whatToDo.equals("verifyPrimaryAgent")) {
                     // Update status
-                    updatePostStatus("Primary_Agent", "statusPrimaryAgent");
+                    updatePostStatus("Primary_Agent", "statusPrimaryAgent", "statusPrimaryAgentTime");
                     String message = "Agent successfully verified. Now please handover your item to the Agent.";
                     showDialog(message);
                 } else if (whatToDo.equals("verifyDeliveryman")) {
                     // Update status
-                    updatePostStatus("Deliveryman", "statusDeliveryman");
+                    updatePostStatus("Deliveryman", "statusDeliveryman", "statusDeliverymanTime");
                     String message = "Deliveryman successfully verified. Now please handover your item to the Deliveryman.";
                     showDialog(message);
                 } else if (whatToDo.equals("verifyFinalAgent")) {
                     // Update status
-                    updatePostStatus("Final_Agent", "statusFinalAgent");
+                    updatePostStatus("Final_Agent", "statusFinalAgent", "statusFinalAgentTime");
                     String message = "Agent successfully verified. Now please handover your item to the Agent.";
                     showDialog(message);
                 } else if (whatToDo.equals("verifyReceiver")) {
                     // Update status
-                    updatePostStatus("Delivered", "receiverPhoneNumber");
+                    updatePostStatus("Delivered", "receiverPhoneNumber", "statusReceiverPhoneNumberTime");
                     String message = "Receiver successfully verified. Now please deliver item to the receiver.";
                     showDialog(message);
                 }
@@ -293,11 +295,12 @@ public class OtpVerificationActivity extends AppCompatActivity {
         }
     }
 
-    private void updatePostStatus(String currentStatus, String statusDeliverymanOrAgentOrReceiver) {
+    private void updatePostStatus(String currentStatus, String statusDeliverymanOrAgentOrReceiver, String statusDeliverymanOrAgentOrReceiverTime) {
         db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
                 .update(
                         "statusCurrent", currentStatus,
-                        statusDeliverymanOrAgentOrReceiver, phoneNumber
+                        statusDeliverymanOrAgentOrReceiver, phoneNumber,
+                        statusDeliverymanOrAgentOrReceiverTime, new Timestamp(new Date())
                 );
     }
 

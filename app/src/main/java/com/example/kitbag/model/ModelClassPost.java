@@ -22,6 +22,10 @@ public class ModelClassPost {
     private String statusPrimaryAgent;
     private String statusDeliveryman;
     private String statusFinalAgent;
+    private Timestamp statusPrimaryAgentTime;
+    private Timestamp statusDeliverymanTime;
+    private Timestamp statusFinalAgentTime;
+    private Timestamp statusReceiverPhoneNumberTime;
 
     public String getStatusPrimaryAgent() {
         return statusPrimaryAgent;
@@ -45,6 +49,38 @@ public class ModelClassPost {
 
     public void setStatusFinalAgent(String statusFinalAgent) {
         this.statusFinalAgent = statusFinalAgent;
+    }
+
+    public Timestamp getStatusPrimaryAgentTime() {
+        return statusPrimaryAgentTime;
+    }
+
+    public void setStatusPrimaryAgentTime(Timestamp statusPrimaryAgentTime) {
+        this.statusPrimaryAgentTime = statusPrimaryAgentTime;
+    }
+
+    public Timestamp getStatusDeliverymanTime() {
+        return statusDeliverymanTime;
+    }
+
+    public void setStatusDeliverymanTime(Timestamp statusDeliverymanTime) {
+        this.statusDeliverymanTime = statusDeliverymanTime;
+    }
+
+    public Timestamp getStatusFinalAgentTime() {
+        return statusFinalAgentTime;
+    }
+
+    public void setStatusFinalAgentTime(Timestamp statusFinalAgentTime) {
+        this.statusFinalAgentTime = statusFinalAgentTime;
+    }
+
+    public Timestamp getStatusReceiverPhoneNumberTime() {
+        return statusReceiverPhoneNumberTime;
+    }
+
+    public void setStatusReceiverPhoneNumberTime(Timestamp statusReceiverPhoneNumberTime) {
+        this.statusReceiverPhoneNumberTime = statusReceiverPhoneNumberTime;
     }
 
     public String getPreferredDeliverymanContact() {
