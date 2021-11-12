@@ -274,7 +274,6 @@ public class ProductHandOverActivity extends AppCompatActivity {
             intent.putExtra("whatToDo", "verifyReceiver");
             intent.putExtra("phoneNumber", phoneNumber);
             intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
-            progressDialog.dismiss();
             startActivity(intent);
             finish();
         } else {
@@ -347,7 +346,7 @@ public class ProductHandOverActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             if (!task.getResult().getDocuments().isEmpty()) {
                                 DocumentSnapshot snapshot = task.getResult().getDocuments().get(0);
-                                if (snapshot.getString("userType").equals("Deliveryman")) {
+                                if (snapshot.getString("userType").equals("Deliveryman") || snapshot.getString("userType").equals("Agent")) {
                                     // Send an OTP to the deliveryman number and verify
                                     Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
                                     intent.putExtra("whatToDo", "verifyDeliveryman");

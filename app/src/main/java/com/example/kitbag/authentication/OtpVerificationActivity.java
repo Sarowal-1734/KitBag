@@ -1,5 +1,8 @@
 package com.example.kitbag.authentication;
 
+import static com.example.kitbag.ui.MainActivity.fromOtpVerificationActivity;
+import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -318,6 +321,8 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                         Intent intent = new Intent(OtpVerificationActivity.this, PostInfoActivity.class);
                                         intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
                                         intent.putExtra("userId", post.getUserId());
+                                        intent.putExtra("statusCurrent", post.getStatusCurrent());
+                                        intent.putExtra(getOpenFromActivity, fromOtpVerificationActivity);
                                         startActivity(intent);
                                         finish();
                                     }
