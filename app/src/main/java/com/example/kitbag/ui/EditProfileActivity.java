@@ -205,7 +205,7 @@ public class EditProfileActivity extends AppCompatActivity {
         binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
         binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
         // Get userName and image from database and set to the drawer and hide or visible the deliveryman text
-        collectionReference.document(currentUser.getUid()).get()
+        collectionReference.document(getIntent().getStringExtra("userId")).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {

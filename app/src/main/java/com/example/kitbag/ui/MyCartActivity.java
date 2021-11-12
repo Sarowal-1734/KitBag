@@ -170,7 +170,9 @@ public class MyCartActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MyCartActivity.this, EditProfileActivity.class));
+                Intent intent = new Intent(MyCartActivity.this, EditProfileActivity.class);
+                intent.putExtra("userId", currentUser.getUid());
+                startActivity(intent);
             }
         });
 
@@ -317,7 +319,7 @@ public class MyCartActivity extends AppCompatActivity {
 
                 // Inflate Custom layout for searching
                 LayoutInflater inflater = MyCartActivity.this.getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.custom_search_dialog, null);
+                View dialogView = inflater.inflate(R.layout.dialog_custom_search, null);
 
                 // Create Dialog Builder
                 AlertDialog.Builder ab = new AlertDialog.Builder(MyCartActivity.this);

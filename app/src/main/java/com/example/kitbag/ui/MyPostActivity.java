@@ -333,7 +333,7 @@ public class MyPostActivity extends AppCompatActivity {
 
                 // Inflate Custom layout for searching
                 LayoutInflater inflater = MyPostActivity.this.getLayoutInflater();
-                View dialogView = inflater.inflate(R.layout.custom_search_dialog, null);
+                View dialogView = inflater.inflate(R.layout.dialog_custom_search, null);
 
                 // Create Dialog Builder
                 AlertDialog.Builder ab = new AlertDialog.Builder(MyPostActivity.this);

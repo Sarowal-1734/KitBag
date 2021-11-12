@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/imageViewNodeSender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewSenderTime"
+        app:layout_constraintStart_toEndOf="@+id/textViewSenderTime"
+        app:layout_constraintTop_toTopOf="@+id/textViewSenderTime"
+        app:srcCompat="@drawable/ic_tracker_node" />
+
+    <ImageView
+        android:id="@+id/imageViewNodePrimaryAgent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/viewSenderToPrimaryAgent"
+        app:layout_constraintStart_toStartOf="@+id/viewSenderToPrimaryAgent"
+        app:layout_constraintTop_toBottomOf="@+id/viewSenderToPrimaryAgent"
+        app:srcCompat="@drawable/ic_tracker_node" />
+
+    <ImageView
+        android:id="@+id/imageViewNodeDeliveryman"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/viewPrimaryToDeliveryman"
+        app:layout_constraintStart_toStartOf="@+id/viewPrimaryToDeliveryman"
+        app:layout_constraintTop_toBottomOf="@+id/viewPrimaryToDeliveryman"
+        app:srcCompat="@drawable/ic_tracker_node" />
+
+    <ImageView
+        android:id="@+id/imageViewNodeSecondaryAgent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/viewDeliverymanToTargetAgent"
+        app:layout_constraintStart_toStartOf="@+id/viewDeliverymanToTargetAgent"
+        app:layout_constraintTop_toBottomOf="@+id/viewDeliverymanToTargetAgent"
+        app:srcCompat="@drawable/ic_tracker_node" />
+
+    <ImageView
+        android:id="@+id/imageViewNodeReceiver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/viewTargetAgentToReceiver"
+        app:layout_constraintStart_toStartOf="@+id/viewTargetAgentToReceiver"
+        app:layout_constraintTop_toBottomOf="@+id/viewTargetAgentToReceiver"
+        app:srcCompat="@drawable/ic_tracker_node" />
+
+    <View
+        android:id="@+id/viewSenderToPrimaryAgent"
+        android:layout_width="2dp"
+        android:layout_height="50dp"
+        android:background="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/imageViewNodePrimaryAgent"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewNodeSender"
+        app:layout_constraintStart_toStartOf="@+id/imageViewNodeSender"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewNodeSender" />
+
+    <View
+        android:id="@+id/viewPrimaryToDeliveryman"
+        android:layout_width="2dp"
+        android:layout_height="50dp"
+        android:background="@color/black"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewNodePrimaryAgent"
+        app:layout_constraintStart_toStartOf="@+id/imageViewNodePrimaryAgent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewNodePrimaryAgent" />
+
+    <View
+        android:id="@+id/viewDeliverymanToTargetAgent"
+        android:layout_width="2dp"
+        android:layout_height="50dp"
+        android:background="@color/black"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewNodeDeliveryman"
+        app:layout_constraintStart_toStartOf="@+id/imageViewNodeDeliveryman"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewNodeDeliveryman" />
+
+    <View
+        android:id="@+id/viewTargetAgentToReceiver"
+        android:layout_width="2dp"
+        android:layout_height="50dp"
+        android:background="@color/black"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewNodeSecondaryAgent"
+        app:layout_constraintStart_toStartOf="@+id/imageViewNodeSecondaryAgent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewNodeSecondaryAgent" />
+
+    <TextView
+        android:id="@+id/textViewSender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:text="Sender"
+        android:focusable="true"
+        android:padding="4dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewNodeSender"
+        app:layout_constraintStart_toEndOf="@+id/imageViewNodeSender"
+        app:layout_constraintTop_toTopOf="@+id/imageViewNodeSender" />
+
+    <TextView
+        android:id="@+id/textViewPrimaryAgent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:text="Primary Agent"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="4dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewNodePrimaryAgent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewNodePrimaryAgent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewNodePrimaryAgent" />
+
+    <TextView
+        android:id="@+id/textViewDeliveryman"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:text="Deliveryman"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="4dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewNodeDeliveryman"
+        app:layout_constraintStart_toEndOf="@+id/imageViewNodeDeliveryman"
+        app:layout_constraintTop_toTopOf="@+id/imageViewNodeDeliveryman" />
+
+    <TextView
+        android:id="@+id/textViewSecondaryAgent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="4dp"
+        android:text="Final Agent"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewNodeSecondaryAgent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewNodeSecondaryAgent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewNodeSecondaryAgent" />
+
+    <TextView
+        android:id="@+id/textViewReceiver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:text="Delivered"
+        android:focusable="true"
+        android:padding="4dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewNodeReceiver"
+        app:layout_constraintStart_toEndOf="@+id/imageViewNodeReceiver"
+        app:layout_constraintTop_toTopOf="@+id/imageViewNodeReceiver" />
+
+    <TextView
+        android:id="@+id/textViewDismiss"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:text="DISMISS"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDeliveredDescription" />
+
+    <TextView
+        android:id="@+id/textViewStatusTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Product Delivery Status"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewSenderTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewStatusTitle" />
+
+    <TextView
+        android:id="@+id/textViewPrimaryAgentTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="4dp"
+        android:gravity="center"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewNodePrimaryAgent"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewNodePrimaryAgent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewNodePrimaryAgent" />
+
+    <TextView
+        android:id="@+id/textViewDeliverymanTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="4dp"
+        android:gravity="center"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewNodeDeliveryman"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewNodeDeliveryman"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewNodeDeliveryman" />
+
+    <TextView
+        android:id="@+id/textViewFinalAgentTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="4dp"
+        android:gravity="center"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewNodeSecondaryAgent"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewNodeSecondaryAgent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewNodeSecondaryAgent" />
+
+    <TextView
+        android:id="@+id/textViewDeliveredTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="4dp"
+        android:gravity="center"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewNodeReceiver"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewNodeReceiver"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/imageViewNodeReceiver" />
+
+    <TextView
+        android:id="@+id/textViewSenderDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="This Product is with the Sender."
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/textViewSender"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSender" />
+
+    <TextView
+        android:id="@+id/textViewPrimaryAgentDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="The Primary Agent has picked\nthis product from Sender."
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/textViewPrimaryAgent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewPrimaryAgent" />
+
+    <TextView
+        android:id="@+id/textViewDeliverymanDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="The Deliveryman has picked\nthis product from Primary Agent."
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/imageViewNodeDeliveryman"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDeliveryman" />
+
+    <TextView
+        android:id="@+id/textViewFinalAgentDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="The Final Agent has picked\nthis product from Deliveryman."
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/imageViewNodeSecondaryAgent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSecondaryAgent" />
+
+    <TextView
+        android:id="@+id/textViewDeliveredDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="This Product has been successfully\ndelivered to the Receiver."
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/imageViewNodeReceiver"
+        app:layout_constraintTop_toBottomOf="@+id/textViewReceiver" />
+</androidx.constraintlayout.widget.ConstraintLayout>

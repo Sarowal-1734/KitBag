@@ -333,7 +333,9 @@ public class MainActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
+                Intent intent = new Intent(MainActivity.this, EditProfileActivity.class);
+                intent.putExtra("userId", currentUser.getUid());
+                startActivity(intent);
             }
         });
 
@@ -394,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // inflate custom layout
-                View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.custom_search_dialog, null);
+                View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_custom_search, null);
                 // Getting view form custom dialog layout
                 editTextFromDistrict = view.findViewById(R.id.EditTextFromDistrict);
                 editTextFromUpazila = view.findViewById(R.id.EditTextFromUpazila);
