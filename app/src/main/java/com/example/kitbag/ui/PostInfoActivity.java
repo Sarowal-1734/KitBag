@@ -39,6 +39,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.kitbag.R;
+import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.authentication.LoginActivity;
 import com.example.kitbag.chat.ChatDetailsActivity;
 import com.example.kitbag.chat.MessageActivity;
@@ -155,15 +156,13 @@ public class PostInfoActivity extends AppCompatActivity {
             binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
             // Inactive Delivery Request & Product Handover Button
             binding.buttonRequestDelivery.setEnabled(false);
-            binding.buttonRequestDelivery.setBackgroundColor(Color.GRAY);
-            binding.buttonProductHandover.setEnabled(false);
-            binding.buttonProductHandover.setBackgroundColor(Color.GRAY);
+            binding.buttonRequestDelivery.setBackgroundColor(getResources().getColor(R.color.silver));
         }
 
         // Inactive Delivery Request Button if My Post
         if (currentUser != null && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
             binding.buttonRequestDelivery.setEnabled(false);
-            binding.buttonRequestDelivery.setBackgroundColor(Color.GRAY);
+            binding.buttonRequestDelivery.setBackgroundColor(getResources().getColor(R.color.silver));
         }
 
         // Adding back arrow in the appBar
@@ -297,6 +296,10 @@ public class PostInfoActivity extends AppCompatActivity {
                                                 binding.imageIconMail.setVisibility(View.GONE);
                                             } else {
                                                 binding.TextViewMail.setText(userModel.getEmail());
+                                            }
+                                            // Inactive Product Delivery Process According to currentPostStatus
+                                            if (currentUser != null) {
+                                                enableDisableHandoverButton(modelClassPost);
                                             }
                                         }
                                     });
@@ -487,12 +490,59 @@ public class PostInfoActivity extends AppCompatActivity {
             }
         });
 
+    } // Ending onCreate
+
+    private void enableDisableHandoverButton(ModelClassPost modelClassPost) {
+        if (modelClassPost.getStatusCurrent().equals("N/A")) {
+            if (currentUser.getUid().equals(modelClassPost.getUserId())) {
+                binding.buttonProductHandover.setEnabled(true);
+                binding.buttonProductHandover.setBackgroundColor(Color.parseColor("#1754B6"));
+            }
+        } else if (modelClassPost.getStatusCurrent().equals("Primary_Agent")) {
+            collectionReference.document(currentUser.getUid()).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            UserModel user = documentSnapshot.toObject(UserModel.class);
+                            if (user.getPhoneNumber().equals(modelClassPost.getStatusPrimaryAgent())) {
+                                binding.buttonProductHandover.setEnabled(true);
+                                binding.buttonProductHandover.setBackgroundColor(Color.parseColor("#1754B6"));
+                            }
+                        }
+                    });
+        } else if (modelClassPost.getStatusCurrent().equals("Deliveryman")) {
+            collectionReference.document(currentUser.getUid()).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            UserModel user = documentSnapshot.toObject(UserModel.class);
+                            if (user.getPhoneNumber().equals(modelClassPost.getStatusDeliveryman())) {
+                                binding.buttonProductHandover.setEnabled(true);
+                                binding.buttonProductHandover.setBackgroundColor(Color.parseColor("#1754B6"));
+                            }
+                        }
+                    });
+        } else if (modelClassPost.getStatusCurrent().equals("Final_Agent")) {
+            collectionReference.document(currentUser.getUid()).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            UserModel user = documentSnapshot.toObject(UserModel.class);
+                            if (user.getPhoneNumber().equals(modelClassPost.getStatusFinalAgent())) {
+                                binding.buttonProductHandover.setEnabled(true);
+                                binding.buttonProductHandover.setBackgroundColor(Color.parseColor("#1754B6"));
+                            }
+                        }
+                    });
+        } else {
+            binding.buttonProductHandover.setVisibility(View.GONE);
+        }
     }
 
     // validation for update password and create popup dialog
     private void validationUpdatePassword() {
         // inflate custom layout
-        View view = LayoutInflater.from(PostInfoActivity.this).inflate(R.layout.dialog_change_password,null);
+        View view = LayoutInflater.from(PostInfoActivity.this).inflate(R.layout.dialog_change_password, null);
         // Getting view form custom dialog layout
         editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
         EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);
@@ -757,8 +807,34 @@ public class PostInfoActivity extends AppCompatActivity {
     }
 
     private void becomeDeliveryMan() {
-        //todo displa popup and button to register to deliveryman
-        Toast.makeText(PostInfoActivity.this, "Please upgrade your account to deliveryman", Toast.LENGTH_SHORT).show();
+        // inflate custom layout
+        View view = LayoutInflater.from(PostInfoActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
+        // Getting view form custom dialog layout
+        ImageView imageViewNode1 = view.findViewById(R.id.imageViewNode1);
+        ImageView imageViewNode2 = view.findViewById(R.id.imageViewNode2);
+        ImageView imageViewNode3 = view.findViewById(R.id.imageViewNode3);
+        Button buttonCancel = view.findViewById(R.id.buttonCancel);
+        Button buttonProceed = view.findViewById(R.id.buttonProceed);
+        imageViewNode1.setColorFilter(Color.parseColor("#1754B6")); // app_bar color
+        imageViewNode2.setColorFilter(Color.parseColor("#1754B6"));
+        imageViewNode3.setColorFilter(Color.parseColor("#1754B6"));
+        builder = new AlertDialog.Builder(PostInfoActivity.this);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        buttonProceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(PostInfoActivity.this, DeliverymanRegistrationActivity.class));
+            }
+        });
     }
 
     // ProgressBar Setup
