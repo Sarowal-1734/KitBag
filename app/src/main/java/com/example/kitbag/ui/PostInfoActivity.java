@@ -5,6 +5,7 @@ import static com.example.kitbag.ui.MainActivity.fromChatDetailsActivity;
 import static com.example.kitbag.ui.MainActivity.fromMainActivity;
 import static com.example.kitbag.ui.MainActivity.fromMyCartActivity;
 import static com.example.kitbag.ui.MainActivity.fromMyPostActivity;
+import static com.example.kitbag.ui.MainActivity.fromOtpVerificationActivity;
 import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
 
 import android.app.AlertDialog;
@@ -185,6 +186,16 @@ public class PostInfoActivity extends AppCompatActivity {
             }
         });
 
+        // Reason: otherwise back to the same postInfo activity
+        if (getIntent().getStringExtra(getOpenFromActivity).equals(fromOtpVerificationActivity)) {
+            slidrInterface.lock();
+        }
+        if (getIntent().getStringExtra("statusCurrent").equals("Deliveryman")
+                || getIntent().getStringExtra("statusCurrent").equals("Final_Agent")
+                || getIntent().getStringExtra("statusCurrent").equals("Delivered")) {
+            binding.buttonRequestDelivery.setVisibility(View.GONE);
+        }
+
         // Active Inactive Slider to back based on drawer
         binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
@@ -262,94 +273,11 @@ public class PostInfoActivity extends AppCompatActivity {
             }
         });
 
-        // Display all the info to the activity
-        db.collection("All_Post")
-                .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
-                            String source, destination;
-                            source = modelClassPost.getFromUpazilla() + ", " + modelClassPost.getFromDistrict();
-                            destination = modelClassPost.getToUpazilla() + ", " + modelClassPost.getToDistrict();
-                            binding.textViewTitle.setText(modelClassPost.getTitle());
-                            binding.TextViewDescription.setText(modelClassPost.getDescription());
-                            binding.TextViewWeight.setText(modelClassPost.getWeight());
-                            binding.TextViewStatus.setText(modelClassPost.getStatusCurrent());
-                            binding.TextViewSource.setText(source);
-                            binding.TextViewDestination.setText(destination);
-                            binding.TextViewCall.setText(modelClassPost.getPhoneNumber());
-                            db.collection("Users").document(modelClassPost.getUserId())
-                                    .get()
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            userModel = documentSnapshot.toObject(UserModel.class);
-                                            String postedUser = "Posted by " + userModel.getUserName();
-                                            String chatWith = "Chat (" + userModel.getUserName() + ")";
-                                            binding.TextViewChat.setText(chatWith);
-                                            binding.textViewUserTime.setText(postedUser);
-                                            binding.TextViewUserType.setText(userModel.getUserType());
-                                            if (userModel.getEmail().equals("")) {
-                                                binding.imageIconMail.setVisibility(View.GONE);
-                                            } else {
-                                                binding.TextViewMail.setText(userModel.getEmail());
-                                            }
-                                            // Inactive Product Delivery Process According to currentPostStatus
-                                            if (currentUser != null) {
-                                                enableDisableHandoverButton(modelClassPost);
-                                            }
-                                        }
-                                    });
-                            // Stop the shimmer effect and display data
-                            binding.shimmerContainer.stopShimmer();
-                            binding.shimmerContainer.setVisibility(View.GONE);
-                            binding.view.setVisibility(View.GONE);
-                            // Initialize shimmer for loading the image
-                            Shimmer shimmer = new Shimmer.ColorHighlightBuilder()
-                                    .setBaseColor(Color.parseColor("#AEADAD"))
-                                    .setBaseAlpha(1)
-                                    .setHighlightColor(Color.parseColor("#E7E7E7"))
-                                    .setHighlightAlpha(1)
-                                    .setDropoff(50)
-                                    .build();
-                            // Initialize shimmer drawable
-                            ShimmerDrawable shimmerDrawable = new ShimmerDrawable();
-                            // Set shimmer
-                            shimmerDrawable.setShimmer(shimmer);
-
-                            Glide.with(PostInfoActivity.this).load(modelClassPost.getImageUrl())
-                                    .placeholder(shimmerDrawable)
-                                    .into(binding.photoView);
-                            return;
-                        }
-                        // Stop the shimmer effect and display data
-                        binding.shimmerContainer.stopShimmer();
-                        binding.shimmerContainer.setVisibility(View.GONE);
-                        binding.view.setVisibility(View.GONE);
-                        binding.textViewTitle.setText("This post has been deleted by the owner! Now please remove this post from your cart.");
-                        binding.textViewTitle.setGravity(Gravity.CENTER);
-                        binding.textViewTitle.setTextColor(Color.RED);
-                        binding.textViewUserTime.setVisibility(View.GONE);
-                        binding.cardViewPhoto.setVisibility(View.GONE);
-                        binding.TextViewDescriptionLayout.setVisibility(View.GONE);
-                        binding.weightStatus.setVisibility(View.GONE);
-                        binding.fromTo.setVisibility(View.GONE);
-                        binding.typeChat.setVisibility(View.GONE);
-                        binding.callEmail.setVisibility(View.GONE);
-                        // Stop the shimmer effect and display data
-                        binding.shimmerContainer.stopShimmer();
-                        binding.shimmerContainer.setVisibility(View.GONE);
-                        binding.view.setVisibility(View.GONE);
-                    }
-                });
-
         // Set button text AddToCart or DeletePost or inactive AddToCartButton
         if (currentUser != null) {
             if (getIntent().getStringExtra(getOpenFromActivity).equals(fromMainActivity)
-                    || getIntent().getStringExtra(getOpenFromActivity).equals(fromChatDetailsActivity)) {
+                    || getIntent().getStringExtra(getOpenFromActivity).equals(fromChatDetailsActivity)
+                    || getIntent().getStringExtra(getOpenFromActivity).equals(fromOtpVerificationActivity)) {
                 // Opened from mainActivity
                 // Checking this is my post or not
                 if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
@@ -489,6 +417,86 @@ public class PostInfoActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // Display all the info to the activity
+        db.collection("All_Post")
+                .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
+                            String source, destination;
+                            source = modelClassPost.getFromUpazilla() + ", " + modelClassPost.getFromDistrict();
+                            destination = modelClassPost.getToUpazilla() + ", " + modelClassPost.getToDistrict();
+                            binding.textViewTitle.setText(modelClassPost.getTitle());
+                            binding.TextViewDescription.setText(modelClassPost.getDescription());
+                            binding.TextViewWeight.setText(modelClassPost.getWeight());
+                            binding.TextViewStatus.setText(modelClassPost.getStatusCurrent());
+                            binding.TextViewSource.setText(source);
+                            binding.TextViewDestination.setText(destination);
+                            binding.TextViewCall.setText(modelClassPost.getPhoneNumber());
+                            db.collection("Users").document(modelClassPost.getUserId())
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            userModel = documentSnapshot.toObject(UserModel.class);
+                                            String postedUser = "Posted by " + userModel.getUserName();
+                                            String chatWith = "Chat (" + userModel.getUserName() + ")";
+                                            binding.TextViewChat.setText(chatWith);
+                                            binding.textViewUserTime.setText(postedUser);
+                                            binding.TextViewUserType.setText(userModel.getUserType());
+                                            if (userModel.getEmail().equals("")) {
+                                                binding.imageIconMail.setVisibility(View.GONE);
+                                            } else {
+                                                binding.TextViewMail.setText(userModel.getEmail());
+                                            }
+                                            // Inactive Product Delivery Process According to currentPostStatus
+                                            if (currentUser != null) {
+                                                enableDisableHandoverButton(modelClassPost);
+                                            }
+                                        }
+                                    });
+                            // Stop the shimmer effect and display data
+                            binding.shimmerContainer.stopShimmer();
+                            binding.shimmerContainer.setVisibility(View.GONE);
+                            binding.view.setVisibility(View.GONE);
+                            // Initialize shimmer for loading the image
+                            Shimmer shimmer = new Shimmer.ColorHighlightBuilder()
+                                    .setBaseColor(Color.parseColor("#AEADAD"))
+                                    .setBaseAlpha(1)
+                                    .setHighlightColor(Color.parseColor("#E7E7E7"))
+                                    .setHighlightAlpha(1)
+                                    .setDropoff(50)
+                                    .build();
+                            // Initialize shimmer drawable
+                            ShimmerDrawable shimmerDrawable = new ShimmerDrawable();
+                            // Set shimmer
+                            shimmerDrawable.setShimmer(shimmer);
+
+                            Glide.with(PostInfoActivity.this).load(modelClassPost.getImageUrl())
+                                    .placeholder(shimmerDrawable)
+                                    .into(binding.photoView);
+                            return;
+                        }
+                        // Stop the shimmer effect and display data
+                        binding.shimmerContainer.stopShimmer();
+                        binding.shimmerContainer.setVisibility(View.GONE);
+                        binding.view.setVisibility(View.GONE);
+                        binding.textViewTitle.setText("This post has been deleted by the owner! Now please remove this post from your cart.");
+                        binding.textViewTitle.setGravity(Gravity.CENTER);
+                        binding.textViewTitle.setTextColor(Color.RED);
+                        binding.textViewUserTime.setVisibility(View.GONE);
+                        binding.cardViewPhoto.setVisibility(View.GONE);
+                        binding.TextViewDescriptionLayout.setVisibility(View.GONE);
+                        binding.weightStatus.setVisibility(View.GONE);
+                        binding.fromTo.setVisibility(View.GONE);
+                        binding.typeChat.setVisibility(View.GONE);
+                        binding.callEmail.setVisibility(View.GONE);
+                    }
+                });
 
     } // Ending onCreate
 
@@ -644,6 +652,10 @@ public class PostInfoActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
+            return;
+        }
+        if (getIntent().getStringExtra(getOpenFromActivity).equals(fromOtpVerificationActivity)) {
+            startActivity(new Intent(PostInfoActivity.this, MainActivity.class));
             return;
         }
         super.onBackPressed();

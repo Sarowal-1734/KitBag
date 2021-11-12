@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
     public static String fromMyPostActivity = "MyPostActivity";
     public static String fromMyCartActivity = "MyCartActivity";
     public static String fromChatDetailsActivity = "ChatDetailsActivity";
+    public static String fromOtpVerificationActivity = "OtpVerificationActivity";
 
     // Check is searching or not
     private boolean searching = false;
@@ -243,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
                                     Intent intent = new Intent(MainActivity.this, PostInfoActivity.class);
                                     intent.putExtra("userId", post.getUserId());
                                     intent.putExtra("postReference", post.getPostReference());
+                                    intent.putExtra("statusCurrent", post.getStatusCurrent());
                                     intent.putExtra(getOpenFromActivity, fromMainActivity);
                                     startActivity(intent);
                                 }
@@ -548,7 +550,8 @@ public class MainActivity extends AppCompatActivity {
                                     Intent intent = new Intent(MainActivity.this, PostInfoActivity.class);
                                     intent.putExtra("userId", post.getUserId());
                                     intent.putExtra("postReference", post.getPostReference());
-                                    intent.putExtra("fromActivity", "MainActivity");
+                                    intent.putExtra("statusCurrent", post.getStatusCurrent());
+                                    intent.putExtra(getOpenFromActivity, fromMainActivity);
                                     startActivity(intent);
                                 }
                             });
@@ -635,7 +638,8 @@ public class MainActivity extends AppCompatActivity {
                                     Intent intent = new Intent(MainActivity.this, PostInfoActivity.class);
                                     intent.putExtra("userId", post.getUserId());
                                     intent.putExtra("postReference", post.getPostReference());
-                                    intent.putExtra("fromActivity", "MainActivity");
+                                    intent.putExtra("statusCurrent", post.getStatusCurrent());
+                                    intent.putExtra(getOpenFromActivity, fromMainActivity);
                                     startActivity(intent);
                                 }
                             });

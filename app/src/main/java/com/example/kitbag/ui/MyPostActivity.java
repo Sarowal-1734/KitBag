@@ -225,6 +225,7 @@ public class MyPostActivity extends AppCompatActivity {
                                     Intent intent = new Intent(MyPostActivity.this, PostInfoActivity.class);
                                     intent.putExtra("userId", post.getUserId());
                                     intent.putExtra("postReference", post.getPostReference());
+                                    intent.putExtra("statusCurrent", post.getStatusCurrent());
                                     intent.putExtra(getOpenFromActivity, fromMyPostActivity);
                                     startActivity(intent);
                                 }

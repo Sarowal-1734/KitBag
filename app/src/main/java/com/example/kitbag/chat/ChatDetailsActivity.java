@@ -124,13 +124,14 @@ public class ChatDetailsActivity extends AppCompatActivity {
                     }
                 });
 
-        // On click the tootbar title to see the post info
+        // On click the toolbar title to see the post info
         binding.textViewPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ChatDetailsActivity.this, PostInfoActivity.class);
                 intent.putExtra("postReference", postReference);
                 intent.putExtra("userId", modelClassPost.getUserId());
+                intent.putExtra("statusCurrent", modelClassPost.getStatusCurrent());
                 intent.putExtra(getOpenFromActivity, fromChatDetailsActivity);
                 startActivity(intent);
             }

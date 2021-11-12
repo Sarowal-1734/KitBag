@@ -226,6 +226,7 @@ public class MyCartActivity extends AppCompatActivity {
                                     intent.putExtra("userId", post.getUserId());
                                     intent.putExtra("postReference", post.getPostReference());
                                     intent.putExtra("documentReference", post.getDocumentReference());
+                                    intent.putExtra("statusCurrent", post.getStatusCurrent());
                                     intent.putExtra(getOpenFromActivity, fromMyCartActivity);
                                     startActivity(intent);
                                 }
