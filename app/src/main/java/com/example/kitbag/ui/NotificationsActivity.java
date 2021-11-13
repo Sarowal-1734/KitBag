@@ -2,6 +2,7 @@ package com.example.kitbag.ui;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -20,8 +21,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
+import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityNotificationsBinding;
+import com.example.kitbag.model.UserModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -88,14 +91,16 @@ public class NotificationsActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
-                            NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-                            View view = navigationView.getHeaderView(0);
+                            UserModel userModel = documentSnapshot.toObject(UserModel.class);
+                            if (userModel.getUserType().equals("Deliveryman") || userModel.getUserType().equals("Agent")) {
+                                binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
+                            }
+                            View view = binding.navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
                             // set userName to the drawer
-                            userName.setText(documentSnapshot.getString("userName"));
-                            if (documentSnapshot.getString("imageUrl") != null) {
+                            userName.setText(userModel.getUserName());
+                            if (userModel.getImageUrl() != null) {
                                 // Picasso library for download & show image
                                 Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
                                 Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
@@ -161,7 +166,9 @@ public class NotificationsActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(NotificationsActivity.this, EditProfileActivity.class));
+                Intent intent = new Intent(NotificationsActivity.this, EditProfileActivity.class);
+                intent.putExtra("userId", currentUser.getUid());
+                startActivity(intent);
             }
         });
 
@@ -172,6 +179,9 @@ public class NotificationsActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.nav_language:
                         Toast.makeText(NotificationsActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_deliveryman:
+                        registerAsDeliveryman();
                         break;
                     case R.id.nav_discover_kitbag:
                         Toast.makeText(NotificationsActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
@@ -210,10 +220,41 @@ public class NotificationsActivity extends AppCompatActivity {
 
     }
 
+    private void registerAsDeliveryman() {
+        // inflate custom layout
+        View view = LayoutInflater.from(NotificationsActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
+        // Getting view form custom dialog layout
+        ImageView imageViewNode1 = view.findViewById(R.id.imageViewNode1);
+        ImageView imageViewNode2 = view.findViewById(R.id.imageViewNode2);
+        ImageView imageViewNode3 = view.findViewById(R.id.imageViewNode3);
+        Button buttonCancel = view.findViewById(R.id.buttonCancel);
+        Button buttonProceed = view.findViewById(R.id.buttonProceed);
+        imageViewNode1.setColorFilter(Color.parseColor("#1754B6")); // app_bar color
+        imageViewNode2.setColorFilter(Color.parseColor("#1754B6"));
+        imageViewNode3.setColorFilter(Color.parseColor("#1754B6"));
+        builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        buttonProceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(NotificationsActivity.this, DeliverymanRegistrationActivity.class));
+            }
+        });
+    }
+
     // validation for update password and create popup dialog
     private void validationUpdatePassword() {
         // inflate custom layout
-        View view = LayoutInflater.from(NotificationsActivity.this).inflate(R.layout.dialog_change_password,null);
+        View view = LayoutInflater.from(NotificationsActivity.this).inflate(R.layout.dialog_change_password, null);
         // Getting view form custom dialog layout
         editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
         EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);

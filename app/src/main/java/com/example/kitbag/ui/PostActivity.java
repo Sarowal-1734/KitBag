@@ -37,6 +37,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
+import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityPostBinding;
 import com.example.kitbag.model.ModelClassPost;
@@ -189,9 +190,10 @@ public class PostActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             UserModel userModel = documentSnapshot.toObject(UserModel.class);
-                            //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
-                            NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-                            View view = navigationView.getHeaderView(0);
+                            if (userModel.getUserType().equals("Deliveryman") || userModel.getUserType().equals("Agent")) {
+                                binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
+                            }
+                            View view = binding.navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
                             // set userName to the drawer
@@ -262,7 +264,9 @@ public class PostActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(PostActivity.this, EditProfileActivity.class));
+                Intent intent = new Intent(PostActivity.this, EditProfileActivity.class);
+                intent.putExtra("userId", currentUser.getUid());
+                startActivity(intent);
             }
         });
 
@@ -273,6 +277,9 @@ public class PostActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.nav_language:
                         Toast.makeText(PostActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.nav_deliveryman:
+                        registerAsDeliveryman();
                         break;
                     case R.id.nav_discover_kitbag:
                         Toast.makeText(PostActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
@@ -310,7 +317,6 @@ public class PostActivity extends AppCompatActivity {
         });
 
         // Get image from camera and set to the imageView
-
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
@@ -359,6 +365,37 @@ public class PostActivity extends AppCompatActivity {
             }
         });
     } // Ending onCreate
+
+    private void registerAsDeliveryman() {
+        // inflate custom layout
+        View view = LayoutInflater.from(PostActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
+        // Getting view form custom dialog layout
+        ImageView imageViewNode1 = view.findViewById(R.id.imageViewNode1);
+        ImageView imageViewNode2 = view.findViewById(R.id.imageViewNode2);
+        ImageView imageViewNode3 = view.findViewById(R.id.imageViewNode3);
+        Button buttonCancel = view.findViewById(R.id.buttonCancel);
+        Button buttonProceed = view.findViewById(R.id.buttonProceed);
+        imageViewNode1.setColorFilter(Color.parseColor("#1754B6")); // app_bar color
+        imageViewNode2.setColorFilter(Color.parseColor("#1754B6"));
+        imageViewNode3.setColorFilter(Color.parseColor("#1754B6"));
+        builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        buttonProceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(PostActivity.this, DeliverymanRegistrationActivity.class));
+            }
+        });
+    }
 
     //Object detect and labeling need input image from bitmap
     private void labelImage(InputImage image) {

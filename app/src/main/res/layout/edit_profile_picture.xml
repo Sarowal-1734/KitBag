@@ -19,7 +19,7 @@
         android:layout_height="40dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:background="?attr/selectableItemBackground"
+        android:background="?attr/selectableItemBackgroundBorderless"
         app:cardBackgroundColor="@color/app_bar"
         app:cardCornerRadius="20dp">
 

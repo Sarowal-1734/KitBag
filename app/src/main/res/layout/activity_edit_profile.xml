@@ -51,6 +51,7 @@
                     </LinearLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/autoCompleteUserName"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -63,44 +64,104 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:hint="@string/username"
-                            android:inputType="textEmailAddress" />
+                            android:inputType="text" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:clickable="false"
                         android:enabled="false"
-                        android:focusable="false"
-                        app:startIconDrawable="@drawable/ic_call">
+                        app:endIconMode="clear_text"
+                        app:startIconDrawable="@drawable/ic_profile">
 
                         <EditText
-                            android:id="@+id/editTextContact"
+                            android:id="@+id/editTextUsertype"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:clickable="false"
                             android:ellipsize="end"
+                            android:hint="User Type"
+                            android:inputType="text" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="5">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="4"
+                            android:clickable="false"
                             android:enabled="false"
                             android:focusable="false"
-                            android:hint="Contact" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                            app:startIconDrawable="@drawable/ic_call">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            <EditText
+                                android:id="@+id/editTextContact"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:clickable="false"
+                                android:ellipsize="end"
+                                android:enabled="false"
+                                android:focusable="false"
+                                android:hint="Contact" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <ImageView
+                            android:id="@+id/imageViewCall"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="16dp"
+                            android:src="@drawable/ic_call"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:endIconMode="clear_text"
-                        app:startIconDrawable="@drawable/ic_mail">
+                        android:orientation="horizontal"
+                        android:weightSum="5">
 
-                        <EditText
-                            android:id="@+id/editTextEmail"
-                            android:layout_width="match_parent"
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/autoCompleteEmail"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:ellipsize="end"
-                            android:hint="@string/email_optional"
-                            android:inputType="textEmailAddress" />
-                    </com.google.android.material.textfield.TextInputLayout>
+                            android:layout_weight="4"
+                            app:endIconMode="clear_text"
+                            app:startIconDrawable="@drawable/ic_mail">
+
+                            <EditText
+                                android:id="@+id/editTextEmail"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:hint="@string/email_optional"
+                                android:inputType="textEmailAddress" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <ImageView
+                            android:id="@+id/imageViewMail"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="16dp"
+                            android:src="@drawable/ic_mail"
+                            android:visibility="gone" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -109,6 +170,7 @@
                         android:weightSum="2">
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/autoCompleteDistrict"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -127,6 +189,7 @@
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/autoCompleteUpazilla"
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -145,6 +208,7 @@
                     </LinearLayout>
 
                     <Button
+                        android:id="@+id/buttonUpdateProfile"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
@@ -164,7 +228,7 @@
                         android:padding="16dp"
                         android:clickable="true"
                         android:focusable="true"
-                        android:background="?attr/selectableItemBackground"/>
+                        android:background="?attr/selectableItemBackgroundBorderless" />
 
                 </LinearLayout>
             </ScrollView>

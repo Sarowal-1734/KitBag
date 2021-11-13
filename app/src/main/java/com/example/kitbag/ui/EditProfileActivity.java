@@ -1,12 +1,16 @@
 package com.example.kitbag.ui;
 
+import static android.Manifest.permission.CALL_PHONE;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -21,12 +25,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
+import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityEditProfileBinding;
 import com.example.kitbag.model.UserModel;
@@ -54,7 +61,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class EditProfileActivity extends AppCompatActivity {
 
     private ActivityEditProfileBinding binding;
-    private UserModel userModel;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
@@ -65,6 +71,9 @@ public class EditProfileActivity extends AppCompatActivity {
     // Dialog Declaration
     private AlertDialog.Builder builder;
     private AlertDialog dialog;
+
+    private UserModel currentUserModel;
+    private UserModel userModelInfo;
 
     // For Changing Password
     private EditText editTextOldPassword;
@@ -82,15 +91,11 @@ public class EditProfileActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 1;
     private Uri imageUri;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityEditProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        userModel = new UserModel();
-        binding.editTextUsername.setText(userModel.getUserName());
 
         // Swipe to back
         slidrInterface = Slidr.attach(this);
@@ -104,6 +109,81 @@ public class EditProfileActivity extends AppCompatActivity {
 
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+
+        // Dynamic Activity View (EditProfile/ViewProfile)
+        if (!currentUser.getUid().equals(getIntent().getStringExtra("userId"))) {
+            binding.customAppBar.appbarTitle.setText("User Info");
+            binding.buttonUpdateProfile.setVisibility(View.GONE);
+            binding.textViewBecomeDeliveryman.setVisibility(View.GONE);
+            binding.customEditProfileImage.cardViewAddProfilePic.setVisibility(View.GONE);
+            binding.autoCompleteUserName.setEnabled(false);
+            binding.autoCompleteEmail.setEnabled(false);
+            binding.autoCompleteDistrict.setEnabled(false);
+            binding.autoCompleteUpazilla.setEnabled(false);
+            binding.imageViewCall.setVisibility(View.VISIBLE);
+            binding.imageViewCall.setColorFilter(Color.parseColor("#43AA0C"));
+            binding.imageViewMail.setVisibility(View.VISIBLE);
+            binding.imageViewMail.setColorFilter(Color.parseColor("#DC6363"));
+        }
+        // on Call icon clicked
+        binding.imageViewCall.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(View v) {
+                makeCall();
+            }
+        });
+        // on Mail icon clicked
+        binding.imageViewMail.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!TextUtils.isEmpty(currentUserModel.getEmail())) {
+                    String subject = "Providing Delivery Service In KitBag";
+                    String body = "Hi! I am a deliveryman. I found that you are going to deliver a product. Here as deliveryman," +
+                            " I can deliver your product. If you are interested then please check the inbox in KitBag Chat option.";
+                    Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:" + userModelInfo.getEmail()));
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                    emailIntent.putExtra(Intent.EXTRA_TEXT, body);
+                    startActivity(Intent.createChooser(emailIntent, "KitBag Courier Service"));
+                } else {
+                    Toast.makeText(EditProfileActivity.this, "Please add an email to your profile", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        // Set drawer menu based on Login/Logout
+        if (currentUser != null) {
+            // User is signed in
+            binding.navigationView.getMenu().clear();
+            binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            // Get userName and image from database and set to the drawer
+            collectionReference.document(currentUser.getUid()).get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            currentUserModel = documentSnapshot.toObject(UserModel.class);
+                            // Hide or visible the deliveryman text
+                            if (currentUserModel.getUserType().equals("Deliveryman") || currentUserModel.getUserType().equals("Agent")) {
+                                binding.textViewBecomeDeliveryman.setVisibility(View.GONE);
+                            }
+                            if (currentUserModel.getUserType().equals("Deliveryman") || currentUserModel.getUserType().equals("Agent")) {
+                                binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
+                            }
+                            View view = binding.navigationView.getHeaderView(0);
+                            TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
+                            CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
+                            userName.setText(currentUserModel.getUserName());
+                            if (currentUserModel.getImageUrl() != null) {
+                                // Picasso library for download & show image in drawer and appBar
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
+                            }
+                        }
+                    });
+        }
 
         // Open Drawer Layout
         binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
@@ -164,6 +244,9 @@ public class EditProfileActivity extends AppCompatActivity {
                     case R.id.nav_language:
                         Toast.makeText(EditProfileActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;
+                    case R.id.nav_deliveryman:
+                        registerAsDeliveryman();
+                        break;
                     case R.id.nav_discover_kitbag:
                         Toast.makeText(EditProfileActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
                         break;
@@ -209,37 +292,27 @@ public class EditProfileActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        UserModel userModel = documentSnapshot.toObject(UserModel.class);
-                        // Hide or visible the deliveryman text
-                        if (userModel.getUserType().equals("Deliveryman") || userModel.getUserType().equals("Agent")) {
-                            binding.textViewBecomeDeliveryman.setVisibility(View.GONE);
+                        userModelInfo = documentSnapshot.toObject(UserModel.class);
+                        if (!currentUser.getUid().equals(getIntent().getStringExtra("userId")) && TextUtils.isEmpty(userModelInfo.getEmail())) {
+                            binding.autoCompleteEmail.setVisibility(View.GONE);
+                            binding.imageViewMail.setVisibility(View.GONE);
                         }
-                        //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
-                        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-                        View view = navigationView.getHeaderView(0);
-                        TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
-                        CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
-                        // set userName to the drawer
-                        userName.setText(userModel.getUserName());
                         // get user info from database and set to fields
-                        binding.editTextUsername.setText(userModel.getUserName());
-                        binding.editTextContact.setText(userModel.getPhoneNumber());
+                        binding.editTextUsername.setText(userModelInfo.getUserName());
+                        binding.editTextUsertype.setText(userModelInfo.getUserType());
+                        binding.editTextContact.setText(userModelInfo.getPhoneNumber());
                         if (documentSnapshot.getString("email") != null) {
-                            binding.editTextEmail.setText(userModel.getEmail());
+                            binding.editTextEmail.setText(userModelInfo.getEmail());
                         }
                         if (documentSnapshot.getString("district") != null) {
-                            binding.EditTextDistrict.setText(userModel.getDistrict());
+                            binding.EditTextDistrict.setText(userModelInfo.getDistrict());
                         }
                         if (documentSnapshot.getString("upazilla") != null) {
-                            binding.EditTextUpazila.setText(userModel.getUpazilla());
+                            binding.EditTextUpazila.setText(userModelInfo.getUpazilla());
                         }
                         if (documentSnapshot.getString("imageUrl") != null) {
                             // set image to the imageView (activity)
-                            Picasso.get().load(userModel.getImageUrl()).placeholder(R.drawable.logo).fit().centerCrop().into(binding.customEditProfileImage.circularImageViewProfile);
-                            // Set image to the drawer
-                            Picasso.get().load(userModel.getImageUrl()).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
-                            // set image to the appBar
-                            Picasso.get().load(userModel.getImageUrl()).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
+                            Picasso.get().load(userModelInfo.getImageUrl()).placeholder(R.drawable.logo).fit().centerCrop().into(binding.customEditProfileImage.circularImageViewProfile);
                         }
                     }
                 });
@@ -255,13 +328,55 @@ public class EditProfileActivity extends AppCompatActivity {
                 startActivityForResult(gallery, PICK_IMAGE);
             }
         });
-        
+
         // On Become Deliveryman text clicked
         binding.textViewBecomeDeliveryman.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO Go Registration of deliveryman activity
-                Toast.makeText(EditProfileActivity.this, "Let's Become a Deliveryman", Toast.LENGTH_SHORT).show();
+                registerAsDeliveryman();
+            }
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void makeCall() {
+        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + userModelInfo.getPhoneNumber()));
+        if (ContextCompat.checkSelfPermission(getApplicationContext(), CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+            startActivity(intent);
+        } else {
+            requestPermissions(new String[]{CALL_PHONE}, 1);
+        }
+
+    }
+
+    // Registration as deliveryman
+    private void registerAsDeliveryman() {
+        // inflate custom layout
+        View view = LayoutInflater.from(EditProfileActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
+        // Getting view form custom dialog layout
+        ImageView imageViewNode1 = view.findViewById(R.id.imageViewNode1);
+        ImageView imageViewNode2 = view.findViewById(R.id.imageViewNode2);
+        ImageView imageViewNode3 = view.findViewById(R.id.imageViewNode3);
+        Button buttonCancel = view.findViewById(R.id.buttonCancel);
+        Button buttonProceed = view.findViewById(R.id.buttonProceed);
+        imageViewNode1.setColorFilter(Color.parseColor("#1754B6")); // app_bar color
+        imageViewNode2.setColorFilter(Color.parseColor("#1754B6"));
+        imageViewNode3.setColorFilter(Color.parseColor("#1754B6"));
+        builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        buttonProceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(EditProfileActivity.this, DeliverymanRegistrationActivity.class));
             }
         });
     }
@@ -291,10 +406,11 @@ public class EditProfileActivity extends AppCompatActivity {
         if (validation()) {
             if (isConnected()) {
                 // Setting user value to model class
-                userModel.setEmail(binding.editTextEmail.getText().toString());
-                userModel.setUserName(binding.editTextUsername.getText().toString());
-                userModel.setUpazilla(binding.EditTextUpazila.getText().toString());
-                userModel.setDistrict(binding.EditTextDistrict.getText().toString());
+                UserModel userModelUpdate = new UserModel();
+                userModelUpdate.setEmail(binding.editTextEmail.getText().toString());
+                userModelUpdate.setUserName(binding.editTextUsername.getText().toString());
+                userModelUpdate.setUpazilla(binding.EditTextUpazila.getText().toString());
+                userModelUpdate.setDistrict(binding.EditTextDistrict.getText().toString());
 
                 // Show progressBar
                 progressDialog = new ProgressDialog(EditProfileActivity.this);
@@ -315,10 +431,10 @@ public class EditProfileActivity extends AppCompatActivity {
                                         db.collection("Users").document(currentUser.getUid())
                                                 .update(
                                                         "imageUrl", uri.toString(),
-                                                        "userName", userModel.getUserName(),
-                                                        "email", userModel.getEmail(),
-                                                        "district", userModel.getDistrict(),
-                                                        "upazilla", userModel.getUpazilla()
+                                                        "userName", userModelUpdate.getUserName(),
+                                                        "email", userModelUpdate.getEmail(),
+                                                        "district", userModelUpdate.getDistrict(),
+                                                        "upazilla", userModelUpdate.getUpazilla()
                                                 );
                                         progressDialog.dismiss();
                                         Toast.makeText(EditProfileActivity.this, "Profile successfully updated", Toast.LENGTH_SHORT).show();

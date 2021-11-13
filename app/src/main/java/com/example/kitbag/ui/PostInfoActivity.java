@@ -161,6 +161,11 @@ public class PostInfoActivity extends AppCompatActivity {
         finalAgentDescription = viewStatusDetails.findViewById(R.id.textViewFinalAgentDescription);
         receiverDescription = viewStatusDetails.findViewById(R.id.textViewDeliveredDescription);
 
+        // Set color on Call and Mail Icon
+        binding.imageViewCall.setColorFilter(Color.parseColor("#43AA0C"));
+        binding.imageViewMail.setColorFilter(Color.parseColor("#DC6363"));
+        binding.imageViewChat.setColorFilter(Color.parseColor("#1754B6"));
+
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
             // User is signed in
@@ -178,10 +183,12 @@ public class PostInfoActivity extends AppCompatActivity {
                             // Inactive the delivery button if the user is not an Agent or Deliveryman
                             if (user.getUserType().equals("GENERAL_USER")) {
                                 binding.buttonRequestDelivery.setEnabled(false);
-                                binding.buttonRequestDelivery.setBackgroundColor(Color.GRAY);
+                                binding.buttonRequestDelivery.setBackgroundColor(getResources().getColor(R.color.silver));
                             }
-                            NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-                            View view = navigationView.getHeaderView(0);
+                            if (user.getUserType().equals("Deliveryman") || user.getUserType().equals("Agent")) {
+                                binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
+                            }
+                            View view = binding.navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
                             // set userName to the drawer
@@ -268,7 +275,9 @@ public class PostInfoActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(PostInfoActivity.this, EditProfileActivity.class));
+                Intent intent = new Intent(PostInfoActivity.this, EditProfileActivity.class);
+                intent.putExtra("userId", currentUser.getUid());
+                startActivity(intent);
             }
         });
 
@@ -279,6 +288,9 @@ public class PostInfoActivity extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.nav_login:
                         startActivity(new Intent(PostInfoActivity.this, LoginActivity.class));
+                        break;
+                    case R.id.nav_deliveryman:
+                        registerAsDeliveryman();
                         break;
                     case R.id.nav_language:
                         Toast.makeText(PostInfoActivity.this, "Language", Toast.LENGTH_SHORT).show();
@@ -534,6 +546,37 @@ public class PostInfoActivity extends AppCompatActivity {
 
     } // Ending onCreate
 
+    private void registerAsDeliveryman() {
+        // inflate custom layout
+        View view = LayoutInflater.from(PostInfoActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
+        // Getting view form custom dialog layout
+        ImageView imageViewNode1 = view.findViewById(R.id.imageViewNode1);
+        ImageView imageViewNode2 = view.findViewById(R.id.imageViewNode2);
+        ImageView imageViewNode3 = view.findViewById(R.id.imageViewNode3);
+        Button buttonCancel = view.findViewById(R.id.buttonCancel);
+        Button buttonProceed = view.findViewById(R.id.buttonProceed);
+        imageViewNode1.setColorFilter(Color.parseColor("#1754B6")); // app_bar color
+        imageViewNode2.setColorFilter(Color.parseColor("#1754B6"));
+        imageViewNode3.setColorFilter(Color.parseColor("#1754B6"));
+        builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        buttonProceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(PostInfoActivity.this, DeliverymanRegistrationActivity.class));
+            }
+        });
+    }
+
     private void updateStatusInfoInDialog() {
         if (getIntent().getStringExtra("statusCurrent").equals("N/A")) {
             updateSenderInfo();
@@ -604,7 +647,6 @@ public class PostInfoActivity extends AppCompatActivity {
     private void updateSenderInfo() {
         senderTime.setText(getDateTimeFormat(modelClassPost.getTimeAdded()));
         senderNode.setColorFilter(Color.parseColor("#1754B6")); // app_bar_color
-        sender.setText("Sender (" + userModel.getUserName() + ")");
         setName(sender, "Sender", modelClassPost.getPhoneNumber());
         sender.setTextColor(Color.parseColor("#1754B6"));
         senderDescription.setTextColor(Color.BLACK);
