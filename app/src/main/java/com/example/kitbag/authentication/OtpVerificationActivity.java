@@ -11,8 +11,11 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +29,7 @@ import com.example.kitbag.R;
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
+import com.example.kitbag.ui.EditProfileActivity;
 import com.example.kitbag.ui.MainActivity;
 import com.example.kitbag.ui.PostInfoActivity;
 import com.goodiebag.pinview.Pinview;
@@ -59,6 +63,10 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class OtpVerificationActivity extends AppCompatActivity {
 
     private ActivityOtpVerificationBinding binding;
+
+    // Dialog Declaration
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
 
     private String pinViewOTP, whatToDo, phoneNumber;
 
@@ -189,6 +197,9 @@ public class OtpVerificationActivity extends AppCompatActivity {
                         startActivity(new Intent(OtpVerificationActivity.this, LoginActivity.class));
                         finish();
                         break;
+                    case R.id.nav_deliveryman:
+                        registerAsDeliveryman();
+                        break;
                     case R.id.nav_language:
                         Toast.makeText(OtpVerificationActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;
@@ -222,6 +233,19 @@ public class OtpVerificationActivity extends AppCompatActivity {
             }
         });
 
+        // On Edit profile icon clicked
+        View view = binding.navigationView.getHeaderView(0);
+        ImageView imageView = view.findViewById(R.id.nav_edit_profile);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OtpVerificationActivity.this, EditProfileActivity.class);
+                intent.putExtra("userId", currentUser.getUid());
+                startActivity(intent);
+                finish();
+            }
+        });
+
         // Set the phone number in UI
         binding.textViewPhoneNumber.setText("" + phoneNumber);
 
@@ -242,6 +266,37 @@ public class OtpVerificationActivity extends AppCompatActivity {
             }
         });
     } // Ending onCreate
+
+    private void registerAsDeliveryman() {
+        // inflate custom layout
+        View view = LayoutInflater.from(OtpVerificationActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
+        // Getting view form custom dialog layout
+        ImageView imageViewNode1 = view.findViewById(R.id.imageViewNode1);
+        ImageView imageViewNode2 = view.findViewById(R.id.imageViewNode2);
+        ImageView imageViewNode3 = view.findViewById(R.id.imageViewNode3);
+        Button buttonCancel = view.findViewById(R.id.buttonCancel);
+        Button buttonProceed = view.findViewById(R.id.buttonProceed);
+        imageViewNode1.setColorFilter(Color.parseColor("#1754B6")); // app_bar color
+        imageViewNode2.setColorFilter(Color.parseColor("#1754B6"));
+        imageViewNode3.setColorFilter(Color.parseColor("#1754B6"));
+        builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        buttonProceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(OtpVerificationActivity.this, DeliverymanRegistrationActivity.class));
+            }
+        });
+    }
 
     // On Sign in button clicked
     public void onSignInButtonClicked(View view) {

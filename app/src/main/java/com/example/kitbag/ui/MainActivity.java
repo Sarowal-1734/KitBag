@@ -171,12 +171,10 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             UserModel user = documentSnapshot.toObject(UserModel.class);
-                            NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-                            if (user.getUserType().equals("GENERAL_USER") || user.getUserType().equals("Agent")) {
-                                Menu navMenu = navigationView.getMenu();
-                                navMenu.findItem(R.id.nav_deliveryman).setVisible(false);
+                            if (user.getUserType().equals("Deliveryman") || user.getUserType().equals("Agent")) {
+                                binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
                             }
-                            View view = navigationView.getHeaderView(0);
+                            View view = binding.navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
                             userName.setText(user.getUserName());
