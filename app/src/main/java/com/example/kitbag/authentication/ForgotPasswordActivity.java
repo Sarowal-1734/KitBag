@@ -157,10 +157,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             binding.EditTextContact.requestFocus();
             return;
         }
-
         // Check Phone already registered or not
         String email = binding.cpp.getFullNumber().trim() + "@gmail.com";
-
         if (isConnected()) {
             // Show progressBar
             progressDialog = new ProgressDialog(ForgotPasswordActivity.this);
@@ -184,7 +182,6 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                                 Intent intent = new Intent(ForgotPasswordActivity.this, OtpVerificationActivity.class);
                                 intent.putExtra("whatToDo", "resetPassword");
                                 intent.putExtra("phoneNumber", binding.cpp.getFullNumberWithPlus().trim());
-                                //Toast.makeText(ForgotPasswordActivity.this, binding.cpp.getFullNumberWithPlus().trim(), Toast.LENGTH_SHORT).show();
                                 startActivity(intent);
                             }
                         }

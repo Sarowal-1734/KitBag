@@ -11,7 +11,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -53,6 +52,8 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.SignInMethodQueryResult;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -61,21 +62,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.google.mlkit.vision.common.InputImage;
-import com.google.mlkit.vision.label.ImageLabel;
-import com.google.mlkit.vision.label.ImageLabeler;
-import com.google.mlkit.vision.label.ImageLabeling;
-import com.google.mlkit.vision.label.defaults.ImageLabelerOptions;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -83,10 +75,7 @@ public class PostActivity extends AppCompatActivity {
 
     private ModelClassPost modelClassPost;
 
-    // Get from database and upload with post
-    String userName, phoneNumber, userType, email;
-
-    private String receiverPhoneNumber, preferredDeliverymanContact;
+    private String receiverPhoneNumber;
 
     private ActivityPostBinding binding;
 
@@ -105,7 +94,7 @@ public class PostActivity extends AppCompatActivity {
 
     // Get image from gallery and set to the imageView
     private static final int PICK_IMAGE = 100;
-    private Uri imageUri;
+    private Uri imageUri = null;
 
     // For camera
     private ActivityResultLauncher<Intent> activityResultLauncher;
@@ -118,6 +107,7 @@ public class PostActivity extends AppCompatActivity {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("Users");
     private final StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+    private UserModel userModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +117,7 @@ public class PostActivity extends AppCompatActivity {
 
         // remove search icon icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
@@ -147,7 +138,7 @@ public class PostActivity extends AppCompatActivity {
         // Change the title of the appBar according to Edit or Create post
         if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
             binding.customAppBar.appbarTitle.setText("Edit Post");
-            binding.buttonAddToCart.setText("Update Post");
+            binding.buttonPostItem.setText("Update Post");
             db.collection("All_Post")
                     .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
                     .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -189,7 +180,7 @@ public class PostActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            UserModel userModel = documentSnapshot.toObject(UserModel.class);
+                            userModel = documentSnapshot.toObject(UserModel.class);
                             if (userModel.getUserType().equals("Deliveryman") || userModel.getUserType().equals("Agent")) {
                                 binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
                             }
@@ -322,36 +313,16 @@ public class PostActivity extends AppCompatActivity {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                            Bundle bundle = result.getData().getExtras();
-                            Bitmap bitmap = (Bitmap) bundle.get("data");
-                            // Convert Bitmap to Uri
-                            File tempDir= Environment.getExternalStorageDirectory();
-                            tempDir=new File(tempDir.getAbsolutePath()+"/.temp/");
-                            tempDir.mkdir();
-                            File tempFile = null;
-                            try {
-                                tempFile = File.createTempFile("pic", ".jpg", tempDir);
-                                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                                 byte[] bitmapData = bytes.toByteArray();
-                                //write the bytes in file
-                                 FileOutputStream fos = new FileOutputStream(tempFile);
-                                fos.write(bitmapData);
-                                fos.flush();
-                                fos.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            imageUri = Uri.fromFile(tempFile);
-                            // Set Uri to the imageView
-                            binding.imageViewAddPhoto.setImageURI(imageUri);
-                            InputImage image = InputImage.fromBitmap(bitmap,0);
-                            // Call custom label method to detect object from camera and label the object
-                            labelImage(image);
+                            Bitmap bitmap = (Bitmap) result.getData().getExtras().get("data");
+                            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                            String path = MediaStore.Images.Media.insertImage(getApplicationContext().getContentResolver(), bitmap, "val", null);
+                            setImageInImageView(path); // Reason: imageUri becomes null
                         }
                     }
                 });
-        // set on button click lister on imageView of post
+
+        // Set on button click lister on imageView of post
         binding.imageViewAddPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -364,8 +335,138 @@ public class PostActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // On Post Button Clicked
+        binding.buttonPostItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isConnected()) {
+                    if (valid()) {
+                        if (currentUser != null) {
+                            receiverPhoneNumber = binding.cppReceiverPhoneNumber.getFullNumberWithPlus().trim();
+                            if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
+                                // Edit The Post
+                                verifyReceiverPhone();
+                            } else {
+                                // Post The Item
+                                if (imageUri != null) {
+                                    verifyRecieverPhoneNumber();
+                                } else {
+                                    Toast.makeText(PostActivity.this, "Please add a photo", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        } else {
+                            Toast.makeText(PostActivity.this, "Please login first", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } else {
+                    // Show that no connection
+                    showMessageNoConnection();
+                }
+            }
+        });
+
     } // Ending onCreate
 
+    // Verify Receiver Phone Number is a User or Not and Continue to create post
+    private void verifyRecieverPhoneNumber() {
+        showProgressBar();
+        String fakeEmail = "880" + binding.EditTextReceiverPhoneNumber.getText() + "@gmail.com";
+        mAuth.fetchSignInMethodsForEmail(fakeEmail)
+                .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
+                            if (isNewUser) {
+                                binding.EditTextReceiverPhoneNumber.setError("User Not Found");
+                                binding.EditTextReceiverPhoneNumber.requestFocus();
+                                progressDialog.dismiss();
+                            } else {
+                                continuePostItem();
+                            }
+                        }
+                    }
+                });
+    }
+
+    // Post a new item
+    private void continuePostItem() {
+        // Get user input data
+        String title = binding.EditTextPostTitle.getText().toString().trim();
+        String weight = binding.EditTextPostWeight.getText().toString().trim();
+        String description = binding.EditTextPostDescription.getText().toString().trim();
+        String fromDistrict = binding.EditTextFromDistrict.getText().toString().trim();
+        String fromUpazilla = binding.EditTextFromUpazila.getText().toString().trim();
+        String toDistrict = binding.EditTextToDistrict.getText().toString().trim();
+        String toUpazilla = binding.EditTextToUpazila.getText().toString().trim();
+        // Set data to the Model Class
+        ModelClassPost post = new ModelClassPost();
+        post.setTitle(title);
+        post.setWeight(weight);
+        post.setDescription(description);
+        post.setFromDistrict(fromDistrict);
+        post.setFromUpazilla(fromUpazilla);
+        post.setToDistrict(toDistrict);
+        post.setToUpazilla(toUpazilla);
+        post.setReceiverPhoneNumber(receiverPhoneNumber);
+        post.setTimeAdded(new Timestamp(new Date()));
+        post.setUserId(currentUser.getUid());
+        post.setStatusCurrent("N/A");
+        post.setPostReference(null);
+        // Get userPhoneNumber from database for storing with the post
+        collectionReference.document(currentUser.getUid()).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        UserModel model = documentSnapshot.toObject(UserModel.class);
+                        post.setPhoneNumber(model.getPhoneNumber());
+                    }
+                });
+        // Store image to Firebase Storage
+        StorageReference filepath = storageReference.child("all_post_images").child(currentUser.getUid() + new Timestamp(new Date()));
+        filepath.putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                post.setImageUrl(uri.toString());
+                                // Storing the PostInfo into All_Post Collection
+                                db.collection("All_Post").add(post)
+                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                            @Override
+                                            public void onSuccess(DocumentReference documentReference) {
+                                                // Storing the document reference for easy to delete later
+                                                db.collection("All_Post").document(documentReference.getId())
+                                                        .update("postReference", documentReference.getId());
+                                                // Hide progressBar
+                                                progressDialog.dismiss();
+                                                Toast.makeText(PostActivity.this, "Your post is now visible to everyone", Toast.LENGTH_SHORT).show();
+                                                startActivity(new Intent(PostActivity.this, MainActivity.class));
+                                                finish();
+                                            }
+                                        });
+                            }
+                        });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(PostActivity.this, "Failed to upload image!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void setImageInImageView(String path) {
+        imageUri = Uri.parse(path);
+        binding.imageViewAddPhoto.setImageURI(imageUri);
+    }
+
+    // Deliveryman Registration Dialog
     private void registerAsDeliveryman() {
         // inflate custom layout
         View view = LayoutInflater.from(PostActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
@@ -397,30 +498,7 @@ public class PostActivity extends AppCompatActivity {
         });
     }
 
-    //Object detect and labeling need input image from bitmap
-    private void labelImage(InputImage image) {
-        // Using default options we can use custom options also
-        ImageLabeler labeler = ImageLabeling.getClient(ImageLabelerOptions.DEFAULT_OPTIONS);
-        // processing our getting image to label the image
-        labeler.process(image).addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {
-            @Override
-            public void onSuccess(@NonNull List<ImageLabel> imageLabels) {
-                for (ImageLabel label : imageLabels) {
-                    String objectNames = label.getText();
-                    Toast.makeText(PostActivity.this, "Your selected Item should be: " + objectNames + ", ", Toast.LENGTH_LONG).show();
-                    // getting the confidence of labeled image
-                    // float confidence = label.getConfidence();
-                    // int index = label.getIndex();
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(PostActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    // method to check for permissions
+    // Method to check for permissions
     private boolean checkPermissions() {
         return ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
@@ -433,7 +511,7 @@ public class PostActivity extends AppCompatActivity {
             },PICK_IMAGE);
         }
 
-    // validation for update password and create popup dialog
+    // Validation for update password and create popup dialog
     private void validationUpdatePassword() {
         // inflate custom layout
         View view = LayoutInflater.from(PostActivity.this).inflate(R.layout.dialog_change_password, null);
@@ -497,11 +575,10 @@ public class PostActivity extends AppCompatActivity {
         });
     }
 
-
-    // Update password
+    // Update user password
     private void updatePassword(String oldPassword, String newPassword) {
         // before updating password we have to re-authenticate our user
-        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(),oldPassword);
+        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(), oldPassword);
         currentUser.reauthenticate(authCredential).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
@@ -509,7 +586,9 @@ public class PostActivity extends AppCompatActivity {
                 currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        // Password update successfully
+                        // Update the password in RealTime Database for ForgotPassword
+                        FirebaseDatabase.getInstance().getReference().child("Passwords")
+                                .child(userModel.getPhoneNumber().substring(1, 14)).setValue(newPassword);
                         dialog.dismiss();
                         progressDialog.dismiss();
                         Toast.makeText(PostActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
@@ -543,161 +622,36 @@ public class PostActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    // On Post Button Clicked
-    public void onPostButtonClick(View view) {
-        if (valid()) {
-            if (isConnected()) {
-                if (currentUser != null) {
-                    receiverPhoneNumber = binding.cppReceiverPhoneNumber.getFullNumberWithPlus().trim();
-                    preferredDeliverymanContact = binding.cppPreferredDeliveryman.getFullNumberWithPlus().trim();
-                    if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
-                        // Edit post here...
-                        updatePost();
-                    } else {
-                        showProgressBar();
-                        // Get user input data
-                        String title = binding.EditTextPostTitle.getText().toString().trim();
-                        String weight = binding.EditTextPostWeight.getText().toString().trim();
-                        String description = binding.EditTextPostDescription.getText().toString().trim();
-                        String fromDistrict = binding.EditTextFromDistrict.getText().toString().trim();
-                        String fromUpazilla = binding.EditTextFromUpazila.getText().toString().trim();
-                        String toDistrict = binding.EditTextToDistrict.getText().toString().trim();
-                        String toUpazilla = binding.EditTextToUpazila.getText().toString().trim();
-                        // Get userInfo from database for storing with the post
-                        collectionReference.document(currentUser.getUid()).get()
-                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                        userName = documentSnapshot.getString("userName");
-                                        phoneNumber = documentSnapshot.getString("phoneNumber");
-                                        userType = documentSnapshot.getString("userType");
-                                        if (documentSnapshot.getString("email") != null) {
-                                            email = documentSnapshot.getString("email");
-                                        }
-                                    }
-                                });
-
-                        // Store image to Firebase Storage
-                        StorageReference filepath = storageReference.child("all_post_images").child(currentUser.getUid() + new Timestamp(new Date()));
-                        filepath.putFile(imageUri)
-                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                    @Override
-                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                        filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                            @Override
-                                            public void onSuccess(Uri uri) {
-                                                String imageUrl = uri.toString();
-                                                ModelClassPost modelClassPost = new ModelClassPost();
-                                                modelClassPost.setImageUrl(imageUrl);
-                                                modelClassPost.setTitle(title);
-                                                modelClassPost.setWeight(weight);
-                                                modelClassPost.setDescription(description);
-                                                modelClassPost.setFromDistrict(fromDistrict);
-                                                modelClassPost.setFromUpazilla(fromUpazilla);
-                                                modelClassPost.setToDistrict(toDistrict);
-                                                modelClassPost.setToUpazilla(toUpazilla);
-                                                modelClassPost.setReceiverPhoneNumber(receiverPhoneNumber);
-                                                modelClassPost.setTimeAdded(new Timestamp(new Date()));
-                                                modelClassPost.setUserId(currentUser.getUid());
-                                                modelClassPost.setPhoneNumber(phoneNumber);
-                                                modelClassPost.setStatusCurrent("N/A");
-                                                modelClassPost.setPostReference(null);
-                                                // Storing the post into All_Post Collection
-                                                db.collection("All_Post").add(modelClassPost)
-                                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                            @Override
-                                                            public void onSuccess(DocumentReference documentReference) {
-                                                                // Storing the document reference for easy to delete later
-                                                                db.collection("All_Post").document(documentReference.getId())
-                                                                        .update("postReference", documentReference.getId());
-                                                                // Hide progressBar
-                                                                progressDialog.dismiss();
-                                                                Toast.makeText(PostActivity.this, "Your post is now visible to everyone", Toast.LENGTH_SHORT).show();
-                                                                startActivity(new Intent(PostActivity.this, MainActivity.class));
-                                                                finish();
-                                                            }
-                                                        });
-                                            }
-                                        });
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        progressDialog.dismiss();
-                                        Toast.makeText(PostActivity.this, "Failed to upload image!", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+    // Here only the ReceiverPhoneNumber will verify and continue to update post
+    private void verifyReceiverPhone() {
+        showProgressBar();
+        // Verify Receiver Phone Number is a User or Not
+        String fakeEmail = "880" + binding.EditTextReceiverPhoneNumber.getText() + "@gmail.com";
+        mAuth.fetchSignInMethodsForEmail(fakeEmail)
+                .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+                        if (task.isSuccessful() && task.getResult() != null) {
+                            boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
+                            if (isNewUser) {
+                                binding.EditTextReceiverPhoneNumber.setError("User Not Found");
+                                binding.EditTextReceiverPhoneNumber.requestFocus();
+                                progressDialog.dismiss();
+                            } else {
+                                verifyDeliverymanPhone();
+                            }
+                        }
                     }
-                } else {
-                    Toast.makeText(PostActivity.this, "Please login first", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                // Show that no connection
-                View parentLayout = findViewById(R.id.snackBarContainer);
-                // create an instance of the snackBar
-                final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
-                // inflate the custom_snackBar_view created previously
-                View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
-                // set the background of the default snackBar as transparent
-                snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
-                // now change the layout of the snackBar
-                Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
-                // set padding of the all corners as 0
-                snackbarLayout.setPadding(0, 0, 0, 0);
-                // add the custom snack bar layout to snackbar layout
-                snackbarLayout.addView(customSnackView, 0);
-                snackbar.show();
-            }
-        }
+                });
     }
 
-    private void updatePost() {
-        // If preferred deliveryman number empty then fine just update with null
+    // Here only the DeliverymanPhoneNumber will verify and continue to update post
+    private void verifyDeliverymanPhone() {
+        String preferredDeliverymanContact = binding.cppPreferredDeliveryman.getFullNumberWithPlus().trim();
         if (binding.EditTextPreferredDeliveryman.getText().toString().isEmpty()) {
-            showProgressBar();
-            preferredDeliverymanContact = null;
-            // Store image to firebase
-            StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl(modelClassPost.getImageUrl());
-            reference.putFile(imageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    // Update post info in Database
-                                    db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
-                                            .update(
-                                                    "imageUrl", uri.toString(),
-                                                    "title", binding.EditTextPostTitle.getText().toString(),
-                                                    "weight", binding.EditTextPostWeight.getText().toString(),
-                                                    "description", binding.EditTextPostDescription.getText().toString(),
-                                                    "fromDistrict", binding.EditTextFromDistrict.getText().toString(),
-                                                    "fromUpazilla", binding.EditTextFromUpazila.getText().toString(),
-                                                    "toDistrict", binding.EditTextToDistrict.getText().toString(),
-                                                    "toUpazilla", binding.EditTextToUpazila.getText().toString(),
-                                                    "receiverPhoneNumber", receiverPhoneNumber,
-                                                    "preferredDeliverymanContact", preferredDeliverymanContact
-                                            );
-                                    progressDialog.dismiss();
-                                    Toast.makeText(PostActivity.this, "Post successfully updated", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(PostActivity.this, MainActivity.class));
-                                    finish();
-                                }
-                            });
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(PostActivity.this, "Failed to update image", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            continueUpdatePost(null);
         } else {
-            // If preferred deliveryman number is not empty then check the number validity
-            showProgressBar();
+            // Checking the given number is a Deliveryman or not
             db.collection("Users")
                     .whereEqualTo("phoneNumber", preferredDeliverymanContact)
                     .get()
@@ -707,47 +661,11 @@ public class PostActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 if (!task.getResult().getDocuments().isEmpty()) {
                                     DocumentSnapshot snapshot = task.getResult().getDocuments().get(0);
-                                    if (snapshot.getString("userType").equals("Deliveryman")) {
-                                        // Store image to firebase
-                                        StorageReference reference = FirebaseStorage.getInstance().getReferenceFromUrl(modelClassPost.getImageUrl());
-                                        reference.putFile(imageUri)
-                                                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                                    @Override
-                                                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                                        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                                            @Override
-                                                            public void onSuccess(Uri uri) {
-                                                                // Update post info in Database
-                                                                db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
-                                                                        .update(
-                                                                                "imageUrl", uri.toString(),
-                                                                                "title", binding.EditTextPostTitle.getText().toString(),
-                                                                                "weight", binding.EditTextPostWeight.getText().toString(),
-                                                                                "description", binding.EditTextPostDescription.getText().toString(),
-                                                                                "fromDistrict", binding.EditTextFromDistrict.getText().toString(),
-                                                                                "fromUpazilla", binding.EditTextFromUpazila.getText().toString(),
-                                                                                "toDistrict", binding.EditTextToDistrict.getText().toString(),
-                                                                                "toUpazilla", binding.EditTextToUpazila.getText().toString(),
-                                                                                "receiverPhoneNumber", receiverPhoneNumber,
-                                                                                "preferredDeliverymanContact", preferredDeliverymanContact
-                                                                        );
-                                                                progressDialog.dismiss();
-                                                                Toast.makeText(PostActivity.this, "Post successfully updated", Toast.LENGTH_SHORT).show();
-                                                                startActivity(new Intent(PostActivity.this, MainActivity.class));
-                                                                finish();
-                                                            }
-                                                        });
-                                                    }
-                                                })
-                                                .addOnFailureListener(new OnFailureListener() {
-                                                    @Override
-                                                    public void onFailure(@NonNull Exception e) {
-                                                        progressDialog.dismiss();
-                                                        Toast.makeText(PostActivity.this, "Failed to update image", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
+                                    if (snapshot.getString("userType").equals("Deliveryman") || snapshot.getString("userType").equals("Agent")) {
+                                        // Deliveryman
+                                        continueUpdatePost(snapshot.getString("phoneNumber"));
                                     } else {
-                                        // Not a deliveryman
+                                        // Not an Deliveryman
                                         binding.EditTextPreferredDeliveryman.setError("Deliveryman Not Found");
                                         binding.EditTextPreferredDeliveryman.requestFocus();
                                         progressDialog.dismiss();
@@ -764,6 +682,65 @@ public class PostActivity extends AppCompatActivity {
         }
     }
 
+    // New image Captured or not and continue to update post
+    private void continueUpdatePost(String preferredDeliverymanContact) {
+        String imageUrl;
+        if (imageUri != null) {
+            // Delete old image and store update image with with this post
+            FirebaseStorage.getInstance().getReferenceFromUrl(modelClassPost.getImageUrl()).delete();
+            storeImageUpdatePost(preferredDeliverymanContact);
+        } else {
+            imageUrl = modelClassPost.getImageUrl();
+            updatePostInfo(imageUrl, preferredDeliverymanContact);
+        }
+    }
+
+    // Store the new captured image and update post
+    private void storeImageUpdatePost(String preferredDeliverymanContact) {
+        StorageReference filepath = storageReference.child("all_post_images").child(currentUser.getUid() + new Timestamp(new Date()));
+        filepath.putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                updatePostInfo(uri.toString(), preferredDeliverymanContact);
+                            }
+                        });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(PostActivity.this, "Failed to upload image!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // Finally Update the post
+    private void updatePostInfo(String imageUrl, String preferredDeliverymanContact) {
+        // Update post info in Database
+        db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
+                .update(
+                        "imageUrl", imageUrl,
+                        "title", binding.EditTextPostTitle.getText().toString(),
+                        "weight", binding.EditTextPostWeight.getText().toString(),
+                        "description", binding.EditTextPostDescription.getText().toString(),
+                        "fromDistrict", binding.EditTextFromDistrict.getText().toString(),
+                        "fromUpazilla", binding.EditTextFromUpazila.getText().toString(),
+                        "toDistrict", binding.EditTextToDistrict.getText().toString(),
+                        "toUpazilla", binding.EditTextToUpazila.getText().toString(),
+                        "receiverPhoneNumber", receiverPhoneNumber,
+                        "preferredDeliverymanContact", preferredDeliverymanContact
+                );
+        progressDialog.dismiss();
+        Toast.makeText(PostActivity.this, "Post successfully updated", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(PostActivity.this, MainActivity.class));
+        finish();
+    }
+
     // Check the internet connection
     public boolean isConnected() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -771,11 +748,8 @@ public class PostActivity extends AppCompatActivity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    // EditText Validation
     private boolean valid() {
-        if (imageUri == null) {
-            Toast.makeText(this, "Please add a picture", Toast.LENGTH_SHORT).show();
-            return false;
-        }
         if (TextUtils.isEmpty(binding.EditTextPostTitle.getText().toString())) {
             binding.EditTextPostTitle.setError("Required");
             binding.EditTextPostTitle.requestFocus();
@@ -809,6 +783,7 @@ public class PostActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(binding.EditTextToUpazila.getText().toString())) {
             binding.EditTextToUpazila.setError("Required");
             binding.EditTextToUpazila.requestFocus();
+            progressDialog.dismiss();
             return false;
         }
         if (TextUtils.isEmpty(binding.EditTextReceiverPhoneNumber.getText().toString())) {
@@ -827,6 +802,24 @@ public class PostActivity extends AppCompatActivity {
         progressDialog.setContentView(R.layout.progress_dialog);
         progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         progressDialog.setCancelable(false);
+    }
+
+    // Display no internet
+    private void showMessageNoConnection() {
+        View parentLayout = findViewById(R.id.snackBarContainer);
+        // create an instance of the snackBar
+        final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+        // inflate the custom_snackBar_view created previously
+        View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
+        // set the background of the default snackBar as transparent
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        // now change the layout of the snackBar
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        // set padding of the all corners as 0
+        snackbarLayout.setPadding(0, 0, 0, 0);
+        // add the custom snack bar layout to snackbar layout
+        snackbarLayout.addView(customSnackView, 0);
+        snackbar.show();
     }
 
     // District and Upazila Recommendation

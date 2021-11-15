@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
@@ -48,6 +47,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -75,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("Users");
+
+    private UserModel userModel;
 
     // Dialog Declaration
     private AlertDialog.Builder builder;
@@ -170,15 +172,15 @@ public class MainActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            UserModel user = documentSnapshot.toObject(UserModel.class);
-                            if (user.getUserType().equals("Deliveryman") || user.getUserType().equals("Agent")) {
+                            userModel = documentSnapshot.toObject(UserModel.class);
+                            if (userModel.getUserType().equals("Deliveryman") || userModel.getUserType().equals("Agent")) {
                                 binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
                             }
                             View view = binding.navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
-                            userName.setText(user.getUserName());
-                            if (user.getImageUrl() != null) {
+                            userName.setText(userModel.getUserName());
+                            if (userModel.getImageUrl() != null) {
                                 // Picasso library for download & show image
                                 Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
                                 Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
@@ -757,8 +759,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-    // Update password
+    // Update Password
     private void updatePassword(String oldPassword, String newPassword) {
         // before updating password we have to re-authenticate our user
         AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(),oldPassword);
@@ -769,7 +770,9 @@ public class MainActivity extends AppCompatActivity {
                 currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        // Password update successfully
+                        // Update the password in RealTime Database for ForgotPassword
+                        FirebaseDatabase.getInstance().getReference().child("Passwords")
+                                .child(userModel.getPhoneNumber().substring(1, 14)).setValue(newPassword);
                         dialog.dismiss();
                         progressDialog.dismiss();
                         Toast.makeText(MainActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();

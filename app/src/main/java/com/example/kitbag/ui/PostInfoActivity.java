@@ -59,6 +59,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -393,6 +394,20 @@ public class PostInfoActivity extends AppCompatActivity {
             }
         }
 
+        // Display all the info to the activity
+        displayPostInfo();
+
+        /*/ Dynamic Edit Delete Button According to current postStatus
+        if (modelClassPost.getStatusCurrent().equals("N/A") || modelClassPost.getStatusCurrent().equals("Primary_Agent")) {
+            binding.buttonAddToCart.setVisibility(View.VISIBLE);
+            binding.buttonDeleteItem.setVisibility(View.VISIBLE);
+        }
+        if (currentUser == null) {
+            binding.buttonAddToCart.setVisibility(View.VISIBLE);
+        } else if (!modelClassPost.getUserId().equals(currentUser.getUid())) {
+            binding.buttonAddToCart.setVisibility(View.VISIBLE);
+        }*/
+
         // Adding onClickListener on Status text click
         binding.textViewStatus.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -464,7 +479,10 @@ public class PostInfoActivity extends AppCompatActivity {
             }
         });
 
-        // Display all the info to the activity
+    } // Ending onCreate
+
+    // Display all the info to the activity
+    private void displayPostInfo() {
         db.collection("All_Post")
                 .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
                 .get()
@@ -494,7 +512,7 @@ public class PostInfoActivity extends AppCompatActivity {
                                             binding.TextViewChat.setText(chatWith);
                                             binding.textViewUserTime.setText(postedUser);
                                             binding.TextViewUserType.setText(userModel.getUserType());
-                                            if (userModel.getEmail().equals("")) {
+                                            if (TextUtils.isEmpty(userModel.getEmail())) {
                                                 binding.imageIconMail.setVisibility(View.GONE);
                                             } else {
                                                 binding.TextViewMail.setText(userModel.getEmail());
@@ -543,8 +561,7 @@ public class PostInfoActivity extends AppCompatActivity {
                         binding.callEmail.setVisibility(View.GONE);
                     }
                 });
-
-    } // Ending onCreate
+    }
 
     private void registerAsDeliveryman() {
         // inflate custom layout
@@ -682,7 +699,7 @@ public class PostInfoActivity extends AppCompatActivity {
     private String getDateTimeFormat(Timestamp timeStamp) {
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
         cal.setTimeInMillis(timeStamp.getSeconds() * 1000);
-        return DateFormat.format("dd MMM\nhh:mm", cal).toString();
+        return DateFormat.format("dd MMM\nhh:mm a", cal).toString();
     }
 
     private void enableDisableHandoverButton(ModelClassPost modelClassPost) {
@@ -808,7 +825,9 @@ public class PostInfoActivity extends AppCompatActivity {
                 currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        // Password update successfully
+                        // Update the password in RealTime Database for ForgotPassword
+                        FirebaseDatabase.getInstance().getReference().child("Passwords")
+                                .child(userModel.getPhoneNumber().substring(1, 14)).setValue(newPassword);
                         dialog.dismiss();
                         progressDialog.dismiss();
                         Toast.makeText(PostInfoActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
@@ -969,7 +988,6 @@ public class PostInfoActivity extends AppCompatActivity {
         } else {
             displayNoConnection();
         }
-
     }
 
     // On Request To delivery button clicked

@@ -72,6 +72,7 @@ public class MessageActivity extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private FirebaseUser currentUser;
     private FirebaseAuth mAuth;
+    private UserModel userModel;
 
     private String postReference;
 
@@ -167,7 +168,7 @@ public class MessageActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        UserModel userModel = documentSnapshot.toObject(UserModel.class);
+                        userModel = documentSnapshot.toObject(UserModel.class);
                         if (userModel.getUserType().equals("Deliveryman") || userModel.getUserType().equals("Agent")) {
                             binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
                         }
@@ -497,7 +498,9 @@ public class MessageActivity extends AppCompatActivity {
                 currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        // Password update successfully
+                        // Update the password in RealTime Database for ForgotPassword
+                        FirebaseDatabase.getInstance().getReference().child("Passwords")
+                                .child(userModel.getPhoneNumber().substring(1, 14)).setValue(newPassword);
                         dialog.dismiss();
                         progressDialog.dismiss();
                         Toast.makeText(MessageActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
