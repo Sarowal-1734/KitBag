@@ -24,6 +24,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
@@ -45,7 +48,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.annotations.Nullable;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -89,7 +92,10 @@ public class EditProfileActivity extends AppCompatActivity {
 
     // Get image from gallery and set to the imageView
     private static final int PICK_IMAGE = 1;
-    private Uri imageUri;
+    private Uri imageUri = null;
+
+    // For Image Picker
+    private ActivityResultLauncher<String> activityResultLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -317,15 +323,21 @@ public class EditProfileActivity extends AppCompatActivity {
                     }
                 });
 
+        // For Image Picker
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
+                new ActivityResultCallback<Uri>() {
+                    @Override
+                    public void onActivityResult(Uri uri) {
+                        imageUri = uri;
+                        binding.customEditProfileImage.circularImageViewProfile.setImageURI(imageUri);
+                    }
+                });
+
         // Get image from gallery and set to the imageView
         binding.customEditProfileImage.cardViewAddProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // making implicit intent to pick photo from external gallery
-                Intent gallery = new Intent();
-                gallery.setType("image/*");
-                gallery.setAction(Intent.ACTION_GET_CONTENT);
-                startActivityForResult(gallery, PICK_IMAGE);
+                activityResultLauncher.launch("image/*");
             }
         });
 
@@ -336,6 +348,70 @@ public class EditProfileActivity extends AppCompatActivity {
                 registerAsDeliveryman();
             }
         });
+
+        // On Update Profile Button Clicked
+        binding.buttonUpdateProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isConnected()) {
+                    if (validation()) {
+                        showProgressBar();
+                        if (imageUri == null) {
+                            // Update user info in Database
+                            updateUserInfo(userModelInfo.getImageUrl());
+                        } else {
+                            // Store image to firebase
+                            StorageReference filepath = storageReference.child("users_profile_picture").child(currentUser.getUid());
+                            filepath.putFile(imageUri)
+                                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                            filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                @Override
+                                                public void onSuccess(Uri uri) {
+                                                    // Update user info in Database
+                                                    updateUserInfo(uri.toString());
+                                                }
+                                            });
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            progressDialog.dismiss();
+                                            Toast.makeText(EditProfileActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+
+                    }
+                } else {
+                    // Show that no connection
+                    showMessageNoConnection();
+                }
+            }
+        });
+    }
+
+    private void updateUserInfo(String imageUrl) {
+        // Setting user value to model class
+        UserModel userModelUpdate = new UserModel();
+        userModelUpdate.setEmail(binding.editTextEmail.getText().toString());
+        userModelUpdate.setUserName(binding.editTextUsername.getText().toString());
+        userModelUpdate.setUpazilla(binding.EditTextUpazila.getText().toString());
+        userModelUpdate.setDistrict(binding.EditTextDistrict.getText().toString());
+        db.collection("Users").document(currentUser.getUid())
+                .update(
+                        "imageUrl", imageUrl,
+                        "userName", userModelUpdate.getUserName(),
+                        "email", userModelUpdate.getEmail(),
+                        "district", userModelUpdate.getDistrict(),
+                        "upazilla", userModelUpdate.getUpazilla()
+                );
+        progressDialog.dismiss();
+        Toast.makeText(EditProfileActivity.this, "Profile successfully updated", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(EditProfileActivity.this, MainActivity.class));
+        finish();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -381,16 +457,6 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
-    // Picking photo from external storage
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
-            imageUri = data.getData();
-            binding.customEditProfileImage.circularImageViewProfile.setImageURI(imageUri);
-        }
-    }
-
     // Exit app on back pressed
     @Override
     public void onBackPressed() {
@@ -401,78 +467,7 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    // On Update Profile Button Clicked
-    public void onUpdateProfileButtonClicked(View view) {
-        if (validation()) {
-            if (isConnected()) {
-                // Setting user value to model class
-                UserModel userModelUpdate = new UserModel();
-                userModelUpdate.setEmail(binding.editTextEmail.getText().toString());
-                userModelUpdate.setUserName(binding.editTextUsername.getText().toString());
-                userModelUpdate.setUpazilla(binding.EditTextUpazila.getText().toString());
-                userModelUpdate.setDistrict(binding.EditTextDistrict.getText().toString());
-
-                // Show progressBar
-                progressDialog = new ProgressDialog(EditProfileActivity.this);
-                progressDialog.show();
-                progressDialog.setContentView(R.layout.progress_dialog);
-                progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                progressDialog.setCancelable(false);
-                // Store image to firebase
-                StorageReference filepath = storageReference.child("users_profile_picture").child(currentUser.getUid());
-                filepath.putFile(imageUri)
-                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        // Update user info in Database
-                                        db.collection("Users").document(currentUser.getUid())
-                                                .update(
-                                                        "imageUrl", uri.toString(),
-                                                        "userName", userModelUpdate.getUserName(),
-                                                        "email", userModelUpdate.getEmail(),
-                                                        "district", userModelUpdate.getDistrict(),
-                                                        "upazilla", userModelUpdate.getUpazilla()
-                                                );
-                                        progressDialog.dismiss();
-                                        Toast.makeText(EditProfileActivity.this, "Profile successfully updated", Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(EditProfileActivity.this, MainActivity.class));
-                                        finish();
-                                    }
-                                });
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                progressDialog.dismiss();
-                                Toast.makeText(EditProfileActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-            } else {
-                // Show that no connection
-                View parentLayout = findViewById(R.id.snackBarContainer);
-                // create an instance of the snackBar
-                final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
-                // inflate the custom_snackBar_view created previously
-                View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
-                // set the background of the default snackBar as transparent
-                snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
-                // now change the layout of the snackBar
-                Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
-                // set padding of the all corners as 0
-                snackbarLayout.setPadding(0, 0, 0, 0);
-                // add the custom snack bar layout to snackbar layout
-                snackbarLayout.addView(customSnackView, 0);
-                snackbar.show();
-            }
-        }
-    }
-
-    // validation for update password and create popup dialog
+    // Validation for update password and create popup dialog
     private void validationUpdatePassword() {
         // inflate custom layout
         View view = LayoutInflater.from(EditProfileActivity.this).inflate(R.layout.dialog_change_password,null);
@@ -526,11 +521,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     return;
                 }
                 // Show progressBar
-                progressDialog = new ProgressDialog(EditProfileActivity.this);
-                progressDialog.show();
-                progressDialog.setContentView(R.layout.progress_dialog);
-                progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-                progressDialog.setCancelable(false);
+                showProgressBar();
                 updatePassword(oldPassword, newPassword);
             }
         });
@@ -548,7 +539,9 @@ public class EditProfileActivity extends AppCompatActivity {
                 currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        // Password update successfully
+                        // Update the password in RealTime Database for ForgotPassword
+                        FirebaseDatabase.getInstance().getReference().child("Passwords")
+                                .child(currentUserModel.getPhoneNumber().substring(1, 14)).setValue(newPassword);
                         dialog.dismiss();
                         progressDialog.dismiss();
                         Toast.makeText(EditProfileActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
@@ -596,15 +589,34 @@ public class EditProfileActivity extends AppCompatActivity {
             binding.EditTextUpazila.requestFocus();
             return false;
         }
-        if (imageUri == null) {
-            Toast.makeText(EditProfileActivity.this, "Please add a profile picture", Toast.LENGTH_SHORT).show();
-            return false;
-        }
         return true;
     }
 
-    // on drawer menu item click
+    private void showProgressBar() {
+        progressDialog = new ProgressDialog(EditProfileActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
+    }
 
+    // Message no connection
+    private void showMessageNoConnection() {
+        View parentLayout = findViewById(R.id.snackBarContainer);
+        // create an instance of the snackBar
+        final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+        // inflate the custom_snackBar_view created previously
+        View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
+        // set the background of the default snackBar as transparent
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        // now change the layout of the snackBar
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        // set padding of the all corners as 0
+        snackbarLayout.setPadding(0, 0, 0, 0);
+        // add the custom snack bar layout to snackbar layout
+        snackbarLayout.addView(customSnackView, 0);
+        snackbar.show();
+    }
 
     // District and Upazila Recommendation
     private void setDistrictUpazilaOnEditText() {

@@ -43,6 +43,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -75,6 +76,7 @@ public class ProductHandOverActivity extends AppCompatActivity {
 
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private UserModel userModel;
 
     private String receiverContact;
     private String preferredDeliverymanContact;
@@ -119,15 +121,15 @@ public class ProductHandOverActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            UserModel user = documentSnapshot.toObject(UserModel.class);
-                            if (user.getUserType().equals("Deliveryman") || user.getUserType().equals("Agent")) {
+                            userModel = documentSnapshot.toObject(UserModel.class);
+                            if (userModel.getUserType().equals("Deliveryman") || userModel.getUserType().equals("Agent")) {
                                 binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
                             }
                             View view = binding.navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
-                            userName.setText(user.getUserName());
-                            if (user.getImageUrl() != null) {
+                            userName.setText(userModel.getUserName());
+                            if (userModel.getImageUrl() != null) {
                                 // Picasso library for download & show image
                                 Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
                                 Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
@@ -202,6 +204,7 @@ public class ProductHandOverActivity extends AppCompatActivity {
             }
         });
 
+        // On Send OTP Button Clicked
         binding.buttonSendOTP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -588,7 +591,9 @@ public class ProductHandOverActivity extends AppCompatActivity {
                 currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        // Password update successfully
+                        // Update the password in RealTime Database for ForgotPassword
+                        FirebaseDatabase.getInstance().getReference().child("Passwords")
+                                .child(userModel.getPhoneNumber().substring(1, 14)).setValue(newPassword);
                         dialog.dismiss();
                         progressDialog.dismiss();
                         Toast.makeText(ProductHandOverActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();

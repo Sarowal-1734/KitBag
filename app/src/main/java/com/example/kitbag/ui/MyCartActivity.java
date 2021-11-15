@@ -48,6 +48,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -92,6 +93,7 @@ public class MyCartActivity extends AppCompatActivity {
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("Users");
+    private UserModel userModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +132,7 @@ public class MyCartActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            UserModel userModel = documentSnapshot.toObject(UserModel.class);
+                            userModel = documentSnapshot.toObject(UserModel.class);
                             if (userModel.getUserType().equals("Deliveryman") || userModel.getUserType().equals("Agent")) {
                                 binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
                             }
@@ -510,7 +512,9 @@ public class MyCartActivity extends AppCompatActivity {
                 currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void unused) {
-                        // Password update successfully
+                        // Update the password in RealTime Database for ForgotPassword
+                        FirebaseDatabase.getInstance().getReference().child("Passwords")
+                                .child(userModel.getPhoneNumber().substring(1, 14)).setValue(newPassword);
                         dialog.dismiss();
                         progressDialog.dismiss();
                         Toast.makeText(MyCartActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();

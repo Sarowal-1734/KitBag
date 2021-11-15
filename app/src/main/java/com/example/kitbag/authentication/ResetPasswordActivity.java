@@ -18,15 +18,19 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityResetPasswordBinding;
 import com.example.kitbag.ui.MainActivity;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.FirebaseDatabase;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 
@@ -148,26 +152,47 @@ public class ResetPasswordActivity extends AppCompatActivity {
         if (isConnected()) {
             if (validation()) {
                 showProgressBar();
-                // TODO
-                FirebaseUser currentUser = mAuth.getCurrentUser();
-                String newPassword = binding.editTextPassword.getText().toString();
-                currentUser.updatePassword(newPassword).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        progressDialog.dismiss();
-                        // Status to check that the password successfully resetted or not
-                        SharedPreference.setPasswordResettedValue(ResetPasswordActivity.this, true);
-                        Toast.makeText(ResetPasswordActivity.this, "Password Reset Successfully.", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(ResetPasswordActivity.this, MainActivity.class));
-                        finish();
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        progressDialog.dismiss();
-                        Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                // Retrieve the password from RealTime Database for login and update password
+                FirebaseDatabase.getInstance().getReference().child("Passwords")
+                        .child(getIntent().getStringExtra("phoneNumber"))
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    String password = (String) task.getResult().getValue();
+                                    String fakeEmail = getIntent().getStringExtra("phoneNumber") + "@gmail.com";
+                                    // Sign in
+                                    mAuth.signInWithEmailAndPassword(fakeEmail, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                            if (task.isSuccessful()) {
+                                                // Update Password
+                                                mAuth.getCurrentUser().updatePassword(binding.editTextPassword.getText().toString()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void unused) {
+                                                        // Update the password in RealTime Database for ForgotPassword
+                                                        FirebaseDatabase.getInstance().getReference().child("Passwords")
+                                                                .child(getIntent().getStringExtra("phoneNumber"))
+                                                                .setValue(binding.editTextPassword.getText().toString());
+                                                        progressDialog.dismiss();
+                                                        Toast.makeText(ResetPasswordActivity.this, "Password Reset Successfully.", Toast.LENGTH_SHORT).show();
+                                                        startActivity(new Intent(ResetPasswordActivity.this, MainActivity.class));
+                                                        finish();
+                                                    }
+                                                }).addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        progressDialog.dismiss();
+                                                        Toast.makeText(ResetPasswordActivity.this, "Password Reset Failed!", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
             }
         } else {
             progressDialog.dismiss();

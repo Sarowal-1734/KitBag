@@ -42,6 +42,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -313,10 +314,10 @@ public class OtpVerificationActivity extends AppCompatActivity {
                     registerUser();
                 } else if (whatToDo.equals("resetPassword")) {
                     progressDialog.dismiss();
-                    // Status to check that the password successfully resetted or not
-                    //SharedPreference.setPasswordResettedValue(OtpVerificationActivity.this, false);
-                    // TODO To Many Things
-                    startActivity(new Intent(OtpVerificationActivity.this, ResetPasswordActivity.class));
+                    String subPhone = phoneNumber.substring(1, 14);
+                    Intent intent = new Intent(OtpVerificationActivity.this, ResetPasswordActivity.class);
+                    intent.putExtra("phoneNumber", subPhone);
+                    startActivity(intent);
                     finish();
                 } else if (whatToDo.equals("verifyPrimaryAgent")) {
                     // Update status
@@ -442,11 +443,13 @@ public class OtpVerificationActivity extends AppCompatActivity {
                             userModel.setDistrict(null);
                             userModel.setUpazilla(null);
                             userModel.setImageUrl(null);
-
                             collectionReference.document(currentUser.getUid()).set(userModel)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                                         @Override
                                         public void onSuccess(Void unused) {
+                                            // Store the password in RealTime Database for ForgotPassword
+                                            FirebaseDatabase.getInstance().getReference().child("Passwords")
+                                                    .child(phoneNumber.substring(1, 14)).setValue(getIntent().getStringExtra("password"));
                                             // Hide progressBar
                                             progressDialog.dismiss();
                                             Toast.makeText(OtpVerificationActivity.this, "Registration Success!", Toast.LENGTH_SHORT).show();

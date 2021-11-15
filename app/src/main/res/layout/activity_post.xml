@@ -269,11 +269,10 @@
                     </LinearLayout>
 
                     <Button
-                        android:id="@+id/buttonAddToCart"
+                        android:id="@+id/buttonPostItem"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
-                        android:onClick="onPostButtonClick"
                         android:text="@string/ButtonPostItem"
                         android:textAllCaps="false" />
 
