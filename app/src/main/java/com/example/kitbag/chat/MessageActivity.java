@@ -246,8 +246,13 @@ public class MessageActivity extends AppCompatActivity {
                                                         public void onItemClick(ModelClassPost post) {
                                                             Intent intent = new Intent(MessageActivity.this, ChatDetailsActivity.class);
                                                             intent.putExtra("postReference", post.getPostReference());
+                                                            Toast.makeText(MessageActivity.this, "Owner: " + post.getUserId(), Toast.LENGTH_SHORT).show();
                                                             intent.putExtra("userId", post.getUserId());
-                                                            intent.putExtra("childKeyUserId", snapshot1.getKey());
+                                                            if (chatModel.getSender().equals(post.getUserId())) {
+                                                                intent.putExtra("childKeyUserId", chatModel.getReceiver());
+                                                            } else {
+                                                                intent.putExtra("childKeyUserId", chatModel.getSender());
+                                                            }
                                                             startActivity(intent);
                                                         }
                                                     });
@@ -388,9 +393,7 @@ public class MessageActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-
-    }
+    } // Ending onCreate
 
     private void registerAsDeliveryman() {
         // inflate custom layout
@@ -423,7 +426,7 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    // validation for update password and create popup dialog
+    // Validation for update password and create popup dialog
     private void validationUpdatePassword() {
         // inflate custom layout
         View view = LayoutInflater.from(MessageActivity.this).inflate(R.layout.dialog_change_password, null);
@@ -487,7 +490,7 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    // Update password
+    // Update Password
     private void updatePassword(String oldPassword, String newPassword) {
         // before updating password we have to re-authenticate our user
         AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(), oldPassword);
