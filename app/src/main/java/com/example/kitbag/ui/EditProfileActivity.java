@@ -117,6 +117,9 @@ public class EditProfileActivity extends AppCompatActivity {
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
 
+        // Change the title of the appBar
+        binding.customAppBar.appbarTitle.setText("Edit Profile");
+
         // Dynamic Activity View (EditProfile/ViewProfile)
         if (!currentUser.getUid().equals(getIntent().getStringExtra("userId"))) {
             binding.customAppBar.appbarTitle.setText("User Info");
@@ -207,9 +210,6 @@ public class EditProfileActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
-        // Change the title of the appBar
-        binding.customAppBar.appbarTitle.setText("Edit Profile");
 
         // Active Inactive Slider to back based on drawer
         binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {

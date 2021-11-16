@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.kitbag.R;
-import com.example.kitbag.model.ModelClassPost;
+import com.example.kitbag.model.ModelClassMessageUser;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -24,16 +24,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHolder> {
 
     //for use onItemClickListener from MainActivity
-    private PostAdapter.OnItemClickListener listener;
+    private ChatUserAdapter.OnItemClickListener listener;
     private int position;
 
     private Context context;
-    private List<ModelClassPost> modelClassPostList = new ArrayList<>();
+    private List<ModelClassMessageUser> modelClassMessageUser = new ArrayList<>();
     private String postId;
 
-    public ChatUserAdapter(Context context, List<ModelClassPost> modelClassPostListUser) {
+    public ChatUserAdapter(Context context, List<ModelClassMessageUser> modelClassMessageUser) {
         this.context = context;
-        this.modelClassPostList = modelClassPostListUser;
+        this.modelClassMessageUser = modelClassMessageUser;
     }
 
     @NonNull
@@ -45,10 +45,9 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ModelClassPost postModelClass = modelClassPostList.get(position);
-
-        Picasso.get().load(postModelClass.getImageUrl()).placeholder(R.drawable.logo).fit().into(holder.circleImageViewSampleUserChat);
-        FirebaseFirestore.getInstance().collection("Users").document(postModelClass.getUserId())
+        ModelClassMessageUser messageUsers = modelClassMessageUser.get(position);
+        Picasso.get().load(messageUsers.getPostImageUrl()).placeholder(R.drawable.logo).fit().into(holder.circleImageViewSampleUserChat);
+        FirebaseFirestore.getInstance().collection("Users").document(messageUsers.getPostedById())
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -56,26 +55,34 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
                         holder.textViewSampleUserNameChat.setText("Posted by " + documentSnapshot.getString("userName"));
                     }
                 });
-        holder.textViewSampleProductTitle.setText(postModelClass.getTitle());
+        FirebaseFirestore.getInstance().collection("Users").document(messageUsers.getChildKeyUserId())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        holder.textViewChatWith.setText("Chat with " + documentSnapshot.getString("userName"));
+                    }
+                });
+        holder.textViewSampleProductTitle.setText(messageUsers.getPostTitle());
 
     }
 
     @Override
     public int getItemCount() {
-        return modelClassPostList.size();
+        return modelClassMessageUser.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView circleImageViewSampleUserChat;
         TextView textViewSampleUserNameChat;
-        TextView textViewSampleLastMessageChat;
+        TextView textViewChatWith;
         TextView textViewSampleProductTitle;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             circleImageViewSampleUserChat = itemView.findViewById(R.id.circularImageViewSampleChatUser);
             textViewSampleUserNameChat = itemView.findViewById(R.id.textViewSampleUsernameChat);
-            textViewSampleLastMessageChat = itemView.findViewById(R.id.textViewSampleLastMessageChat);
+            textViewChatWith = itemView.findViewById(R.id.textViewChatWith);
             textViewSampleProductTitle = itemView.findViewById(R.id.textViewUserTitle);
 
             //for use onItemClickListener from MainActivity
@@ -84,7 +91,7 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
                 public void onClick(View v) {
                     position = getAdapterPosition();
                     if (listener != null && position != -1) {
-                        listener.onItemClick(modelClassPostList.get(position));
+                        listener.onItemClick(modelClassMessageUser.get(position));
                     }
                 }
             });
@@ -92,10 +99,10 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
     }
     //for use onItemClickListener from MainActivity
     public interface OnItemClickListener {
-        void onItemClick(ModelClassPost post);
+        void onItemClick(ModelClassMessageUser list);
     }
 
-    public void setOnItemClickListener(PostAdapter.OnItemClickListener listener) {
+    public void setOnItemClickListener(ChatUserAdapter.OnItemClickListener listener) {
         this.listener = listener;
     }
 }
