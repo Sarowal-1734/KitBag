@@ -13,12 +13,14 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.kitbag.ui.PostInfoActivity;
 import com.example.kitbag.R;
 import com.example.kitbag.adapter.ChatAdapter;
 import com.example.kitbag.databinding.ActivityChatDetailsBinding;
 import com.example.kitbag.model.ChatModel;
 import com.example.kitbag.model.ModelClassPost;
+import com.example.kitbag.model.UserModel;
+import com.example.kitbag.ui.EditProfileActivity;
+import com.example.kitbag.ui.PostInfoActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -60,6 +62,9 @@ public class ChatDetailsActivity extends AppCompatActivity {
     String receiverId, postedBy, childKeyUserId;
     ModelClassPost modelClassPost;
 
+    // To display userInfo
+    private String userId;
+
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -99,33 +104,24 @@ public class ChatDetailsActivity extends AppCompatActivity {
         // Initially disable the send button
         binding.buttonSendMessage.setEnabled(false);
 
-        // Display username, post Title and post image in Message details activity
-        db.collection("All_Post")
-                .whereEqualTo("postReference", postReference)
-                .get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        modelClassPost = new ModelClassPost();
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                            modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
-                            Picasso.get().load(modelClassPost.getImageUrl()).fit().placeholder(R.drawable.logo)
-                                    .into(binding.circularImageViewToolbarItemPhotoChat);
-                            binding.textViewToolbarItemTitleChat.setText(modelClassPost.getTitle());
-                            db.collection("Users").document(postedBy)
-                                    .get()
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                        @Override
-                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                            binding.textViewToolbarUsernameChat.setText("Posted by " + documentSnapshot.getString("userName"));
-                                        }
-                                    });
-                        }
-                    }
-                });
+        // Display username, postType and user image in toolbar
+        displayUserInfo();
 
-        // On click the toolbar title to see the post info
-        binding.textViewPost.setOnClickListener(new View.OnClickListener() {
+        // Display username, post Title and post image in cardView
+        displayPostInfo();
+
+        // On click the user info to see the user profile
+        binding.userInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChatDetailsActivity.this, EditProfileActivity.class);
+                intent.putExtra("userId", userId);
+                startActivity(intent);
+            }
+        });
+
+        // On click the post info to see the post info
+        binding.cardViewPostInfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ChatDetailsActivity.this, PostInfoActivity.class);
@@ -177,6 +173,53 @@ public class ChatDetailsActivity extends AppCompatActivity {
 
         // Read Message and show into recyclerview
         showMessage();
+    }
+
+    // Display username, postType and user image in toolbar
+    private void displayUserInfo() {
+        userId = postedBy;
+        if (currentUser.getUid().equals(postedBy)) {
+            userId = childKeyUserId;
+        }
+        db.collection("Users").document(userId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        UserModel model = documentSnapshot.toObject(UserModel.class);
+                        binding.textViewChatWithUserName.setText(model.getUserName());
+                        binding.textViewChatWithUserType.setText(model.getUserType());
+                        Picasso.get().load(model.getImageUrl()).fit().placeholder(R.drawable.logo)
+                                .into(binding.circularImageViewChatWithUser);
+                    }
+                });
+    }
+
+    // Display username, post Title and post image in cardView
+    private void displayPostInfo() {
+        db.collection("All_Post")
+                .whereEqualTo("postReference", postReference)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        modelClassPost = new ModelClassPost();
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                            modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
+                            Picasso.get().load(modelClassPost.getImageUrl()).fit().placeholder(R.drawable.logo)
+                                    .into(binding.circularImageViewToolbarItemPhotoChat);
+                            binding.textViewToolbarItemTitleChat.setText(modelClassPost.getTitle());
+                            db.collection("Users").document(postedBy)
+                                    .get()
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            binding.textViewToolbarUsernameChat.setText("Posted by " + documentSnapshot.getString("userName"));
+                                        }
+                                    });
+                        }
+                    }
+                });
     }
 
     private void sendMessage(String userId, String receiverId, String message) {

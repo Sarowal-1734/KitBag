@@ -20,17 +20,18 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.kitbag.R;
 import com.example.kitbag.adapter.ChatUserAdapter;
-import com.example.kitbag.adapter.PostAdapter;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.authentication.LoginActivity;
 import com.example.kitbag.databinding.ActivityMessageBinding;
 import com.example.kitbag.model.ChatModel;
+import com.example.kitbag.model.ModelClassMessageUser;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
 import com.example.kitbag.ui.EditProfileActivity;
@@ -91,7 +92,7 @@ public class MessageActivity extends AppCompatActivity {
 
     private ModelClassPost modelClassPost;
 
-    private List<ModelClassPost> modelClassPostUserList = new ArrayList<>();
+    private List<ModelClassMessageUser> modelClassMessageUserList = new ArrayList<>();
     private ChatUserAdapter adapter;
 
     // For Pagination
@@ -201,7 +202,8 @@ public class MessageActivity extends AppCompatActivity {
         // setting up adapter
         binding.recyclerViewUser.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerViewUser.setHasFixedSize(true);
-        adapter = new ChatUserAdapter(MessageActivity.this, modelClassPostUserList);
+        binding.recyclerViewUser.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        adapter = new ChatUserAdapter(MessageActivity.this, modelClassMessageUserList);
         binding.recyclerViewUser.setAdapter(adapter);
 
         // Show progressBar
@@ -216,7 +218,7 @@ public class MessageActivity extends AppCompatActivity {
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                modelClassPostUserList.clear();
+                modelClassMessageUserList.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     for (DataSnapshot snapshot1 : dataSnapshot.getChildren()) {
                         for (DataSnapshot snapshot2 : snapshot1.getChildren()) {
@@ -233,7 +235,13 @@ public class MessageActivity extends AppCompatActivity {
                                                 if (task.isSuccessful()) {
                                                     for (DocumentSnapshot documentSnapshot : task.getResult()) {
                                                         modelClassPost = documentSnapshot.toObject(ModelClassPost.class);
-                                                        modelClassPostUserList.add(modelClassPost);
+                                                        ModelClassMessageUser modelClassMessageUser = new ModelClassMessageUser();
+                                                        modelClassMessageUser.setPostReference(modelClassPost.getPostReference());
+                                                        modelClassMessageUser.setPostTitle(modelClassPost.getTitle());
+                                                        modelClassMessageUser.setPostedById(modelClassPost.getUserId());
+                                                        modelClassMessageUser.setPostImageUrl(modelClassPost.getImageUrl());
+                                                        modelClassMessageUser.setChildKeyUserId(snapshot1.getKey());
+                                                        modelClassMessageUserList.add(modelClassMessageUser);
                                                     }
                                                     progressDialog.dismiss();
                                                     adapter.notifyDataSetChanged();
@@ -241,18 +249,13 @@ public class MessageActivity extends AppCompatActivity {
                                                         lastVisible = task.getResult().getDocuments().get(task.getResult().size() - 1);
                                                     }
                                                     // On recycler item click listener
-                                                    adapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
+                                                    adapter.setOnItemClickListener(new ChatUserAdapter.OnItemClickListener() {
                                                         @Override
-                                                        public void onItemClick(ModelClassPost post) {
+                                                        public void onItemClick(ModelClassMessageUser list) {
                                                             Intent intent = new Intent(MessageActivity.this, ChatDetailsActivity.class);
-                                                            intent.putExtra("postReference", post.getPostReference());
-                                                            Toast.makeText(MessageActivity.this, "Owner: " + post.getUserId(), Toast.LENGTH_SHORT).show();
-                                                            intent.putExtra("userId", post.getUserId());
-                                                            if (chatModel.getSender().equals(post.getUserId())) {
-                                                                intent.putExtra("childKeyUserId", chatModel.getReceiver());
-                                                            } else {
-                                                                intent.putExtra("childKeyUserId", chatModel.getSender());
-                                                            }
+                                                            intent.putExtra("postReference", list.getPostReference());
+                                                            intent.putExtra("userId", list.getPostedById());
+                                                            intent.putExtra("childKeyUserId", list.getChildKeyUserId());
                                                             startActivity(intent);
                                                         }
                                                     });
@@ -286,7 +289,13 @@ public class MessageActivity extends AppCompatActivity {
                                                                         if (t.isSuccessful()) {
                                                                             for (DocumentSnapshot d : t.getResult()) {
                                                                                 ModelClassPost modelClassPost = d.toObject(ModelClassPost.class);
-                                                                                modelClassPostUserList.add(modelClassPost);
+                                                                                ModelClassMessageUser modelClassMessageUser = new ModelClassMessageUser();
+                                                                                modelClassMessageUser.setPostReference(modelClassPost.getPostReference());
+                                                                                modelClassMessageUser.setPostTitle(modelClassPost.getTitle());
+                                                                                modelClassMessageUser.setPostedById(modelClassPost.getUserId());
+                                                                                modelClassMessageUser.setPostImageUrl(modelClassPost.getImageUrl());
+                                                                                modelClassMessageUser.setChildKeyUserId(snapshot1.getKey());
+                                                                                modelClassMessageUserList.add(modelClassMessageUser);
                                                                             }
                                                                             binding.progressBar.setVisibility(View.GONE);
                                                                             adapter.notifyDataSetChanged();
