@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/layoutBackground"
     android:focusableInTouchMode="true"
     tools:context=".authentication.LoginActivity">
 
@@ -64,15 +64,18 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_marginTop="5dp"
-                        android:gravity="center"
-                        app:ccp_autoDetectCountry="true"
-                        app:ccp_showNameCode="true"
-                        app:ccp_textSize="14sp" />
+                            android:gravity="center"
+                            app:ccp_arrowColor="?attr/textColor"
+                            app:ccp_autoDetectCountry="true"
+                            app:ccp_contentColor="?attr/textColor"
+                            app:ccp_showNameCode="true"
+                            app:ccp_textSize="14sp" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColorHint="@color/silver"
                         app:endIconMode="clear_text">
 
                         <EditText
@@ -81,7 +84,8 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:hint="@string/contact"
-                            android:inputType="numberDecimal" />
+                            android:inputType="phone"
+                            android:textColor="?attr/textColor" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
@@ -91,6 +95,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:passwordToggleEnabled="true"
+                    android:textColorHint="@color/silver"
                     app:startIconDrawable="@drawable/ic_password">
 
                     <EditText
@@ -99,6 +104,7 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:hint="@string/password"
+                        android:textColor="?attr/textColor"
                         android:inputType="textPassword" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -109,6 +115,7 @@
                         android:layout_marginBottom="32dp"
                         android:onClick="onLoginButtonClick"
                         android:text="@string/login"
+                        android:textColor="@color/white"
                         android:textAllCaps="false" />
 
                     <TextView
@@ -128,7 +135,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_horizontal"
-                        android:text="or" />
+                        android:text="@string/or"
+                        android:textColor="?attr/textColor" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -140,6 +148,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="16dp"
+                            android:textColor="?attr/textColor"
                             android:gravity="center_horizontal"
                             android:text="@string/don_t_have_an_account" />
 
@@ -153,7 +162,7 @@
                             android:gravity="center_horizontal"
                             android:onClick="onSignupButtonClicked"
                             android:padding="8dp"
-                            android:text="Sign Up"
+                            android:text="@string/sign_up"
                             android:textColor="@color/app_bar"
                             android:textStyle="bold" />
                     </LinearLayout>

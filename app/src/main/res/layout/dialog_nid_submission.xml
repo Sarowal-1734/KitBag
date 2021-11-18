@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/layoutBackground"
     android:padding="16dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -25,7 +26,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:gravity="center"
-        android:text="Please Confirm!"
+        android:text="@string/please_confirm"
         android:textColor="@color/app_bar"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -41,8 +42,8 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:gravity="center"
-        android:text="Information provided for\nKitBag Deliveryman Account\nRegistration is correct,\ndeliberate and authentic."
-        android:textColor="@color/black"
+        android:text="@string/information_provided_for_nkitbag_deliveryman_account_nregistration_is_correct_ndeliberate_and_authentic"
+        android:textColor="?attr/textColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -54,7 +55,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:text="Confirm"
+        android:text="@string/confirm"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

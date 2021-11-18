@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
-    android:background="@color/white"
+    android:background="?attr/layoutBackground"
     tools:context=".authentication.SignUpActivity">
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -58,15 +58,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:endIconMode="clear_text"
+                        android:textColorHint="@color/silver"
                         app:startIconDrawable="@drawable/ic_profile">
 
                         <EditText
                             android:id="@+id/editTextUsername"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:hint="@string/username"
-                        android:inputType="textEmailAddress" />
+                            android:ellipsize="end"
+                            android:hint="@string/username"
+                            android:inputType="textEmailAddress"
+                            android:textColor="?attr/textColor" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <LinearLayout
@@ -83,12 +85,15 @@
                         android:gravity="center"
                         app:ccp_autoDetectCountry="true"
                         app:ccp_showNameCode="true"
+                        app:ccp_arrowColor="?attr/textColor"
+                        app:ccp_contentColor="?attr/textColor"
                         app:ccp_textSize="14sp" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColorHint="@color/silver"
                         app:endIconMode="clear_text">
 
                         <EditText
@@ -97,7 +102,8 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:hint="@string/contact"
-                            android:inputType="numberDecimal" />
+                            android:inputType="phone"
+                            android:textColor="?attr/textColor" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
@@ -107,6 +113,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:passwordToggleEnabled="true"
+                    android:textColorHint="@color/silver"
                     app:startIconDrawable="@drawable/ic_password">
 
                     <EditText
@@ -115,6 +122,7 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:hint="@string/password"
+                        android:textColor="?attr/textColor"
                         android:inputType="textPassword" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -123,6 +131,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:passwordToggleEnabled="true"
+                    android:textColorHint="@color/silver"
                     app:startIconDrawable="@drawable/ic_password">
 
                     <EditText
@@ -131,6 +140,7 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:hint="@string/confirm_password"
+                        android:textColor="?attr/textColor"
                         android:inputType="textPassword" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -140,7 +150,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="24dp"
                     android:onClick="onGetOTPButtonClicked"
-                    android:text="Get OTP"
+                    android:text="@string/send_otp"
                     android:textAllCaps="false" />
 
                 <LinearLayout
@@ -154,7 +164,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="16dp"
                         android:gravity="center_horizontal"
-                        android:textColor="@color/black"
+                        android:textColor="?attr/textColor"
                         android:text="@string/already_have_an_account"/>
 
                     <TextView

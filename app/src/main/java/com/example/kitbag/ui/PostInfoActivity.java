@@ -35,8 +35,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
@@ -45,6 +47,7 @@ import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.authentication.LoginActivity;
 import com.example.kitbag.chat.ChatDetailsActivity;
 import com.example.kitbag.chat.MessageActivity;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
@@ -119,6 +122,12 @@ public class PostInfoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // DarkMode Enable or Disable
+        if (SharedPreference.getDarkModeEnableValue(this)) {
+            setTheme(R.style.DarkMode);
+        } else {
+            setTheme(R.style.LightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityPostInfoBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -174,6 +183,9 @@ public class PostInfoActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            // Hide DarkMode button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
             // Get userName and image from database and set to the drawer
             collectionReference.document(currentUser.getUid()).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -207,7 +219,10 @@ public class PostInfoActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
             binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+            // Hide DarkMode button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
             // Inactive Delivery Request & Product Handover Button
             binding.buttonRequestDelivery.setEnabled(false);
             binding.buttonRequestDelivery.setBackgroundColor(getResources().getColor(R.color.silver));
@@ -401,6 +416,7 @@ public class PostInfoActivity extends AppCompatActivity {
         // Display all the info to the activity
         displayPostInfo();
 
+        // TODO Later
         /*/ Dynamic Edit Delete Button According to current postStatus
         if (modelClassPost.getStatusCurrent().equals("N/A") || modelClassPost.getStatusCurrent().equals("Primary_Agent")) {
             binding.buttonAddToCart.setVisibility(View.VISIBLE);
@@ -511,10 +527,14 @@ public class PostInfoActivity extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             userModel = documentSnapshot.toObject(UserModel.class);
-                                            String postedUser = "Posted by " + userModel.getUserName();
+                                            Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+                                            cal.setTimeInMillis(modelClassPost.getTimeAdded().getSeconds() * 1000);
+                                            String postedUserTime;
+                                            postedUserTime = "Posted by " + userModel.getUserName() + " on ";
+                                            postedUserTime += DateFormat.format("dd MMM hh:mm a", cal).toString();;
                                             String chatWith = "Chat (" + userModel.getUserName() + ")";
                                             binding.TextViewChat.setText(chatWith);
-                                            binding.textViewUserTime.setText(postedUser);
+                                            binding.textViewUserTime.setText(postedUserTime);
                                             binding.TextViewUserType.setText(userModel.getUserType());
                                             if (TextUtils.isEmpty(userModel.getEmail())) {
                                                 binding.imageIconMail.setVisibility(View.GONE);

@@ -30,6 +30,7 @@ import com.example.kitbag.R;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.authentication.OtpVerificationActivity;
 import com.example.kitbag.chat.MessageActivity;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityProductHandOverBinding;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
@@ -83,6 +84,12 @@ public class ProductHandOverActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // DarkMode Enable or Disable
+        if (SharedPreference.getDarkModeEnableValue(this)) {
+            setTheme(R.style.DarkMode);
+        } else {
+            setTheme(R.style.LightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityProductHandOverBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -116,6 +123,8 @@ public class ProductHandOverActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            // Hide DarkMode button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
             // Get userName and image from database and set to the drawer
             db.collection("Users").document(currentUser.getUid()).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -143,6 +152,8 @@ public class ProductHandOverActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+            // Hide DarkMode button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
         }
 
         // Get postStatus info from database and Set Hint On EditText

@@ -31,25 +31,25 @@
             android:id="@+id/textViewUserTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
+            android:textColor="?attr/textColor"
             android:textStyle="bold"
-            android:text="Title" />
+            android:text="@string/post_title" />
 
         <TextView
             android:id="@+id/textViewSampleUsernameChat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:textColor="@color/black"
-            android:text="User Name" />
+            android:textColor="?attr/textColor"
+            android:text="@string/username" />
 
         <TextView
             android:id="@+id/textViewChatWith"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:textColor="@color/black"
-            android:text="Last Message"/>
+            android:textColor="?attr/textColor"
+            android:text="@string/chat_mr_x"/>
     </LinearLayout>
 
 

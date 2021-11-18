@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/layoutBackground"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -10,16 +11,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
-        android:text="Find by location"
-        android:textColor="@color/black"
+        android:text="@string/find_by_location"
+        android:textColor="?attr/textColor"
         android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="From:"
-        android:textColor="@color/black"
+        android:text="@string/from"
+        android:textColor="?attr/textColor"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -32,8 +33,9 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="2dp"
+            android:layout_marginEnd="2dp"
             android:layout_weight="1"
+            android:textColorHint="@color/silver"
             app:endIconMode="dropdown_menu">
 
             <AutoCompleteTextView
@@ -41,8 +43,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:completionThreshold="1"
-                android:hint="District"
+                android:hint="@string/district"
                 android:inputType="text"
+                android:textColor="?attr/textColor"
                 android:padding="8dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -51,6 +54,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textColorHint="@color/silver"
             app:endIconMode="dropdown_menu">
 
             <AutoCompleteTextView
@@ -58,8 +62,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:completionThreshold="1"
-                android:hint="Upazila"
+                android:hint="@string/upazila"
                 android:inputType="text"
+                android:textColor="?attr/textColor"
                 android:padding="8dp" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
@@ -68,8 +73,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="To:"
-        android:textColor="@color/black"
+        android:text="@string/to"
+        android:textColor="?attr/textColor"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -84,6 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="2dp"
             android:layout_weight="1"
+            android:textColorHint="@color/silver"
             app:endIconMode="dropdown_menu">
 
             <AutoCompleteTextView
@@ -91,8 +97,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:completionThreshold="1"
-                android:hint="District"
+                android:hint="@string/district"
                 android:inputType="text"
+                android:textColor="?attr/textColor"
                 android:padding="8dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -100,6 +107,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:textColorHint="@color/silver"
             android:layout_weight="1"
             app:endIconMode="dropdown_menu">
 
@@ -108,7 +116,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:completionThreshold="1"
-                android:hint="Upazila"
+                android:hint="@string/upazila"
+                android:textColor="?attr/textColor"
                 android:inputType="text"
                 android:padding="8dp" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -120,9 +129,11 @@
         android:layout_marginBottom="8dp"
         android:text="@string/all_fields_are_required"
         android:textColor="@color/red"/>
+
     <Button
         android:id="@+id/buttonSearch"
+        android:text="@string/search"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Search"/>
+        android:textAllCaps="false" />
 </LinearLayout>

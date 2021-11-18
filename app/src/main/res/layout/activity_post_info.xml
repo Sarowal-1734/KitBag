@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/layoutBackground"
     android:focusableInTouchMode="true"
     tools:context=".ui.PostInfoActivity">
 
@@ -34,65 +34,68 @@
                 android:layout_height="match_parent">
 
                 <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp">
-
-                <TextView
-                    android:id="@+id/textViewTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Title: Apple iPhone XS"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/textViewUserTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Posted by Mr. X on 30 Apr 11:25 am" />
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardViewPhoto"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:cardCornerRadius="5dp"
-                    app:cardMaxElevation="@dimen/cardview_compat_inset_shadow"
-                    app:cardUseCompatPadding="true">
-
-                    <com.github.chrisbanes.photoview.PhotoView
-                        android:id="@+id/photoView"
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/logo" />
-                </androidx.cardview.widget.CardView>
-
-
-                <LinearLayout
-                    android:id="@+id/TextViewDescriptionLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="8dp">
 
                     <TextView
+                        android:id="@+id/textViewTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="Description: "
-                        android:textColor="@color/black"
+                        android:text="@string/title_apple_iphone_xs"
+                        android:textColor="?attr/textColor"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/TextViewDescription"
+                        android:id="@+id/textViewUserTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/posted_by_mr_x_on_30_apr_11_25_am"
+                        android:textColor="?attr/textColor" />
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardViewPhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="I want to send my iPhone to my sister. I am from Savar, Dhaka. And my sister is in Bogra." />
-                </LinearLayout>
+                        app:cardCornerRadius="5dp"
+                        app:cardMaxElevation="@dimen/cardview_compat_inset_shadow"
+                        app:cardUseCompatPadding="true">
+
+                        <com.github.chrisbanes.photoview.PhotoView
+                            android:id="@+id/photoView"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_gravity="center"
+                            android:background="?attr/layoutBackground"
+                            android:src="@drawable/logo" />
+                    </androidx.cardview.widget.CardView>
+
+
+                    <LinearLayout
+                        android:id="@+id/TextViewDescriptionLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/description"
+                            android:textColor="?attr/textColor"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/TextViewDescription"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="I want to send my iPhone to my sister. I am from Savar, Dhaka. And my sister is in Bogra."
+                            android:textColor="?attr/textColor" />
+                    </LinearLayout>
 
 
                 <LinearLayout
@@ -113,14 +116,15 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Weight: "
-                            android:textColor="@color/black"
+                            android:text="@string/weight"
+                            android:textColor="?attr/textColor"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/TextViewWeight"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:textColor="?attr/textColor"
                             android:text="250gm" />
                     </LinearLayout>
 
@@ -137,14 +141,15 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Status: "
-                            android:textColor="@color/black"
+                            android:text="@string/status"
+                            android:textColor="?attr/textColor"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/TextViewStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:textColor="?attr/textColor"
                             android:text="Idle" />
 
 
@@ -169,14 +174,15 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="From: "
-                            android:textColor="@color/black"
+                            android:text="@string/from"
+                            android:textColor="?attr/textColor"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/TextViewSource"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:textColor="?attr/textColor"
                             android:text="Kahalu, Bogra" />
                     </LinearLayout>
 
@@ -189,14 +195,15 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="To: "
-                            android:textColor="@color/black"
+                            android:text="@string/to"
+                            android:textColor="?attr/textColor"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/TextViewDestination"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:textColor="?attr/textColor"
                             android:text="Savar, Dhaka" />
 
                     </LinearLayout>
@@ -220,15 +227,16 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="User Type: "
-                            android:textColor="@color/black"
+                            android:text="User_Type: "
+                            android:textColor="?attr/textColor"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/TextViewUserType"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Deliveryman" />
+                            android:text=" Deliveryman"
+                            android:textColor="?attr/textColor" />
 
                     </LinearLayout>
 
@@ -253,7 +261,8 @@
                             android:id="@+id/TextViewChat"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Chat (Mr. X)" />
+                            android:text="@string/chat_mr_x"
+                            android:textColor="?attr/textColor" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -286,7 +295,8 @@
                                 android:id="@+id/TextViewCall"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="017XXXXXXXX" />
+                                android:text="@string/number_hint"
+                                android:textColor="?attr/textColor" />
 
                         </LinearLayout>
 
@@ -312,7 +322,8 @@
                                 android:id="@+id/TextViewMail"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="aabbcc.cse.2021@gmail.com " />
+                                android:text="@string/email_hint"
+                                android:textColor="?attr/textColor" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -322,7 +333,7 @@
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
                         android:onClick="onAddToCartButtonClick"
-                        android:text="Add to Cart"
+                        android:text="@string/add_to_cart"
                         android:textAllCaps="false" />
 
                     <Button
@@ -332,7 +343,7 @@
                         android:layout_marginTop="8dp"
                         android:backgroundTint="@color/red"
                         android:onClick="onDeletePostButtonClick"
-                        android:text="Delete Post"
+                        android:text="@string/delete_post"
                         android:textAllCaps="false"
                         android:visibility="gone" />
 
@@ -343,7 +354,7 @@
                         android:layout_marginTop="8dp"
                         android:backgroundTint="@color/app_bar"
                         android:onClick="onRequestDeliveryButtonClick"
-                        android:text="Request For Delivery"
+                        android:text="@string/request_for_delivery"
                         android:textAllCaps="false" />
 
                     <Button
@@ -354,7 +365,7 @@
                         android:backgroundTint="@color/silver"
                         android:enabled="false"
                         android:onClick="onProductHandoverButtonClick"
-                        android:text="Product Handover Process"
+                        android:text="@string/product_handover_process"
                         android:textAllCaps="false" />
 
                 </LinearLayout>
@@ -377,12 +388,13 @@
         android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white" />
+        android:background="?attr/layoutBackground" />
 
     <com.facebook.shimmer.ShimmerFrameLayout
         android:id="@+id/shimmerContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
+
         <include layout="@layout/shimmer_effect_layout_post_info" />
     </com.facebook.shimmer.ShimmerFrameLayout>
 

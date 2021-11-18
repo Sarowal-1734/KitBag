@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/layoutBackground"
     android:focusableInTouchMode="true"
     tools:context=".ui.PostActivity">
 
@@ -51,6 +51,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_gravity="center"
+                        android:background="?attr/layoutBackground"
                         app:srcCompat="@drawable/ic_add_photo" />
                 </androidx.cardview.widget.CardView>
 
@@ -58,6 +59,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColorHint="@color/silver"
                     app:endIconMode="clear_text">
 
                     <EditText
@@ -66,6 +68,7 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:hint="@string/post_title"
+                        android:textColor="?attr/textColor"
                         android:maxLength="40"
                         android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -74,6 +77,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColorHint="@color/silver"
                     app:endIconMode="clear_text">
 
                     <EditText
@@ -81,7 +85,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
-                        android:hint="Weight e.g: 2 Kg / 250 Gram"
+                        android:hint="@string/weight_e_g_2_kg_250_gram"
+                        android:textColor="?attr/textColor"
                         android:inputType="text" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -89,6 +94,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColorHint="@color/silver"
                     app:endIconMode="clear_text">
 
                     <EditText
@@ -96,6 +102,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:gravity="start"
+                        android:textColor="?attr/textColor"
                         android:hint="@string/post_description" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -104,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="From:"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -119,6 +126,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="2dp"
                         android:layout_weight="1"
+                        android:textColorHint="@color/silver"
                         app:endIconMode="dropdown_menu">
 
                         <AutoCompleteTextView
@@ -126,8 +134,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:completionThreshold="1"
-                            android:hint="District"
+                            android:hint="@string/district"
                             android:inputType="text"
+                            android:textColor="?attr/textColor"
                             android:padding="8dp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -136,6 +145,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColorHint="@color/silver"
                         app:endIconMode="dropdown_menu">
 
                         <AutoCompleteTextView
@@ -143,7 +153,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:completionThreshold="1"
-                            android:hint="Upazila"
+                            android:hint="@string/upazila"
+                            android:textColor="?attr/textColor"
                             android:inputType="text"
                             android:padding="8dp" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -154,7 +165,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="To:"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textStyle="bold" />
 
                 <LinearLayout
@@ -169,6 +180,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="2dp"
                         android:layout_weight="1"
+                        android:textColorHint="@color/silver"
                         app:endIconMode="dropdown_menu">
 
                         <AutoCompleteTextView
@@ -176,7 +188,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:completionThreshold="1"
-                            android:hint="District"
+                            android:hint="@string/district"
+                            android:textColor="?attr/textColor"
                             android:inputType="text"
                             android:padding="8dp" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -186,6 +199,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColorHint="@color/silver"
                         app:endIconMode="dropdown_menu">
 
                         <AutoCompleteTextView
@@ -193,7 +207,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:completionThreshold="1"
-                            android:hint="Upazila"
+                            android:hint="@string/upazila"
+                            android:textColor="?attr/textColor"
                             android:inputType="text"
                             android:padding="8dp" />
                     </com.google.android.material.textfield.TextInputLayout>
@@ -212,6 +227,8 @@
                             android:layout_height="match_parent"
                             android:layout_marginTop="5dp"
                             android:gravity="center"
+                            app:ccp_arrowColor="?attr/textColor"
+                            app:ccp_contentColor="?attr/textColor"
                             app:ccp_autoDetectCountry="true"
                             app:ccp_showNameCode="true"
                             app:ccp_textSize="14sp" />
@@ -220,6 +237,7 @@
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:textColorHint="@color/silver"
                             app:endIconMode="clear_text">
 
                             <EditText
@@ -227,8 +245,9 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:ellipsize="end"
-                                android:hint="Receiver Contact"
-                                android:inputType="numberDecimal" />
+                                android:hint="@string/receiver_contact"
+                                android:inputType="phone"
+                                android:textColor="?attr/textColor" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                     </LinearLayout>
@@ -247,6 +266,8 @@
                             android:layout_height="match_parent"
                             android:layout_marginTop="5dp"
                             android:gravity="center"
+                            app:ccp_arrowColor="?attr/textColor"
+                            app:ccp_contentColor="?attr/textColor"
                             app:ccp_autoDetectCountry="true"
                             app:ccp_showNameCode="true"
                             app:ccp_textSize="14sp" />
@@ -255,6 +276,7 @@
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:textColorHint="@color/silver"
                             app:endIconMode="clear_text">
 
                             <EditText
@@ -262,8 +284,9 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:ellipsize="end"
-                                android:hint="Deliveryman (Optional)"
-                                android:inputType="numberDecimal" />
+                                android:hint="@string/deliveryman_optional"
+                                android:inputType="phone"
+                                android:textColor="?attr/textColor" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                     </LinearLayout>
@@ -282,7 +305,8 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="8dp"
                         android:gravity="center"
-                        android:text="By posting this ad you agree to our" />
+                        android:text="@string/by_posting_this_ad_you_agree_to_our"
+                        android:textColor="?attr/textColor" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -292,7 +316,7 @@
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:gravity="center"
                         android:padding="4dp"
-                        android:text="Terms &amp; Conditions"
+                        android:text="@string/terms_and_conditions"
                         android:textColor="@color/red"
                         android:textStyle="bold" />
                 </LinearLayout>

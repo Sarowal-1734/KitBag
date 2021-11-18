@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/layoutBackground"
     android:padding="16dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
@@ -25,7 +26,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:gravity="center"
-        android:text="Become a deliveryman\nin three easy steps"
+        android:text="@string/become_a_deliveryman_nin_three_easy_steps"
         android:textColor="@color/app_bar"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -50,8 +51,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Take photo of your NID"
-        android:textColor="@color/black"
+        android:text="@string/take_photo_of_your_nid"
+        android:textColor="?attr/textColor"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewNode1"
         app:layout_constraintStart_toEndOf="@+id/imageViewNode1"
         app:layout_constraintTop_toTopOf="@+id/imageViewNode1" />
@@ -90,8 +91,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Take a photo of your face"
-        android:textColor="@color/black"
+        android:text="@string/take_a_photo_of_your_face"
+        android:textColor="?attr/textColor"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewNode2"
         app:layout_constraintStart_toEndOf="@+id/imageViewNode2"
         app:layout_constraintTop_toBottomOf="@+id/view2" />
@@ -141,8 +142,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Fill in required information"
-        android:textColor="@color/black"
+        android:text="@string/fill_in_required_information"
+        android:textColor="?attr/textColor"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewNode3"
         app:layout_constraintStart_toEndOf="@+id/imageViewNode3"
         app:layout_constraintTop_toBottomOf="@+id/view3" />
@@ -153,7 +154,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="8dp"
-        android:text="Proceed"
+        android:text="@string/proceed"
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewStep3" />
@@ -164,7 +165,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:backgroundTint="@color/red"
-        android:text="Cancel"
+        android:text="@string/cancel"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="@+id/buttonProceed"
         app:layout_constraintStart_toStartOf="parent"
