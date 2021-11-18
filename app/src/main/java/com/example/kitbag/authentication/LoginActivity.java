@@ -105,6 +105,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        finish();
+                        break;
                     case R.id.nav_login:
                         binding.drawerLayout.closeDrawer(GravityCompat.END);
                         break;

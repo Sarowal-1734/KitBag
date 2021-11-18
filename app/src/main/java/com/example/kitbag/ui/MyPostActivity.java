@@ -380,6 +380,9 @@ public class MyPostActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        finish();
+                        break;
                     case R.id.nav_language:
                         Toast.makeText(MyPostActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;

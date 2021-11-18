@@ -50,8 +50,10 @@
         <entry key="app/src/main/res/drawable/background_sender_chat.xml" value="0.4197916666666667" />
         <entry key="app/src/main/res/drawable/ic_add_photo.xml" value="0.41333333333333333" />
         <entry key="app/src/main/res/drawable/ic_call.xml" value="0.41333333333333333" />
+        <entry key="app/src/main/res/drawable/ic_chat.xml" value="0.39444444444444443" />
         <entry key="app/src/main/res/drawable/ic_connected.xml" value="0.41333333333333333" />
         <entry key="app/src/main/res/drawable/ic_contact.xml" value="0.41333333333333333" />
+        <entry key="app/src/main/res/drawable/ic_notifications.xml" value="0.3861111111111111" />
         <entry key="app/src/main/res/drawable/ic_profile.xml" value="0.41333333333333333" />
         <entry key="app/src/main/res/drawable/ic_send.xml" value="0.35" />
         <entry key="app/src/main/res/drawable/ripple_effect.xml" value="0.41333333333333333" />

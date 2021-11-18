@@ -35,9 +35,11 @@ import com.example.kitbag.model.ModelClassMessageUser;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
 import com.example.kitbag.ui.EditProfileActivity;
+import com.example.kitbag.ui.MainActivity;
 import com.example.kitbag.ui.MyCartActivity;
 import com.example.kitbag.ui.MyPostActivity;
 import com.example.kitbag.ui.NotificationsActivity;
+import com.example.kitbag.ui.PostActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -356,6 +358,10 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(MessageActivity.this, MainActivity.class));
+                        finish();
+                        break;
                     case R.id.nav_login:
                         startActivity(new Intent(MessageActivity.this, LoginActivity.class));
                         break;

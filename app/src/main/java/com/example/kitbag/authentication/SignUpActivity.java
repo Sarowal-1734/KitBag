@@ -19,6 +19,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
 import com.example.kitbag.databinding.ActivitySignUpBinding;
+import com.example.kitbag.ui.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -125,6 +126,10 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+                        finish();
+                        break;
                     case R.id.nav_login:
                         finish();
                         break;

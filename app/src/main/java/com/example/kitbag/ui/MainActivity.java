@@ -160,6 +160,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Hide Home button in drawer in MainActivity
+        binding.navigationView.getMenu().findItem(R.id.nav_home).setVisible(false);
+
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
             // User is signed in
@@ -167,6 +170,8 @@ public class MainActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            // Hide Home button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_home).setVisible(false);
             // Get userName and image from database and set to the drawer
             collectionReference.document(currentUser.getUid()).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -194,6 +199,8 @@ public class MainActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+            // Hide Home button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_home).setVisible(false);
         }
 
         // Initial view of dark mode button in drawer menu
@@ -344,6 +351,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        binding.drawerLayout.closeDrawer(GravityCompat.END);
+                        break;
                     case R.id.nav_login:
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
                         break;

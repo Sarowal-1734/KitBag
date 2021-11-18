@@ -364,6 +364,10 @@ public class MyCartActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(MyCartActivity.this, MainActivity.class));
+                        finish();
+                        break;
                     case R.id.nav_language:
                         Toast.makeText(MyCartActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;

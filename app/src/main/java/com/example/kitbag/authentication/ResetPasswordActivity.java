@@ -20,6 +20,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.kitbag.R;
 import com.example.kitbag.databinding.ActivityResetPasswordBinding;
 import com.example.kitbag.ui.MainActivity;
+import com.example.kitbag.ui.PostActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -122,6 +123,10 @@ public class ResetPasswordActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(ResetPasswordActivity.this, MainActivity.class));
+                        finish();
+                        break;
                     case R.id.nav_login:
                         startActivity(new Intent(ResetPasswordActivity.this, LoginActivity.class));
                         finish();

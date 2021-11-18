@@ -247,6 +247,10 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(EditProfileActivity.this, MainActivity.class));
+                        finish();
+                        break;
                     case R.id.nav_language:
                         Toast.makeText(EditProfileActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;

@@ -287,6 +287,10 @@ public class PostInfoActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(PostInfoActivity.this, MainActivity.class));
+                        finish();
+                        break;
                     case R.id.nav_login:
                         startActivity(new Intent(PostInfoActivity.this, LoginActivity.class));
                         break;

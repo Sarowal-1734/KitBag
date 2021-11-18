@@ -7,21 +7,15 @@
     android:background="@color/white"
     tools:context=".authentication.OtpVerificationActivity">
 
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/drawer_layout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:openDrawer="start">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
 
             <include
                 android:id="@+id/custom_app_bar"
@@ -102,7 +96,7 @@
                         android:padding="8dp"
                         android:text="@string/resend_otp"
                         android:clickable="true"
-                        android:background="?attr/selectableItemBackground"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:textColor="@color/app_bar"
                         android:textStyle="bold"
                         android:focusable="true" />
@@ -119,15 +113,6 @@
             </LinearLayout>
         </ScrollView>
         </LinearLayout>
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/navigation_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            app:headerLayout="@layout/nav_header"
-            app:menu="@menu/drawer_menu_logout" />
-    </androidx.drawerlayout.widget.DrawerLayout>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/snackBarContainer"
