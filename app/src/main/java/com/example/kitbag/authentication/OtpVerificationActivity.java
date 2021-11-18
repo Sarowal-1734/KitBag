@@ -11,32 +11,25 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
+import android.os.CountDownTimer;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
-import com.example.kitbag.ui.EditProfileActivity;
 import com.example.kitbag.ui.MainActivity;
 import com.example.kitbag.ui.PostInfoActivity;
 import com.goodiebag.pinview.Pinview;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
@@ -59,19 +52,16 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Random;
 
-import de.hdodenhof.circleimageview.CircleImageView;
-
 public class OtpVerificationActivity extends AppCompatActivity {
 
     private ActivityOtpVerificationBinding binding;
 
-    // Dialog Declaration
-    private AlertDialog.Builder builder;
-    private AlertDialog dialog;
-
     private String pinViewOTP, whatToDo, phoneNumber;
-
     private int OtpID;
+
+    // Set timer to resend otp button
+    private CountDownTimer countDownTimer;
+    private long timeLeftInMilliSeconds = 120000; //2 minutes
 
     // Swipe to back
     private SlidrInterface slidrInterface;
@@ -89,6 +79,12 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // DarkMode Enable or Disable
+        if (SharedPreference.getDarkModeEnableValue(this)) {
+            setTheme(R.style.DarkMode);
+        } else {
+            setTheme(R.style.LightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityOtpVerificationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -123,103 +119,22 @@ public class OtpVerificationActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
 
+        setTimerToResendOtpButton();
+
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
-            // User is signed in
-            binding.navigationView.getMenu().clear();
-            binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
-            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
-            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
-
-
             // Get userName and image from database and set to the drawer
             collectionReference.document(currentUser.getUid()).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
-                            NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
-                            View view = navigationView.getHeaderView(0);
-                            TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
-                            CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
-                            // set userName to the drawer
-                            userName.setText(documentSnapshot.getString("userName"));
                             if (documentSnapshot.getString("imageUrl") != null) {
-                                // Picasso library for download & show image
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.logo).fit().centerCrop().into(imageView);
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
+                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile)
+                                        .fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
                             }
                         }
                     });
-        } else {
-            // No user is signed in
-            binding.navigationView.getMenu().clear();
-            binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
-            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
-            binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
         }
-
-        // Open Drawer Layout
-        binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.drawerLayout.openDrawer(GravityCompat.END);
-            }
-        });
-
-        // Active Inactive Slider to back based on drawer
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
-
-        // On drawer menu item clicked
-        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nav_login:
-                        Toast.makeText(OtpVerificationActivity.this, "Process dismissed!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(OtpVerificationActivity.this, LoginActivity.class));
-                        finish();
-                        break;
-                    case R.id.nav_deliveryman:
-                        registerAsDeliveryman();
-                        break;
-                    case R.id.nav_language:
-                        Toast.makeText(OtpVerificationActivity.this, "Language", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_discover_kitbag:
-                        Toast.makeText(OtpVerificationActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_terms_conditions:
-                        Toast.makeText(OtpVerificationActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_contact:
-                        Toast.makeText(OtpVerificationActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.nav_about:
-                        Toast.makeText(OtpVerificationActivity.this, "About Us", Toast.LENGTH_SHORT).show();
-                        break;
-                }
-                return false;
-            }
-        });
 
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
@@ -234,19 +149,6 @@ public class OtpVerificationActivity extends AppCompatActivity {
             }
         });
 
-        // On Edit profile icon clicked
-        View view = binding.navigationView.getHeaderView(0);
-        ImageView imageView = view.findViewById(R.id.nav_edit_profile);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(OtpVerificationActivity.this, EditProfileActivity.class);
-                intent.putExtra("userId", currentUser.getUid());
-                startActivity(intent);
-                finish();
-            }
-        });
-
         // Set the phone number in UI
         binding.textViewPhoneNumber.setText("" + phoneNumber);
 
@@ -254,6 +156,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
         binding.textViewResendOTP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setTimerToResendOtpButton();
                 sendOTP();
             }
         });
@@ -268,35 +171,34 @@ public class OtpVerificationActivity extends AppCompatActivity {
         });
     } // Ending onCreate
 
-    private void registerAsDeliveryman() {
-        // inflate custom layout
-        View view = LayoutInflater.from(OtpVerificationActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
-        // Getting view form custom dialog layout
-        ImageView imageViewNode1 = view.findViewById(R.id.imageViewNode1);
-        ImageView imageViewNode2 = view.findViewById(R.id.imageViewNode2);
-        ImageView imageViewNode3 = view.findViewById(R.id.imageViewNode3);
-        Button buttonCancel = view.findViewById(R.id.buttonCancel);
-        Button buttonProceed = view.findViewById(R.id.buttonProceed);
-        imageViewNode1.setColorFilter(Color.parseColor("#1754B6")); // app_bar color
-        imageViewNode2.setColorFilter(Color.parseColor("#1754B6"));
-        imageViewNode3.setColorFilter(Color.parseColor("#1754B6"));
-        builder = new AlertDialog.Builder(this);
-        builder.setView(view);
-        dialog = builder.create();
-        dialog.setCancelable(false);
-        dialog.show();
-        buttonCancel.setOnClickListener(new View.OnClickListener() {
+    private void setTimerToResendOtpButton() {
+        binding.textViewResendOTP.setEnabled(false);
+        binding.textViewResendOTP.setTextColor(Color.GRAY);
+        countDownTimer = new CountDownTimer(timeLeftInMilliSeconds, 1000) {
             @Override
-            public void onClick(View v) {
-                dialog.dismiss();
+            public void onTick(long millisUntilFinished) {
+                updateTimerOnResendOtpButton(millisUntilFinished);
             }
-        });
-        buttonProceed.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View v) {
-                startActivity(new Intent(OtpVerificationActivity.this, DeliverymanRegistrationActivity.class));
+            public void onFinish() {
+                binding.textViewResendOTP.setText("RESEND OTP");
+                binding.textViewResendOTP.setEnabled(true);
+                binding.textViewResendOTP.setTextColor(Color.parseColor("#1754B6"));
             }
-        });
+        }.start();
+    }
+
+    private void updateTimerOnResendOtpButton(long millisUntilFinished) {
+        int minutes = (int) millisUntilFinished / 60000;
+        int seconds = (int) millisUntilFinished % 60000 / 1000;
+        String timeLeft;
+        timeLeft = "RESEND OTP (" + minutes;
+        timeLeft += ":";
+        if (seconds < 10)
+            timeLeft += 0;
+        timeLeft += seconds + ")";
+        binding.textViewResendOTP.setText(timeLeft);
     }
 
     // On Sign in button clicked
@@ -480,17 +382,6 @@ public class OtpVerificationActivity extends AppCompatActivity {
         // add the custom snack bar layout to snackbar layout
         snackbarLayout.addView(customSnackView, 0);
         snackbar.show();
-    }
-
-    // Close Drawer on back pressed
-    @Override
-    public void onBackPressed() {
-        // progressDialog.dismiss(); //produce bug
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.END);
-            return;
-        }
-        super.onBackPressed();
     }
 
     // Check the internet connection

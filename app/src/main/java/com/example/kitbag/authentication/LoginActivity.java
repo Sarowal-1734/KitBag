@@ -18,6 +18,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityLoginBinding;
 import com.example.kitbag.ui.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -47,6 +48,12 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // DarkMode Enable or Disable
+        if (SharedPreference.getDarkModeEnableValue(this)) {
+            setTheme(R.style.DarkMode);
+        } else {
+            setTheme(R.style.LightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -58,6 +65,9 @@ public class LoginActivity extends AppCompatActivity {
         // Swipe to back
         slidrInterface = Slidr.attach(this);
 
+        // Hide DarkMode button in drawer in MainActivity
+        binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
+
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
             // User is signed in
@@ -65,12 +75,16 @@ public class LoginActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            // Hide DarkMode button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
         } else {
             // No user is signed in
             binding.navigationView.getMenu().clear();
             binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+            // Hide DarkMode button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
         }
 
         // Attach full number from edittext with cpp
@@ -105,6 +119,10 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                        finish();
+                        break;
                     case R.id.nav_login:
                         binding.drawerLayout.closeDrawer(GravityCompat.END);
                         break;

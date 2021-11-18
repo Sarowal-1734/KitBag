@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.kitbag.R;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityNidInformationBinding;
 import com.example.kitbag.model.ModelClassDeliveryman;
 import com.example.kitbag.ui.MainActivity;
@@ -74,6 +75,12 @@ public class NidInformationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // DarkMode Enable or Disable
+        if (SharedPreference.getDarkModeEnableValue(this)) {
+            setTheme(R.style.DarkMode);
+        } else {
+            setTheme(R.style.LightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityNidInformationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

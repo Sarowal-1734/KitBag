@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.kitbag.R;
 import com.example.kitbag.adapter.ChatAdapter;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityChatDetailsBinding;
 import com.example.kitbag.model.ChatModel;
 import com.example.kitbag.model.ModelClassPost;
@@ -70,6 +71,12 @@ public class ChatDetailsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // DarkMode Enable or Disable
+        if (SharedPreference.getDarkModeEnableValue(this)) {
+            setTheme(R.style.DarkMode);
+        } else {
+            setTheme(R.style.LightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityChatDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

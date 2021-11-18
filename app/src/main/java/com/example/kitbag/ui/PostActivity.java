@@ -38,6 +38,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.kitbag.R;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.chat.MessageActivity;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityPostBinding;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
@@ -111,6 +112,12 @@ public class PostActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // DarkMode Enable or Disable
+        if (SharedPreference.getDarkModeEnableValue(this)) {
+            setTheme(R.style.DarkMode);
+        } else {
+            setTheme(R.style.LightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityPostBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -175,6 +182,8 @@ public class PostActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            // Hide DarkMode button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
             // Get userName and image from database and set to the drawer
             collectionReference.document(currentUser.getUid()).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -203,6 +212,8 @@ public class PostActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
             binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+            // Hide DarkMode button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
         }
 
         // Adding back arrow in the appBar
@@ -266,6 +277,10 @@ public class PostActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(PostActivity.this, MainActivity.class));
+                        finish();
+                        break;
                     case R.id.nav_language:
                         Toast.makeText(PostActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;

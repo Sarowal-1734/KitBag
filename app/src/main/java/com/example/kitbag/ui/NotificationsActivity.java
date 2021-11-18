@@ -23,6 +23,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.kitbag.R;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.chat.MessageActivity;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityNotificationsBinding;
 import com.example.kitbag.model.UserModel;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -70,6 +71,12 @@ public class NotificationsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // DarkMode Enable or Disable
+        if (SharedPreference.getDarkModeEnableValue(this)) {
+            setTheme(R.style.DarkMode);
+        } else {
+            setTheme(R.style.LightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityNotificationsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -88,6 +95,8 @@ public class NotificationsActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            // Hide DarkMode button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
             // Get userName and image from database and set to the drawer
             collectionReference.document(currentUser.getUid()).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -115,6 +124,8 @@ public class NotificationsActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+            // Hide DarkMode button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
         }
 
         // remove search icon and notification icon from appBar
@@ -179,6 +190,10 @@ public class NotificationsActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(NotificationsActivity.this, MainActivity.class));
+                        finish();
+                        break;
                     case R.id.nav_language:
                         Toast.makeText(NotificationsActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;

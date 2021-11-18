@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?attr/layoutBackground"
     android:orientation="vertical"
     tools:context=".chat.ChatDetailsActivity">
 
@@ -53,7 +54,6 @@
                     android:id="@+id/textViewChatWithUserName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="User Name"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -62,7 +62,6 @@
                     android:id="@+id/textViewChatWithUserType"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="User Type"
                     android:textColor="@color/white"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -107,7 +106,6 @@
                     android:id="@+id/textViewToolbarItemTitleChat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Post Title"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -115,7 +113,6 @@
                     android:id="@+id/textViewToolbarUsernameChat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="User Name"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
@@ -142,7 +139,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="8.5"
-            android:hint="Enter Message" />
+            android:hint="@string/enter_message"
+            android:textColor="?attr/textColor"
+            android:textColorHint="@color/silver" />
 
         <ImageView
             android:id="@+id/buttonSendMessage"

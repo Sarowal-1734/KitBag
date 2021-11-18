@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/layoutBackground"
     android:orientation="vertical"
     tools:context=".authentication.TakeFacePhotoActivity">
 
@@ -19,8 +19,8 @@
         android:layout_marginBottom="24dp"
         android:gravity="center"
         android:padding="8dp"
-        android:text="Now take a photo of your face"
-        android:textColor="@color/black" />
+        android:text="@string/now_take_a_photo_of_your_face"
+        android:textColor="?attr/textColor" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardViewPreviewView"
@@ -75,8 +75,8 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="Retake"
-                android:textColor="@color/gray"
+                android:text="@string/retake"
+                android:textColor="?attr/textColor"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -101,8 +101,8 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="Submit"
-                android:textColor="@color/gray"
+                android:text="@string/submit"
+                android:textColor="?attr/textColor"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>

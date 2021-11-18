@@ -15,83 +15,105 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.KitBag">
+        android:supportsRtl="true">
         <activity
             android:name=".authentication.TakeFacePhotoActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.NidInformationActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.DeliverymanRegistrationActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".ui.ProductHandOverActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".chat.ChatDetailsActivity"
             android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme"
             android:parentActivityName=".chat.MessageActivity" />
         <activity
             android:name=".chat.MessageActivity"
             android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme"
             android:parentActivityName=".ui.MainActivity" />
         <activity
             android:name=".ui.MyCartActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".ui.MyPostActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".ui.EditProfileActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:launchMode="singleTop" />
         <activity
             android:name=".authentication.ResetPasswordActivity"
             android:exported="true"
             android:parentActivityName=".authentication.ForgotPasswordActivity"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.ForgotPasswordActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:parentActivityName=".authentication.LoginActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.OtpVerificationActivity"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".ui.NotificationsActivity"
             android:parentActivityName=".ui.MainActivity"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".ui.PostInfoActivity"
             android:parentActivityName=".ui.MainActivity"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".ui.PostActivity"
             android:parentActivityName=".ui.MainActivity"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.SignUpActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".authentication.LoginActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.LoginActivity"
             android:parentActivityName=".ui.MainActivity"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
-        <activity android:name=".ui.MainActivity">
+        <activity
+            android:name=".ui.MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- This is for object detection and labeling -->
-        <meta-data
-            android:name="com.google.firebase.ml.vision.DEPENDENCIES"
-            android:value="label" />
-        <meta-data
-            android:name="com.google.mlkit.vision.DEPENDENCIES"
-            android:value="ica" />
+        </activity>
     </application>
 
 </manifest>

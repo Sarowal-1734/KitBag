@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/layoutBackground"
     android:focusableInTouchMode="true"
     tools:context=".ui.EditProfileActivity">
 
@@ -56,6 +56,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:endIconMode="clear_text"
+                        android:textColorHint="@color/silver"
                         app:startIconDrawable="@drawable/ic_profile">
 
                         <EditText
@@ -64,6 +65,7 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:hint="@string/username"
+                            android:textColor="?attr/textColor"
                             android:inputType="text" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -73,6 +75,7 @@
                         android:layout_height="wrap_content"
                         android:enabled="false"
                         app:endIconMode="clear_text"
+                        android:textColorHint="@color/silver"
                         app:startIconDrawable="@drawable/ic_profile">
 
                         <EditText
@@ -80,7 +83,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
-                            android:hint="User Type"
+                            android:hint="@string/user_type"
+                            android:textColor="?attr/textColor"
                             android:inputType="text" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,6 +102,7 @@
                             android:clickable="false"
                             android:enabled="false"
                             android:focusable="false"
+                            android:textColorHint="@color/silver"
                             app:startIconDrawable="@drawable/ic_call">
 
                             <EditText
@@ -108,7 +113,8 @@
                                 android:ellipsize="end"
                                 android:enabled="false"
                                 android:focusable="false"
-                                android:hint="Contact" />
+                                android:hint="@string/contact"
+                                android:textColor="?attr/textColor" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <ImageView
@@ -138,6 +144,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="4"
                             app:endIconMode="clear_text"
+                            android:textColorHint="@color/silver"
                             app:startIconDrawable="@drawable/ic_mail">
 
                             <EditText
@@ -145,6 +152,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:ellipsize="end"
+                                android:textColorHint="?attr/textColor"
                                 android:hint="@string/email_optional"
                                 android:inputType="textEmailAddress" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -176,6 +184,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="2dp"
                             android:layout_weight="1"
+                            android:textColorHint="@color/silver"
                             app:endIconMode="dropdown_menu">
 
                             <AutoCompleteTextView
@@ -183,7 +192,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:completionThreshold="1"
-                                android:hint="District"
+                                android:hint="@string/district"
+                                android:textColor="?attr/textColor"
                                 android:inputType="text"
                                 android:padding="8dp" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -194,6 +204,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
+                            android:textColorHint="@color/silver"
                             app:endIconMode="dropdown_menu">
 
                             <AutoCompleteTextView
@@ -201,7 +212,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:completionThreshold="1"
-                                android:hint="Upazila"
+                                android:hint="@string/upazila"
+                                android:textColor="?attr/textColor"
                                 android:inputType="text"
                                 android:padding="8dp" />
                         </com.google.android.material.textfield.TextInputLayout>
@@ -213,15 +225,14 @@
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="8dp"
-                        android:onClick="onUpdateProfileButtonClicked"
-                        android:text="Update Profile"
+                        android:text="@string/update_profile"
                         android:textAllCaps="false" />
 
                     <TextView
                         android:id="@+id/textViewBecomeDeliveryman"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Become a Deliveryman"
+                        android:text="@string/become_a_deliveryman"
                         android:textStyle="bold"
                         android:textColor="@color/app_bar"
                         android:gravity="center"

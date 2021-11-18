@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/layoutBackground"
     android:orientation="vertical"
     tools:context=".authentication.NidInformationActivity">
 
@@ -25,24 +25,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Review your NID Information"
+                android:text="@string/review_your_nid_information"
                 android:textSize="14sp"
-                android:textColor="@color/black"
+                android:textColor="?attr/textColor"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:textColor="@color/black"
-                android:text="Please ensure your information is same as NID" />
+                android:textColor="?attr/textColor"
+                android:text="@string/please_ensure_your_information_is_same_as_nid" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="General Information"
-                android:textColor="@color/black"
+                android:text="@string/general_information"
+                android:textColor="?attr/textColor"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -58,8 +58,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="Name (Bangla)"
-                    android:textColor="@color/black" />
+                    android:text="@string/name_bangla"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextNameBangla"
@@ -69,7 +69,7 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="মিঃ কিটব্যাগ"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -91,8 +91,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="Name (English)"
-                    android:textColor="@color/black" />
+                    android:text="@string/name_english"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextNameEnglish"
@@ -102,7 +102,7 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="Mr. KitBag"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -124,8 +124,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="Father/Husband's Name (Bangla)"
-                    android:textColor="@color/black" />
+                    android:text="@string/father_husband_s_name_bangla"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextFatherHusbandName"
@@ -135,7 +135,7 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="KitBag Courier Service"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -157,8 +157,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="Mother's Name (Bangla)"
-                    android:textColor="@color/black" />
+                    android:text="@string/mother_s_name_bangla"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextMotherName"
@@ -168,7 +168,7 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="KitBag Courier Service"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -190,9 +190,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="Date Of Birth"
-                    android:inputType="date"
-                    android:textColor="@color/black" />
+                    android:text="@string/date_of_birth"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextDateOfBirth"
@@ -202,7 +201,8 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="08-11-2021"
-                    android:textColor="@color/black"
+                    android:inputType="date"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -224,8 +224,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="NID No."
-                    android:textColor="@color/black" />
+                    android:text="@string/nid_no"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextNidNumber"
@@ -236,7 +236,7 @@
                     android:background="@android:color/transparent"
                     android:text="1234567889"
                     android:inputType="numberDecimal"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -249,8 +249,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Address"
-                android:textColor="@color/black"
+                android:text="@string/address"
+                android:textColor="?attr/textColor"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -266,8 +266,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="Present Address"
-                    android:textColor="@color/black" />
+                    android:text="@string/present_address"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextPresentAddress"
@@ -277,7 +277,7 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="ঠিকানা বাসা/হোল্ডিং, গ্রাম/রাস্তা হাটুভাঙ্গা, ডাকঘর সমশিরা ৫৯০০, জয়পুরহাট"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -299,8 +299,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="Post Code"
-                    android:textColor="@color/black" />
+                    android:text="@string/post_code"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextPostCode"
@@ -310,7 +310,7 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="5900"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -332,8 +332,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="Post Office"
-                    android:textColor="@color/black" />
+                    android:text="@string/post_office"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextPostOffice"
@@ -343,7 +343,7 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="Joypurhat Sadar"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -365,8 +365,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="Thana"
-                    android:textColor="@color/black" />
+                    android:text="@string/upazila"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextThana"
@@ -376,7 +376,7 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="Joypurhat"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -398,8 +398,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="District"
-                    android:textColor="@color/black" />
+                    android:text="@string/district"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextDistrict"
@@ -409,7 +409,7 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="Joypurhat"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -431,8 +431,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="Division"
-                    android:textColor="@color/black" />
+                    android:text="@string/division"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextDivision"
@@ -442,7 +442,7 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="Rajshahi"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -455,8 +455,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Other Information"
-                android:textColor="@color/black"
+                android:text="@string/other_information"
+                android:textColor="?attr/textColor"
                 android:textStyle="bold" />
 
             <LinearLayout
@@ -472,8 +472,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="Gender"
-                    android:textColor="@color/black" />
+                    android:text="@string/gender"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextGender"
@@ -483,7 +483,7 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="Male"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -505,8 +505,8 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:layout_weight="2"
-                    android:text="Occupation"
-                    android:textColor="@color/black" />
+                    android:text="@string/occupation"
+                    android:textColor="?attr/textColor" />
 
                 <EditText
                     android:id="@+id/editTextOccupation"
@@ -516,7 +516,7 @@
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
                     android:text="Student"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
 

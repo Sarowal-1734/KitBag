@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/layoutBackground"
     tools:context=".ui.ProductHandOverActivity">
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -49,8 +49,8 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Handover The Product From:"
-                        android:textColor="@color/black"
+                        android:text="@string/handover_the_product_from"
+                        android:textColor="?attr/textColor"
                         android:textStyle="bold" />
 
                     <RadioGroup
@@ -63,28 +63,28 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:enabled="false"
-                            android:text="Sender to Primary Agent" />
+                            android:text="@string/sender_to_primary_agent" />
 
                         <RadioButton
                             android:id="@+id/PrimaryToDeliveryman"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:enabled="false"
-                            android:text="Primary Agent to Deliveryman" />
+                            android:text="@string/primary_agent_to_deliveryman" />
 
                         <RadioButton
                             android:id="@+id/DeliverymanToFinal"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:enabled="false"
-                            android:text="Deliveryman to Final Agent" />
+                            android:text="@string/deliveryman_to_final_agent" />
 
                         <RadioButton
                             android:id="@+id/FinalToReceiver"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:enabled="false"
-                            android:text="Final Agent to Receiver" />
+                            android:text="@string/final_agent_to_receiver" />
                     </RadioGroup>
 
                     <TextView
@@ -92,8 +92,9 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
                         android:layout_marginBottom="4dp"
+                        android:text="@string/we_will_send_an_otp_to_the_given_number_so_please_make_sure_that_you_are_staying_any_of_your_nearest_kitbag_agent"
                         android:gravity="center"
-                        android:text="We will send an OTP to the given number. So please make sure that you are staying any of your nearest KitBag Agent." />
+                        android:textColor="?attr/textColor" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -109,6 +110,8 @@
                             android:layout_marginTop="5dp"
                             android:gravity="center"
                             app:ccp_autoDetectCountry="true"
+                            app:ccp_arrowColor="?attr/textColor"
+                            app:ccp_contentColor="?attr/textColor"
                             app:ccp_showNameCode="true"
                             app:ccp_textSize="14sp" />
 
@@ -116,6 +119,7 @@
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:textColorHint="@color/silver"
                             app:endIconMode="clear_text">
 
                             <EditText
@@ -123,7 +127,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:ellipsize="end"
-                                android:inputType="numberDecimal" />
+                                android:inputType="phone"
+                                android:textColor="?attr/textColor" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                     </LinearLayout>
@@ -134,7 +139,7 @@
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="24dp"
-                        android:text="Send OTP"
+                        android:text="@string/send_otp"
                         android:textAllCaps="false" />
                 </LinearLayout>
             </ScrollView>

@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
     // Show progressBar
     private ProgressDialog progressDialog;
 
+    private SwitchCompat switchDarkMode;
+
     // For Changing Password
     private EditText editTextOldPassword;
 
@@ -111,6 +113,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // DarkMode Enable or Disable
+        if (SharedPreference.getDarkModeEnableValue(this)) {
+            setTheme(R.style.DarkMode);
+        } else {
+            setTheme(R.style.LightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -118,17 +126,6 @@ public class MainActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-
-        // Status to check that the password successfully resetted or not
-        if (!SharedPreference.getPasswordResettedValue(this)) {
-            // smoothly signOut activity
-            SharedPreference.setPasswordResettedValue(MainActivity.this, true);
-            mAuth.signOut();
-            finish();
-            overridePendingTransition(0, 0);
-            startActivity(getIntent());
-            overridePendingTransition(0, 0);
-        }
 
         // Click the appBar logo to refresh the layout
         binding.customAppBar.appbarLogo.setOnClickListener(new View.OnClickListener() {
@@ -160,6 +157,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Hide Home button in drawer in MainActivity
+        binding.navigationView.getMenu().findItem(R.id.nav_home).setVisible(false);
+
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
             // User is signed in
@@ -167,6 +167,15 @@ public class MainActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+            // Theme
+            switchDarkMode = MenuItemCompat.getActionView(binding.navigationView.getMenu().findItem(R.id.nav_dark_mode)).findViewById(R.id.switch_dark_mode);
+            if (SharedPreference.getDarkModeEnableValue(this)) {
+                switchDarkMode.setChecked(true);
+            } else {
+                switchDarkMode.setChecked(false);
+            }
+            // Hide Home button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_home).setVisible(false);
             // Get userName and image from database and set to the drawer
             collectionReference.document(currentUser.getUid()).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -194,19 +203,35 @@ public class MainActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
+            // Theme
+            switchDarkMode = MenuItemCompat.getActionView(binding.navigationView.getMenu().findItem(R.id.nav_dark_mode)).findViewById(R.id.switch_dark_mode);
+            if (SharedPreference.getDarkModeEnableValue(this)) {
+                switchDarkMode.setChecked(true);
+            } else {
+                switchDarkMode.setChecked(false);
+            }
+            // Hide Home button in drawer in MainActivity
+            binding.navigationView.getMenu().findItem(R.id.nav_home).setVisible(false);
         }
 
-        // Initial view of dark mode button in drawer menu
-        SwitchCompat switchDarkMode = MenuItemCompat.getActionView(binding.navigationView.getMenu().findItem(R.id.nav_dark_mode)).findViewById(R.id.switch_dark_mode);
-        switchDarkMode.setChecked(true);
         // Toggle dark mode button in drawer menu
         switchDarkMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (switchDarkMode.isChecked()) {
+                    SharedPreference.setDarkModeEnableValue(MainActivity.this, true);
                     Toast.makeText(MainActivity.this, "Dark Mode Enabled!", Toast.LENGTH_SHORT).show();
+                    finish();
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
+                    overridePendingTransition(0, 0);
                 } else {
+                    SharedPreference.setDarkModeEnableValue(MainActivity.this, false);
                     Toast.makeText(MainActivity.this, "Dark Mode Disabled!", Toast.LENGTH_SHORT).show();
+                    finish();
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
+                    overridePendingTransition(0, 0);
                 }
             }
         });
@@ -344,6 +369,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        binding.drawerLayout.closeDrawer(GravityCompat.END);
+                        break;
                     case R.id.nav_login:
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
                         break;

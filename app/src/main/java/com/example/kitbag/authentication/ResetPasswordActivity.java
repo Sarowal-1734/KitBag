@@ -18,8 +18,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityResetPasswordBinding;
 import com.example.kitbag.ui.MainActivity;
+import com.example.kitbag.ui.PostActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -50,6 +52,12 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // DarkMode Enable or Disable
+        if (SharedPreference.getDarkModeEnableValue(this)) {
+            setTheme(R.style.DarkMode);
+        } else {
+            setTheme(R.style.LightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityResetPasswordBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -72,6 +80,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
         binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
         binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+        // Hide DarkMode button in drawer in MainActivity
+        binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
 
         // Adding back arrow in the appBar
         binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
@@ -122,6 +132,10 @@ public class ResetPasswordActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(ResetPasswordActivity.this, MainActivity.class));
+                        finish();
+                        break;
                     case R.id.nav_login:
                         startActivity(new Intent(ResetPasswordActivity.this, LoginActivity.class));
                         finish();

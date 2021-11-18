@@ -4,24 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/layoutBackground"
     tools:context=".authentication.OtpVerificationActivity">
 
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/drawer_layout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:openDrawer="start">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
 
             <include
                 android:id="@+id/custom_app_bar"
@@ -55,7 +49,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:layout_marginBottom="16dp"
                     android:gravity="center"
                     android:text="@string/send_otp_message"/>
@@ -67,7 +61,7 @@
                     android:layout_gravity="center"
                     android:layout_marginBottom="16dp"
                     android:text="@string/number_hint"
-                    android:textColor="@color/black"
+                    android:textColor="?attr/textColor"
                     android:textStyle="bold" />
 
                 <com.goodiebag.pinview.Pinview
@@ -76,7 +70,6 @@
                     android:layout_gravity="center"
                     android:layout_height="wrap_content"
                     app:cursorVisible="true"
-                    app:forceKeyboard="true"
                     app:inputType="number"
                     app:pinHeight="40dp"
                     app:pinLength="6"
@@ -94,6 +87,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="?attr/textColor"
                         android:text="@string/didnt_get_otp"/>
                     <TextView
                         android:id="@+id/textViewResendOTP"
@@ -102,7 +96,7 @@
                         android:padding="8dp"
                         android:text="@string/resend_otp"
                         android:clickable="true"
-                        android:background="?attr/selectableItemBackground"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:textColor="@color/app_bar"
                         android:textStyle="bold"
                         android:focusable="true" />
@@ -119,15 +113,6 @@
             </LinearLayout>
         </ScrollView>
         </LinearLayout>
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/navigation_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            app:headerLayout="@layout/nav_header"
-            app:menu="@menu/drawer_menu_logout" />
-    </androidx.drawerlayout.widget.DrawerLayout>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/snackBarContainer"

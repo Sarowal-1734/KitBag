@@ -29,15 +29,18 @@ import com.example.kitbag.R;
 import com.example.kitbag.adapter.ChatUserAdapter;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.authentication.LoginActivity;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityMessageBinding;
 import com.example.kitbag.model.ChatModel;
 import com.example.kitbag.model.ModelClassMessageUser;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
 import com.example.kitbag.ui.EditProfileActivity;
+import com.example.kitbag.ui.MainActivity;
 import com.example.kitbag.ui.MyCartActivity;
 import com.example.kitbag.ui.MyPostActivity;
 import com.example.kitbag.ui.NotificationsActivity;
+import com.example.kitbag.ui.PostActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -103,6 +106,12 @@ public class MessageActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // DarkMode Enable or Disable
+        if (SharedPreference.getDarkModeEnableValue(this)) {
+            setTheme(R.style.DarkMode);
+        } else {
+            setTheme(R.style.LightMode);
+        }
         super.onCreate(savedInstanceState);
         binding = ActivityMessageBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -164,6 +173,8 @@ public class MessageActivity extends AppCompatActivity {
         binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
         binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
         binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
+        // Hide DarkMode button in drawer in MainActivity
+        binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
         // Get userName and image from database and set to the drawer
         db.collection("Users").document(currentUser.getUid()).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -356,6 +367,10 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(MessageActivity.this, MainActivity.class));
+                        finish();
+                        break;
                     case R.id.nav_login:
                         startActivity(new Intent(MessageActivity.this, LoginActivity.class));
                         break;

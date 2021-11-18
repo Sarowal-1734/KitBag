@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white"
+    android:background="?attr/layoutBackground"
     android:orientation="vertical"
     tools:context=".authentication.DeliverymanRegistrationActivity">
 
@@ -19,8 +19,8 @@
         android:layout_marginBottom="24dp"
         android:gravity="center"
         android:padding="8dp"
-        android:text="Place you NID within the frame and take a photo"
-        android:textColor="@color/black" />
+        android:text="@string/place_your_nid_within_the_frame_and_take_a_photo"
+        android:textColor="?attr/textColor" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardViewPreviewView"
@@ -55,8 +55,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="8dp"
-        android:text="Front of NID"
-        android:textColor="@color/black"
+        android:text="@string/front_of_nid"
+        android:textColor="?attr/textColor"
         android:textStyle="bold" />
 
     <RelativeLayout
@@ -83,8 +83,8 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="Retake"
-                android:textColor="@color/gray"
+                android:text="@string/retake"
+                android:textColor="?attr/textColor"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -109,8 +109,8 @@
                 android:focusable="true"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="Submit"
-                android:textColor="@color/gray"
+                android:text="@string/submit"
+                android:textColor="?attr/textColor"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
