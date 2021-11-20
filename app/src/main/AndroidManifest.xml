@@ -17,6 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
         <activity
+            android:name=".fragment.container.FragmentContainerActivity"
+            android:exported="false" />
+        <activity
             android:name=".authentication.TakeFacePhotoActivity"
             android:exported="false"
             android:launchMode="singleTop"
@@ -40,14 +43,14 @@
             android:name=".chat.ChatDetailsActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.KitBag.SlidrActivityTheme"
-            android:parentActivityName=".chat.MessageActivity" />
+            android:parentActivityName=".chat.MessageActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".chat.MessageActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.KitBag.SlidrActivityTheme"
-            android:parentActivityName=".ui.MainActivity" />
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".ui.MyCartActivity"
             android:exported="true"
@@ -67,8 +70,8 @@
         <activity
             android:name=".authentication.ResetPasswordActivity"
             android:exported="true"
-            android:parentActivityName=".authentication.ForgotPasswordActivity"
             android:launchMode="singleTop"
+            android:parentActivityName=".authentication.ForgotPasswordActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.ForgotPasswordActivity"
@@ -82,18 +85,18 @@
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".ui.NotificationsActivity"
-            android:parentActivityName=".ui.MainActivity"
             android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".ui.PostInfoActivity"
-            android:parentActivityName=".ui.MainActivity"
             android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".ui.PostActivity"
-            android:parentActivityName=".ui.MainActivity"
             android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.SignUpActivity"
@@ -102,8 +105,8 @@
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.LoginActivity"
-            android:parentActivityName=".ui.MainActivity"
             android:launchMode="singleTop"
+            android:parentActivityName=".ui.MainActivity"
             android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".ui.MainActivity"

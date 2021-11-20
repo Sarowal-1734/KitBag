@@ -13,7 +13,9 @@
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/activity_deliveryman_registration.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/activity_edit_profile.xml" value="0.371875" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/activity_forgot_password.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/activity_fragment_container.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/activity_login.xml" value="0.18085106382978725" />
+        <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/activity_message.xml" value="0.18085106382978725" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/activity_nid_information.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/activity_otp_verification.xml" value="0.25416666666666665" />
@@ -28,7 +30,11 @@
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/dialog_deliveryman_requirements.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/dialog_nid_submission.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/edit_profile_picture.xml" value="0.33605072463768115" />
+        <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/fragment_about_us.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/fragment_chat.xml" value="0.33" />
+        <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/fragment_contact_us.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/fragment_discover_kit_bag.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/fragment_terns_and_conditions.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/fragment_user.xml" value="0.371875" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/nav_header.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/notification_icon.xml" value="0.25416666666666665" />

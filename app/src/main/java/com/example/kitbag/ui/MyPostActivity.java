@@ -38,6 +38,7 @@ import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityMyPostBinding;
+import com.example.kitbag.fragment.container.FragmentContainerActivity;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -330,22 +331,6 @@ public class MyPostActivity extends AppCompatActivity {
             }
         });
 
-        // On drawer menu item clicked
-        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nav_logout:
-                        mAuth.signOut();
-                        Toast.makeText(MyPostActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(MyPostActivity.this, MainActivity.class));
-                        finish();
-                        break;
-                }
-                return false;
-            }
-        });
-
         // On search button click
         binding.customAppBar.appbarImageviewSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -390,6 +375,7 @@ public class MyPostActivity extends AppCompatActivity {
         binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intentFragment = new Intent(MyPostActivity.this, FragmentContainerActivity.class);
                 switch (item.getItemId()) {
                     case R.id.nav_home:
                         finish();
@@ -401,16 +387,20 @@ public class MyPostActivity extends AppCompatActivity {
                         registerAsDeliveryman();
                         break;
                     case R.id.nav_discover_kitbag:
-                        Toast.makeText(MyPostActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        intentFragment.putExtra("whatToDo","discoverKitBag");
+                        startActivity(intentFragment);
                         break;
                     case R.id.nav_terms_conditions:
-                        Toast.makeText(MyPostActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        intentFragment.putExtra("whatToDo","termsAndCondition");
+                        startActivity(intentFragment);
                         break;
                     case R.id.nav_contact:
                         Toast.makeText(MyPostActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        //Todo: Have to Create a Alert Dialog For Contact Us
                         break;
                     case R.id.nav_about:
-                        Toast.makeText(MyPostActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        intentFragment.putExtra("whatToDo","aboutUs");
+                        startActivity(intentFragment);
                         break;
                     case R.id.nav_chat:
                         startActivity(new Intent(MyPostActivity.this, MessageActivity.class));

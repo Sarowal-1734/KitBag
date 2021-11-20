@@ -36,6 +36,7 @@ import com.example.kitbag.authentication.LoginActivity;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityMainBinding;
+import com.example.kitbag.fragment.container.FragmentContainerActivity;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -368,6 +369,7 @@ public class MainActivity extends AppCompatActivity {
         binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intentFragment = new Intent(MainActivity.this,FragmentContainerActivity.class);
                 switch (item.getItemId()) {
                     case R.id.nav_home:
                         binding.drawerLayout.closeDrawer(GravityCompat.END);
@@ -382,16 +384,20 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_discover_kitbag:
-                        Toast.makeText(MainActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        intentFragment.putExtra("whatToDo","discoverKitBag");
+                        startActivity(intentFragment);
                         break;
                     case R.id.nav_terms_conditions:
-                        Toast.makeText(MainActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        intentFragment.putExtra("whatToDo","termsAndCondition");
+                        startActivity(intentFragment);
                         break;
                     case R.id.nav_contact:
                         Toast.makeText(MainActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        //Todo: Have to Create a Alert Dialog For Contact Us
                         break;
                     case R.id.nav_about:
-                        Toast.makeText(MainActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        intentFragment.putExtra("whatToDo","aboutUs");
+                        startActivity(intentFragment);
                         break;
                     case R.id.nav_chat:
                         startActivity(new Intent(MainActivity.this, MessageActivity.class));

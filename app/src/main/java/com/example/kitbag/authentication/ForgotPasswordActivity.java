@@ -20,6 +20,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.example.kitbag.R;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityForgotPasswordBinding;
+import com.example.kitbag.fragment.container.FragmentContainerActivity;
 import com.example.kitbag.ui.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -90,6 +91,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intentFragment = new Intent(ForgotPasswordActivity.this, FragmentContainerActivity.class);
                 switch (item.getItemId()) {
                     case R.id.nav_home:
                         startActivity(new Intent(ForgotPasswordActivity.this, MainActivity.class));
@@ -102,16 +104,20 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                         Toast.makeText(ForgotPasswordActivity.this, "Language", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_discover_kitbag:
-                        Toast.makeText(ForgotPasswordActivity.this, "Discover KitBag", Toast.LENGTH_SHORT).show();
+                        intentFragment.putExtra("whatToDo","discoverKitBag");
+                        startActivity(intentFragment);
                         break;
                     case R.id.nav_terms_conditions:
-                        Toast.makeText(ForgotPasswordActivity.this, "Terms And Conditions", Toast.LENGTH_SHORT).show();
+                        intentFragment.putExtra("whatToDo","termsAndCondition");
+                        startActivity(intentFragment);
                         break;
                     case R.id.nav_contact:
                         Toast.makeText(ForgotPasswordActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
+                        //Todo: Have to create alert dialog to contact Us
                         break;
                     case R.id.nav_about:
-                        Toast.makeText(ForgotPasswordActivity.this, "About Us", Toast.LENGTH_SHORT).show();
+                        intentFragment.putExtra("whatToDo","aboutUs");
+                        startActivity(intentFragment);
                         break;
                 }
                 return false;
