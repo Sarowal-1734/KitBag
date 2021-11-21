@@ -2,8 +2,12 @@
 <resources>
     <declare-styleable name="ds">
         <attr name="layoutBackground" format="color" />
+        <attr name="navigationDrawerBackground" format="color" />
+        <attr name="cardViewPostBackground" format="color" />
         <attr name="textColor" format="color" />
         <attr name="buttonColor" format="color" />
         <attr name="dividerColor" format="color" />
+        <attr name="appBarColor" format="color" />
+        <attr name="navigationHeaderColor" format="color" />
     </declare-styleable>
 </resources>

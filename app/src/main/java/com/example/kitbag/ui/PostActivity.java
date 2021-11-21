@@ -273,6 +273,27 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
+        // Active Inactive Slider to back based on drawer
+        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                slidrInterface.lock();
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                slidrInterface.unlock();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+        });
+
         // On drawer menu item clicked
         binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override

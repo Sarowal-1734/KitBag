@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -114,7 +115,7 @@ public class MyCartActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
 
         // Change appBar title
-        binding.customAppBar.appbarTitle.setText("My Cart");
+        binding.customAppBar.appbarTitle.setText(R.string.nav_my_cart);
 
         // Swipe to back
         slidrInterface = Slidr.attach(this);
@@ -167,21 +168,6 @@ public class MyCartActivity extends AppCompatActivity {
             // Hide DarkMode button in drawer in MainActivity
             binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
         }
-
-        // Initial view of dark mode button in drawer menu
-        SwitchCompat switchDarkMode = MenuItemCompat.getActionView(binding.navigationView.getMenu().findItem(R.id.nav_dark_mode)).findViewById(R.id.switch_dark_mode);
-        switchDarkMode.setChecked(true);
-        // Toggle dark mode button in drawer menu
-        switchDarkMode.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (switchDarkMode.isChecked()) {
-                    Toast.makeText(MyCartActivity.this, "Dark Mode Enabled!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MyCartActivity.this, "Dark Mode Disabled!", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
 
         // On Edit profile icon clicked
         View view = binding.navigationView.getHeaderView(0);
@@ -371,6 +357,27 @@ public class MyCartActivity extends AppCompatActivity {
             }
         });
 
+        // Active Inactive Slider to back based on drawer
+        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                slidrInterface.lock();
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                slidrInterface.unlock();
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+            }
+        });
+
         // On drawer menu item clicked
         binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -425,7 +432,7 @@ public class MyCartActivity extends AppCompatActivity {
                 return false;
             }
         });
-    }
+    } // Ending onCreate
 
     private void registerAsDeliveryman() {
         // inflate custom layout

@@ -800,7 +800,7 @@
     <string name="front_of_nid">Front of NID</string>
     <string name="retake">Retake</string>
     <string name="submit">Submit</string>
-    <string name="user_type">User Type</string>
+    <string name="user_type">User Type:</string>
     <string name="upazila">Upazila</string>
     <string name="update_profile">Update Profile</string>
     <string name="please_enter_your_registered_phone_number">Please enter your registered phone number.</string>

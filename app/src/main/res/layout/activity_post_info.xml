@@ -69,7 +69,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="200dp"
                             android:layout_gravity="center"
-                            android:background="?attr/layoutBackground"
+                            android:background="?attr/navigationDrawerBackground"
                             android:src="@drawable/logo" />
                     </androidx.cardview.widget.CardView>
 
@@ -84,6 +84,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
+                            android:layout_marginEnd="2dp"
                             android:text="@string/description"
                             android:textColor="?attr/textColor"
                             android:textStyle="bold" />
@@ -117,6 +118,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/weight"
+                            android:layout_marginEnd="2dp"
                             android:textColor="?attr/textColor"
                             android:textStyle="bold" />
 
@@ -142,6 +144,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/status"
+                            android:layout_marginEnd="2dp"
                             android:textColor="?attr/textColor"
                             android:textStyle="bold" />
 
@@ -175,6 +178,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/from"
+                            android:layout_marginEnd="2dp"
                             android:textColor="?attr/textColor"
                             android:textStyle="bold" />
 
@@ -196,6 +200,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/to"
+                            android:layout_marginEnd="2dp"
                             android:textColor="?attr/textColor"
                             android:textStyle="bold" />
 
@@ -227,7 +232,8 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="User_Type: "
+                            android:layout_marginEnd="2dp"
+                            android:text="@string/user_type"
                             android:textColor="?attr/textColor"
                             android:textStyle="bold" />
 
@@ -379,6 +385,9 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
+            android:background="?attr/navigationDrawerBackground"
+            app:itemIconTint="?attr/textColor"
+            app:itemTextColor="?attr/textColor"
             app:headerLayout="@layout/nav_header"
             app:menu="@menu/drawer_menu_logout" />
 

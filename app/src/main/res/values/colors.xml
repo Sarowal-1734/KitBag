@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#1754B6</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="silver">#AFAFAF</color>
     <color name="gray">#555353</color>
-    <color name="darker_gray">#474040</color>
+    <color name="darker_gray">#333333</color>
     <color name="app_bar">#1754B6</color>
-    <color name="title_bar">#1754B6</color>
+    <color name="app_bar_deep">#0842A1</color>
+    <color name="title_bar">#0C47A6</color>
+    <color name="app_bar_night">#052A65</color>
+    <color name="app_bar_night_deep">#032050</color>
+    <color name="title_bar_night">#06265A</color>
+    <color name="cardViewPost">#EDF8F8</color>
     <color name="red">#FF0000</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="blue">#002BFF</color>
     <color name="transparent_grey">#323E3D3D</color>
 </resources>

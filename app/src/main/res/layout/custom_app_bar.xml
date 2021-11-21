@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="?android:actionBarSize"
-        android:background="@color/app_bar"
+        android:background="?attr/appBarColor"
         android:padding="8dp">
 
         <de.hdodenhof.circleimageview.CircleImageView

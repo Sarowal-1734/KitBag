@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="150dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#13479E">
+    android:background="?attr/navigationHeaderColor">
 
     <LinearLayout
         android:layout_width="match_parent"
