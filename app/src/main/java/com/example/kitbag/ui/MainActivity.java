@@ -158,9 +158,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Hide Home button in drawer in MainActivity
-        binding.navigationView.getMenu().findItem(R.id.nav_home).setVisible(false);
-
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
             // User is signed in

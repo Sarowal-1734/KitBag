@@ -46,10 +46,10 @@
                         android:padding="60dp">
 
                         <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="130dp"
-                            android:layout_height="130dp"
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
                             android:src="@drawable/logo"
-                            app:civ_border_color="@color/app_bar"
+                            app:civ_border_color="@color/silver"
                             app:civ_border_width="1dp" />
                     </LinearLayout>
 
@@ -66,9 +66,11 @@
                             android:layout_marginTop="5dp"
                             android:gravity="center"
                             app:ccp_arrowColor="?attr/textColor"
+                            android:layout_marginEnd="1dp"
                             app:ccp_autoDetectCountry="true"
                             app:ccp_contentColor="?attr/textColor"
                             app:ccp_showNameCode="true"
+                            android:background="?attr/navigationDrawerBackground"
                             app:ccp_textSize="14sp" />
 
                     <com.google.android.material.textfield.TextInputLayout
@@ -84,36 +86,39 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:hint="@string/contact"
+                            android:background="?attr/navigationDrawerBackground"
                             android:inputType="phone"
                             android:textColor="?attr/textColor" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                </LinearLayout>
+                    </LinearLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:passwordToggleEnabled="true"
-                    android:textColorHint="@color/silver"
-                    app:startIconDrawable="@drawable/ic_password">
-
-                    <EditText
-                        android:id="@+id/EditTextPassword"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:hint="@string/password"
-                        android:textColor="?attr/textColor"
-                        android:inputType="textPassword" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginTop="5dp"
+                        android:textColorHint="@color/silver"
+                        app:boxBackgroundColor="?attr/navigationDrawerBackground"
+                        app:passwordToggleEnabled="true"
+                        app:startIconDrawable="@drawable/ic_password">
+
+                        <EditText
+                            android:id="@+id/EditTextPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:hint="@string/password"
+                            android:inputType="textPassword"
+                            android:textColor="?attr/textColor" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <Button
+                        android:id="@+id/buttonLogin"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
                         android:layout_marginBottom="32dp"
-                        android:onClick="onLoginButtonClick"
                         android:text="@string/login"
                         android:textColor="@color/white"
                         android:textAllCaps="false" />
@@ -175,6 +180,9 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="end"
+            android:background="?attr/navigationDrawerBackground"
+            app:itemIconTint="?attr/textColor"
+            app:itemTextColor="?attr/textColor"
             app:headerLayout="@layout/nav_header"
             app:menu="@menu/drawer_menu_logout" />
     </androidx.drawerlayout.widget.DrawerLayout>

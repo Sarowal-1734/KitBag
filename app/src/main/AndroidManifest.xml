@@ -18,7 +18,9 @@
         android:supportsRtl="true">
         <activity
             android:name=".fragment.container.FragmentContainerActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:parentActivityName=".ui.MainActivity"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.TakeFacePhotoActivity"
             android:exported="false"
@@ -66,7 +68,8 @@
         <activity
             android:name=".ui.EditProfileActivity"
             android:exported="true"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.KitBag.SlidrActivityTheme" />
         <activity
             android:name=".authentication.ResetPasswordActivity"
             android:exported="true"

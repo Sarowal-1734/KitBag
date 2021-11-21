@@ -115,6 +115,22 @@ public class LoginActivity extends AppCompatActivity {
         // Change the title of the appBar
         binding.customAppBar.appbarTitle.setText("Login");
 
+        // On Login Button Clicked
+        binding.buttonLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isConnected()) {
+                    if (valid()) {
+                        // Get user input number
+                        String phone = binding.cpp.getFullNumber().trim();
+                        verifyNumberAndLogin(phone);
+                    }
+                } else {
+                    displayNoConnection();
+                }
+            }
+        });
+
         // On drawer menu item clicked
         binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -175,49 +191,47 @@ public class LoginActivity extends AppCompatActivity {
             public void onDrawerStateChanged(int newState) {
             }
         });
-    }
+    } // Ending onCreate
 
-    public void onLoginButtonClick(View view) {
-        if (isConnected()) {
-            // Validation
-            if (TextUtils.isEmpty(binding.EditTextContact.getText().toString())) {
-                binding.EditTextContact.setError("Required");
-                binding.EditTextContact.requestFocus();
-                return;
-            }
-            if (TextUtils.isEmpty(binding.EditTextPassword.getText().toString())) {
-                binding.EditTextPassword.setError("Required");
-                binding.EditTextPassword.requestFocus();
-                return;
-            }
-            // Get user input data
-            String phone = binding.cpp.getFullNumber().trim();
-            String fakeEmail = phone + "@gmail.com";
-            String password = binding.EditTextPassword.getText().toString();
-            showProgressBar();
-            // Check user already registered or not
-            mAuth.fetchSignInMethodsForEmail(fakeEmail)
-                    .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
-                            if (task.isSuccessful()) {
-                                boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
-                                if (isNewUser) {
-                                    // Hide progressBar
-                                    progressDialog.dismiss();
-                                    //binding.progressBar.setVisibility(View.GONE);
-                                    binding.EditTextContact.setError("User Not Found!");
-                                    binding.EditTextContact.requestFocus();
-                                } else {
-                                    // Sign in with email and password
-                                    SignIn(fakeEmail, password);
-                                }
+    private void verifyNumberAndLogin(String phone) {
+        String fakeEmail = phone + "@gmail.com";
+        String password = binding.EditTextPassword.getText().toString();
+        showProgressBar();
+        // Check user already registered or not
+        mAuth.fetchSignInMethodsForEmail(fakeEmail)
+                .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<SignInMethodQueryResult> task) {
+                        if (task.isSuccessful()) {
+                            boolean isNewUser = task.getResult().getSignInMethods().isEmpty();
+                            if (isNewUser) {
+                                // Hide progressBar
+                                progressDialog.dismiss();
+                                //binding.progressBar.setVisibility(View.GONE);
+                                binding.EditTextContact.setError("User Not Found!");
+                                binding.EditTextContact.requestFocus();
+                            } else {
+                                // Sign in with email and password
+                                SignIn(fakeEmail, password);
                             }
                         }
-                    });
-        } else {
-            displayNoConnection();
+                    }
+                });
+    }
+
+    private boolean valid() {
+        // Validation
+        if (TextUtils.isEmpty(binding.EditTextContact.getText().toString())) {
+            binding.EditTextContact.setError("Required");
+            binding.EditTextContact.requestFocus();
+            return false;
         }
+        if (TextUtils.isEmpty(binding.EditTextPassword.getText().toString())) {
+            binding.EditTextPassword.setError("Required");
+            binding.EditTextPassword.requestFocus();
+            return false;
+        }
+        return true;
     }
 
     private void showProgressBar() {
