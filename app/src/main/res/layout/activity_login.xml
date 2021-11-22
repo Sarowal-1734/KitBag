@@ -86,7 +86,6 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:hint="@string/contact"
-                            android:background="?attr/navigationDrawerBackground"
                             android:inputType="phone"
                             android:textColor="?attr/textColor" />
                     </com.google.android.material.textfield.TextInputLayout>
