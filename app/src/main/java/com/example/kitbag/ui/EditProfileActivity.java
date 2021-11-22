@@ -2,10 +2,14 @@ package com.example.kitbag.ui;
 
 import static android.Manifest.permission.CALL_PHONE;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -61,6 +65,8 @@ import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
+import java.util.Locale;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EditProfileActivity extends AppCompatActivity {
@@ -109,6 +115,7 @@ public class EditProfileActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         binding = ActivityEditProfileBinding.inflate(getLayoutInflater());
+        loadLocale();
         setContentView(binding.getRoot());
 
         // Swipe to back
@@ -263,7 +270,7 @@ public class EditProfileActivity extends AppCompatActivity {
                         finish();
                         break;
                     case R.id.nav_language:
-                        Toast.makeText(EditProfileActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        showChangeLanguageDialog();
                         break;
                     case R.id.nav_deliveryman:
                         registerAsDeliveryman();
@@ -410,7 +417,49 @@ public class EditProfileActivity extends AppCompatActivity {
                 }
             }
         });
+    }//ending onCreate
+
+    // showing language alert Dialog to pick one language
+    private void showChangeLanguageDialog() {
+        final String[] multiLanguage = {"বাংলা","English"};
+        builder = new AlertDialog.Builder(this);
+        builder.setTitle("Choose a Language..");
+        builder.setSingleChoiceItems(multiLanguage, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(which == 0){
+                    setLocale("bn");
+                    recreate();
+                }else {
+                    setLocale("en");
+                    recreate();
+                }
+                dialog.dismiss();
+            }
+        });
+        dialog = builder.create();
+        dialog.show();
     }
+    // setting chosen language to system
+    private void setLocale(String lang) {
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Configuration configuration = new Configuration();
+        configuration.locale = locale;
+        getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
+
+        // save data to SharedPreference
+        SharedPreferences.Editor editor = getSharedPreferences("settings",MODE_PRIVATE).edit();
+        editor.putString("my_lang",lang);
+        editor.apply();
+    }
+    // get save value from sharedPreference and set It to as local language
+    public void loadLocale(){
+        SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
+        String lang = preferences.getString("my_lang","bn");
+        setLocale(lang);
+    }
+
 
     private void updateUserInfo(String imageUrl) {
         // Setting user value to model class

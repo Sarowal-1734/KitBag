@@ -8,12 +8,15 @@ import static com.example.kitbag.ui.MainActivity.fromMyPostActivity;
 import static com.example.kitbag.ui.MainActivity.fromOtpVerificationActivity;
 import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -129,6 +132,8 @@ public class PostInfoActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         binding = ActivityPostInfoBinding.inflate(getLayoutInflater());
+        // loading chosen language from multiple language option
+        loadLocale();
         setContentView(binding.getRoot());
 
         // remove search icon from appBar
@@ -312,14 +317,15 @@ public class PostInfoActivity extends AppCompatActivity {
                         registerAsDeliveryman();
                         break;
                     case R.id.nav_language:
-                        Toast.makeText(PostInfoActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        // showing alert dialog to choose system language from multiple language
+                        showChangeLanguageDialog();
                         break;
                     case R.id.nav_discover_kitbag:
-                        intentFragment.putExtra("whatToDo","discoverKitBag");
+                        intentFragment.putExtra("whatToDo", "discoverKitBag");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_terms_conditions:
-                        intentFragment.putExtra("whatToDo","termsAndCondition");
+                        intentFragment.putExtra("whatToDo", "termsAndCondition");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_contact:
@@ -327,7 +333,7 @@ public class PostInfoActivity extends AppCompatActivity {
                         //Todo: Have to Create a Alert Dialog For Contact Us
                         break;
                     case R.id.nav_about:
-                        intentFragment.putExtra("whatToDo","aboutUs");
+                        intentFragment.putExtra("whatToDo", "aboutUs");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_chat:
@@ -504,6 +510,51 @@ public class PostInfoActivity extends AppCompatActivity {
 
     } // Ending onCreate
 
+
+    // showing language alert Dialog to pick one language
+    private void showChangeLanguageDialog() {
+        final String[] multiLanguage = {"বাংলা", "English"};
+        builder = new AlertDialog.Builder(this);
+        builder.setTitle("Choose a Language..");
+        builder.setSingleChoiceItems(multiLanguage, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    setLocale("bn");
+                    recreate();
+                } else {
+                    setLocale("en");
+                    recreate();
+                }
+                dialog.dismiss();
+            }
+        });
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    // setting chosen language to system
+    private void setLocale(String lang) {
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Configuration configuration = new Configuration();
+        configuration.locale = locale;
+        getBaseContext().getResources().updateConfiguration(configuration, getBaseContext().getResources().getDisplayMetrics());
+
+        // save data to SharedPreference
+        SharedPreferences.Editor editor = getSharedPreferences("settings", MODE_PRIVATE).edit();
+        editor.putString("my_lang", lang);
+        editor.apply();
+    }
+
+    // get save value from sharedPreference and set It to as local language
+    public void loadLocale() {
+        SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
+        String lang = preferences.getString("my_lang", "bn");
+        setLocale(lang);
+    }
+
+
     // Display all the info to the activity
     private void displayPostInfo() {
         db.collection("All_Post")
@@ -534,7 +585,8 @@ public class PostInfoActivity extends AppCompatActivity {
                                             cal.setTimeInMillis(modelClassPost.getTimeAdded().getSeconds() * 1000);
                                             String postedUserTime;
                                             postedUserTime = "Posted by " + userModel.getUserName() + " on ";
-                                            postedUserTime += DateFormat.format("dd MMM hh:mm a", cal).toString();;
+                                            postedUserTime += DateFormat.format("dd MMM hh:mm a", cal).toString();
+                                            ;
                                             String chatWith = "Chat (" + userModel.getUserName() + ")";
                                             binding.TextViewChat.setText(chatWith);
                                             binding.textViewUserTime.setText(postedUserTime);
@@ -844,7 +896,7 @@ public class PostInfoActivity extends AppCompatActivity {
     // Update password
     private void updatePassword(String oldPassword, String newPassword) {
         // before updating password we have to re-authenticate our user
-        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(),oldPassword);
+        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(), oldPassword);
         currentUser.reauthenticate(authCredential).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {

@@ -1,8 +1,12 @@
 package com.example.kitbag.authentication;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,6 +17,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -32,12 +37,18 @@ import com.google.firebase.auth.SignInMethodQueryResult;
 import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 
+import java.util.Locale;
+
 public class SignUpActivity extends AppCompatActivity {
 
     private ActivitySignUpBinding binding;
 
     // Swipe to back
     private SlidrInterface slidrInterface;
+
+    //for alert Dialog
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
 
     // Show progressBar
     private ProgressDialog progressDialog;
@@ -56,6 +67,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         binding = ActivitySignUpBinding.inflate(getLayoutInflater());
+        loadLocale();
         setContentView(binding.getRoot());
 
         // Initialize FirebaseAuth
@@ -147,7 +159,7 @@ public class SignUpActivity extends AppCompatActivity {
                         finish();
                         break;
                     case R.id.nav_language:
-                        Toast.makeText(SignUpActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        showChangeLanguageDialog();
                         break;
                     case R.id.nav_discover_kitbag:
                         intentFragment.putExtra("whatToDo","discoverKitBag");
@@ -173,7 +185,48 @@ public class SignUpActivity extends AppCompatActivity {
         // Attach full number from edittext with cpp
         binding.cpp.registerCarrierNumberEditText(binding.editTextContact);
 
+    }// ending onCreate
+    // showing language alert Dialog to pick one language
+    private void showChangeLanguageDialog() {
+        final String[] multiLanguage = {"বাংলা","English"};
+        builder = new AlertDialog.Builder(this);
+        builder.setTitle("Choose a Language..");
+        builder.setSingleChoiceItems(multiLanguage, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if(which == 0){
+                    setLocale("bn");
+                    recreate();
+                }else {
+                    setLocale("en");
+                    recreate();
+                }
+                dialog.dismiss();
+            }
+        });
+        dialog = builder.create();
+        dialog.show();
     }
+    // setting chosen language to system
+    private void setLocale(String lang) {
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Configuration configuration = new Configuration();
+        configuration.locale = locale;
+        getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
+
+        // save data to SharedPreference
+        SharedPreferences.Editor editor = getSharedPreferences("settings",MODE_PRIVATE).edit();
+        editor.putString("my_lang",lang);
+        editor.apply();
+    }
+    // get save value from sharedPreference and set It to as local language
+    public void loadLocale(){
+        SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
+        String lang = preferences.getString("my_lang","bn");
+        setLocale(lang);
+    }
+
 
     public void onLoginButtonClick(View view) {
         onBackPressed();
