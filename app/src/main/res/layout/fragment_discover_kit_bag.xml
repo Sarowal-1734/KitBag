@@ -3,16 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
     android:orientation="vertical"
-    tools:context=".fragment.DiscoverKitBagFragment">
+    tools:context=".fragment.discover_kitbag.DiscoverKitBagFragment">
 
-   <TextView
+   <androidx.recyclerview.widget.RecyclerView
+       android:id="@+id/recyclerViewDiscoverKitBag"
        android:layout_width="match_parent"
        android:layout_height="match_parent"
-       android:text="Discover KitBag"
-       android:gravity="center"
-       android:textSize="20sp"
-       />
+       android:divider="?attr/dividerColor"
+       tools:listitem="@layout/row_item_discover_kitbag" />
 
 </LinearLayout>

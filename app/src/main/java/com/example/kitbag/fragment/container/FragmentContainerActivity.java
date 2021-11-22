@@ -22,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -33,8 +32,8 @@ import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityFragmentContainerBinding;
 import com.example.kitbag.fragment.AboutUsFragment;
-import com.example.kitbag.fragment.DiscoverKitBagFragment;
 import com.example.kitbag.fragment.TermsAndConditionsFragment;
+import com.example.kitbag.fragment.discover_kitbag.DiscoverKitBagFragment;
 import com.example.kitbag.model.UserModel;
 import com.example.kitbag.ui.EditProfileActivity;
 import com.example.kitbag.ui.MyCartActivity;
@@ -49,8 +48,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
@@ -70,9 +67,6 @@ public class FragmentContainerActivity extends AppCompatActivity {
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private UserModel userModel;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // Dialog Declaration
     private AlertDialog.Builder builder;
@@ -116,9 +110,6 @@ public class FragmentContainerActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         // Adding back arrow in the appBar
         binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
@@ -190,27 +181,6 @@ public class FragmentContainerActivity extends AppCompatActivity {
                 Intent intent = new Intent(FragmentContainerActivity.this, EditProfileActivity.class);
                 intent.putExtra("userId", currentUser.getUid());
                 startActivity(intent);
-            }
-        });
-
-        // Active Inactive Slider to back based on drawer
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
             }
         });
 
@@ -322,6 +292,8 @@ public class FragmentContainerActivity extends AppCompatActivity {
     // Dynamically Replace Fragment
     private void loadFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+        transaction.addToBackStack(null);
         transaction.replace(R.id.fragmentContainer, fragment).commit();
     }
 
@@ -448,7 +420,7 @@ public class FragmentContainerActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         progressDialog.dismiss();
-                        Toast.makeText(FragmentContainerActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(FragmentContainerActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -469,7 +441,12 @@ public class FragmentContainerActivity extends AppCompatActivity {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.END)) {
             binding.drawerLayout.closeDrawer(GravityCompat.END);
         } else {
-            super.onBackPressed();
+            if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+                finish();
+            } else {
+                getSupportFragmentManager().popBackStackImmediate();
+            }
         }
     }
+
 }
