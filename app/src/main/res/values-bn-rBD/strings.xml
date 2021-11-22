@@ -1,0 +1,888 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="application_name">কিটব্যাগ</string>
+    <string name="forgotten_password">আপনার পাসওয়ার্ড ভুলে গেছেন?</string>
+    <string name="don_t_have_an_account">কোন অ্যাকাউন্ট নায়?</string>
+    <string name="login">লগ ইন</string>
+    <string name="password">পাসওয়ার্ড</string>
+    <string name="contact">ফোন নাম্বার</string>
+    <string name="email_optional">ইমেইল (অতিরিক্ত)</string>
+    <string name="username">ব্যবহারকারীর নাম</string>
+    <string name="district">জেলা</string>
+    <string name="confirm_password">পাসওয়ার্ড পুনরায় প্রবেশ করুন</string>
+    <string name="already_have_an_account">ইতোমধ্যে একটি অ্যাকাউন্ট আছে?</string>
+    <string name="create_post">পোস্ট তৈরী করুন</string>
+    <string name="post_title">প্রডাক্টের নাম</string>
+    <string name="post_description">বিবরন</string>
+    <string name="ButtonPostItem">পোস্ট করুন</string>
+    <string name="all_fields_are_required">*সব ফিল্ড পূরন করুন</string>
+    <string name="by_posting_this_ad_you_agree_to_our_terms_and_conditions"> <br /> <font color='#FFFF0000'>শর্তাবলী</font></string>
+    <string name="otp">ওটিপি</string>
+    <string name="resend_otp"><u>পূনরায় ওটিপি পাঠান</u></string>
+    <string name="nav_chat">আলোচনা করুন</string>
+    <string name="nav_my_posts">আমার পোস্ট</string>
+    <string name="nav_my_cart">আমার কার্ট</string>
+    <string name="nav_change_password">পাসওয়ার্ড পরিবর্তন</string>
+    <string name="nav_language">ভাষা</string>
+    <string name="nav_dark_mode">ডার্কমুড</string>
+    <string name="nav_discover_kitbag">কিটব্যাগ স্মপর্কে জানুন</string>
+    <string name="nav_terms_conditions"><![CDATA[শর্তাবলী]]></string>
+    <string name="nav_contact_us">আমাদের সাথে যোগাযোগ</string>
+    <string name="nav_about_us">আমাদের তথ্য</string>
+    <string name="nav_log_out">লগ আউট</string>
+    <string name="nav_login">লগ ইন</string>
+    <string name="app_name">কিটব্যাগ</string>
+    <string name="send_otp_message">ওয়ান টাইম পাসওয়ার্ড (ওটিপি) আপনাকে পাঠানো হয়েছে </string>
+    <string name="number_hint">+৮৮০১XXXXXXXX</string>
+    <string name="didnt_get_otp">ওটিপি পায়নি?</string>
+    <string name="update_password">পাসওয়ার্ড পরিবর্তন</string>
+    <string name="old_password">পুরাতন পাসওয়ার্ড প্রবেশ করুন</string>
+    <string name="new_password">নতুন পাসওয়ার্ড প্রবেশ করুন</string>
+    <string name="conform_new_password">নতুন পাসওয়ার্ড নিশ্চিত করুন</string>
+
+    <string-array name="Districts">
+        <item>বাগেরহাট</item>
+        <item>বান্দরবন</item>
+        <item>বরগুনা</item>
+        <item>বরিশাল</item>
+        <item>ভোলা</item>
+        <item>বগুড়া</item>
+        <item>ব্রাহ্মণবাড়িয়া</item>
+        <item>চাঁদপুর</item>
+        <item>চাঁপাইনবাবগঞ্জ</item>
+        <item>চট্টগ্রাম</item>
+        <item>চুয়াডাঙ্গা</item>
+        <item>কক্সবাজার</item>
+        <item>কুমিল্লা</item>
+        <item>ঢাকা</item>
+        <item>দিনাজপুর</item>
+        <item>ফরিদপুর</item>
+        <item>ফেনি</item>
+        <item>গাইবান্ধা</item>
+        <item>গাজীপুর</item>
+        <item>গোপালগঞ্জ</item>
+        <item>হবিগঞ্জ</item>
+        <item>জয়পুরহাট</item>
+        <item>জামালপুর</item>
+        <item>যশোর</item>
+        <item>ঝালকাঠি</item>
+        <item>ঝিনাইদহ</item>
+        <item>খাগড়াছড়ি</item>
+        <item>খুলনা</item>
+        <item>কিশোরগঞ্জ</item>
+        <item>কুড়িগ্রাম</item>
+        <item>কুষ্টিয়া</item>
+        <item>লক্ষ্মীপুর</item>
+        <item>লালমনিরহাট</item>
+        <item>মাদারীপুর</item>
+        <item>মাগুরা</item>
+        <item>মানিকগজ্ঞ</item>
+        <item>মেহেরপুর</item>
+        <item>মৌলভীবাজার</item>
+        <item>মুন্সীগঞ্জ</item>
+        <item>ময়মনসিংহ</item>
+        <item>নওগাঁ</item>
+        <item>নড়াইল</item>
+        <item>নারায়ণগঞ্জ</item>
+        <item>নরসিংদী</item>
+        <item>নাটোর</item>
+        <item>নেত্রকোনা</item>
+        <item>নীলফামারী</item>
+        <item>নোয়াখালী</item>
+        <item>পাবনা</item>
+        <item>পঞ্চগড়</item>
+        <item>পটুয়াখালী</item>
+        <item>পিরোজপুর</item>
+        <item>রাজবাড়ী</item>
+        <item>রাজশাহী</item>
+        <item>রংপুর</item>
+        <item>রাঙ্গামাটি</item>
+        <item>সাতক্ষীরা</item>
+        <item>শরীয়তপুর</item>
+        <item>শেরপুর</item>
+        <item>সিরাজগঞ্জ</item>
+        <item>সুনামগঞ্জ</item>
+        <item>সিলেট</item>
+        <item>টাঙ্গাইল</item>
+        <item>ঠাকুরগাঁও</item>
+    </string-array>
+
+    <string-array name="Bagerhat">
+        <item>বাগেরহাট সদর</item>
+        <item>চিতলমারী</item>
+        <item>ফকিরহাট</item>
+        <item>কচুয়া</item>
+        <item>মোল্লাহাট</item>
+        <item>মংলা</item>
+        <item>মোরেলগঞ্জ</item>
+        <item>রামপাল</item>
+        <item>শরণখোলা</item>
+    </string-array>
+
+    <string-array name="Bandarban">
+        <item>আলী কদম</item>
+        <item>বান্দরবান সদর</item>
+        <item>লামা</item>
+        <item>নাইক্ষংছড়ি</item>
+        <item>রোয়াংছড়ি</item>
+        <item>রুমা</item>
+        <item>থানচি</item>
+    </string-array>
+
+    <string-array name="Barguna">
+        <item>আমতলী</item>
+        <item>বামনা</item>
+        <item>বরগুনা সদর</item>
+        <item>বেতাগী</item>
+        <item>পাথরঘাটা</item>
+        <item>তালতলী</item>
+    </string-array>
+
+    <string-array name="Barisal">
+        <item>আগাইলঝাড়া</item>
+        <item>বাবুগঞ্জ</item>
+        <item>বাকেরগঞ্জ</item>
+        <item>বানারীপাড়া</item>
+        <item>গৌরনদী</item>
+        <item>হিজলা</item>
+        <item>বরিশাল সদর</item>
+        <item>মেহেন্দিগঞ্জ</item>
+        <item>মুলাদি</item>
+        <item>উজিরপুর</item>
+    </string-array>
+
+    <string-array name="Bhola">
+        <item>ভোলা সদর</item>
+        <item>বুরহানউদ্দিন</item>
+        <item>চর ফাসন</item>
+        <item>দৌলতখান</item>
+        <item>লালমোহন</item>
+        <item>মনপুরা</item>
+        <item>তজুমদ্দিন</item>
+    </string-array>
+
+    <string-array name="Bogra">
+        <item>আদমদীঘি</item>
+        <item>বগুড়া সদর</item>
+        <item>ধুনট</item>
+        <item>ধুপচাঁচিয়া</item>
+        <item>গাবতলী</item>
+        <item>কাহালু</item>
+        <item>নন্দীগ্রাম</item>
+        <item>সারিয়াকান্দি</item>
+        <item>শাহজাহানপুর</item>
+        <item>শেরপুর</item>
+        <item>শিবগঞ্জ</item>
+        <item>সোনাটোলা</item>
+    </string-array>
+
+    <string-array name="Brahmanbaria">
+        <item>আখাউড়া</item>
+        <item>বাঞ্ছারামপুর</item>
+        <item>ব্রাহ্মণবাড়িয়া সদর</item>
+        <item>কসবা</item>
+        <item>নবীনগর</item>
+        <item>নাসিরনগর</item>
+        <item>সরাইল</item>
+        <item>আশুগঞ্জ</item>
+        <item>বিজয়নগর</item>
+    </string-array>
+
+    <string-array name="Chandpur">
+        <item>চাঁদপুর সদর</item>
+        <item>ফরিদগঞ্জ</item>
+        <item>হাইমচর</item>
+        <item>হাজীগঞ্জ</item>
+        <item>কচুয়া</item>
+        <item>মতলব দক্ষিণ</item>
+        <item>মতলব উত্তর</item>
+        <item>শাহরাস্তি</item>
+    </string-array>
+
+    <string-array name="Chapainawabganj">
+        <item>ভোলাহাট</item>
+        <item>গোমস্তাপুর</item>
+        <item>গোমস্তাপুর</item>
+        <item>নবাবগঞ্জ সদর</item>
+        <item>শিবগঞ্জ</item>
+    </string-array>
+
+    <string-array name="Chittagong">
+        <item>আনোয়ারা</item>
+        <item>বাঁশখালী</item>
+        <item>বোয়ালখালী</item>
+        <item>চন্দনাইশ</item>
+        <item>ফটিকছড়ি</item>
+        <item>হাটহাজারী</item>
+        <item>কর্ণফুলী</item>
+        <item>লোহাগাড়া</item>
+        <item>মিরসরাই</item>
+        <item>পটিয়া</item>
+        <item>রাঙ্গুনিয়া</item>
+        <item>রাউজান</item>
+        <item>সন্দ্বীপ</item>
+        <item>সাতকানিয়া</item>
+        <item>সীতাকুণ্ড</item>
+    </string-array>
+
+    <string-array name="Chuadanga">
+        <item>আলমডাঙ্গা</item>
+        <item>চুয়াডাঙ্গা সদর</item>
+        <item>দামুড়হুদা</item>
+        <item>জীবননগর</item>
+    </string-array>
+
+    <string-array name="CoxBazar">
+        <item>চকরিয়া</item>
+        <item>কক্সবাজার সদর</item>
+        <item>কুতুবদিয়া</item>
+        <item>মহেশখালী</item>
+        <item>রামু</item>
+        <item>টেকনাফ</item>
+        <item>উখিয়া</item>
+        <item>পেকুয়া</item>
+    </string-array>
+
+    <string-array name="Comilla">
+        <item>বরুড়া</item>
+        <item>ব্রাহ্মণপাড়া</item>
+        <item>বুড়িচং</item>
+        <item>চান্দিনা</item>
+        <item>চৌদ্দগ্রাম</item>
+        <item>দাউদকান্দি</item>
+        <item>দেবিদ্বার</item>
+        <item>হোমনা</item>
+        <item>লাকসাম</item>
+        <item>লালমাই</item>
+        <item>মুরাদনগর</item>
+        <item>নাঙ্গলকোট</item>
+        <item>কুমিল্লা আদর্শ সদর</item>
+        <item>মেঘনা</item>
+        <item>তিতাস</item>
+        <item>মনোহরগঞ্জ</item>
+        <item>কুমিল্লা সদর দক্ষিণ </item>
+    </string-array>
+
+    <string-array name="Dhaka">
+        <item>ধামরাই</item>
+        <item>দোহার</item>
+        <item>কেরানীগঞ্জ</item>
+        <item>নবাবগঞ্জ</item>
+        <item>সাভার</item>
+        <item>তেজগাঁও সার্কেল</item>
+    </string-array>
+
+    <string-array name="Dinajpur">
+        <item>বিরামপুর</item>
+        <item>বীরগঞ্জ</item>
+        <item>বিরল</item>
+        <item>বোচাগঞ্জ</item>
+        <item>চিরিরবন্দর</item>
+        <item>ফুলবাড়ী</item>
+        <item>ঘোড়াঘাট</item>
+        <item>হাকিমপুর</item>
+        <item>কাহারোল</item>
+        <item>খানসামা</item>
+        <item>দিনাজপুর সদর</item>
+        <item>নবাবগঞ্জ</item>
+        <item>পার্বতীপুর</item>
+    </string-array>
+
+    <string-array name="Faridpur">
+        <item>আলফাডাঙ্গা</item>
+        <item>ভাঙ্গা</item>
+        <item>বোয়ালমারী</item>
+        <item>চারভদ্রাসন</item>
+        <item>ফরিদপুর সদর</item>
+        <item>মধুখালী</item>
+        <item>নগরকান্দা</item>
+        <item>সদরপুর</item>
+        <item>সালথা</item>
+    </string-array>
+
+    <string-array name="Feni">
+        <item>ছাগলনাইয়া</item>
+        <item>দাগনভূঁইয়া</item>
+        <item>ফেনী সদর</item>
+        <item>পরশুরাম</item>
+        <item>সোনাগাজী</item>
+        <item>ফুলগাজী</item>
+    </string-array>
+
+    <string-array name="Gaibandha">
+        <item>ফুলছড়ি</item>
+        <item>গাইবান্ধা সদর</item>
+        <item>গোবিন্দগঞ্জ</item>
+        <item>পলাশবাড়ী</item>
+        <item>সাদুল্লাপুর</item>
+        <item>সুঘাটা</item>
+        <item>সুন্দরগঞ্জ</item>
+    </string-array>
+
+    <string-array name="Gazipur">
+        <item>গাজীপুর সদর</item>
+        <item>কালিয়াকৈর</item>
+        <item>কালীগঞ্জ</item>
+        <item>কাপাসিয়া</item>
+        <item>টুঙ্গিপাড়া</item>
+    </string-array>
+
+    <string-array name="Gopalganj">
+        <item>গোপালগঞ্জ সদর</item>
+        <item>কাশিয়ানি</item>
+        <item>কোটালীপাড়া</item>
+        <item>মুকসুদপুর</item>
+        <item>টুঙ্গিপাড়া</item>
+    </string-array>
+
+    <string-array name="Habiganj">
+        <item>আজমিরীগঞ্জ</item>
+        <item>বাহুবল</item>
+        <item>বানিয়াচং</item>
+        <item>চুনারুঘাট</item>
+        <item>হবিগঞ্জ সদর</item>
+        <item>লাখাই</item>
+        <item>মাধবপুর</item>
+        <item>নবীগঞ্জ</item>
+        <item>সায়েস্তাগঞ্জ</item>
+    </string-array>
+
+    <string-array name="Joypurhat">
+        <item>আক্কেলপুর</item>
+        <item>জয়পুরহাট সদর</item>
+        <item>কালাই </item>
+        <item>ক্ষেতলাল</item>
+        <item>পাঁচবিবি</item>
+    </string-array>
+
+    <string-array name="Jamalpur">
+        <item>বকসীগঞ্জ</item>
+        <item>দেওয়ানগঞ্জ</item>
+        <item>ইসলামপুর</item>
+        <item>জামালপুর</item>
+        <item>মাদারগঞ্জ</item>
+        <item>মেলান্দাহা</item>
+        <item>সরিষা বাড়ি</item>
+    </string-array>
+
+    <string-array name="Jessore">
+        <item>অভয়নগর</item>
+        <item>বাঘেরপাড়া</item>
+        <item>চৌগাছা</item>
+        <item>ঝিকরগাছা</item>
+        <item>কেশবপুর</item>
+        <item>যশোর সদর</item>
+        <item>মণিরামপুর</item>
+        <item>শার্শা</item>
+    </string-array>
+
+    <string-array name="Jhalokati">
+        <item>ঝালকাঠি সদর</item>
+        <item>কাঠালিয়া</item>
+        <item>নালছিটি</item>
+        <item>রাজাপুর</item>
+    </string-array>
+
+    <string-array name="Jhenaidah">
+        <item>হরিণাকুণ্ড</item>
+        <item>ঝিনাইদহ</item>
+        <item>কালীগঞ্জ</item>
+        <item>কোটচাঁদপুর</item>
+        <item>মহেশপুর</item>
+        <item>শৈলকুপা</item>
+    </string-array>
+
+    <string-array name="Khagrachari">
+        <item>দীঘিনালা</item>
+        <item>খাগড়াছড়ি</item>
+        <item>লক্ষ্মীছড়ি</item>
+        <item>মহালছড়ি</item>
+        <item>মানিকছড়ি</item>
+        <item>মাটিরাঙ্গা</item>
+        <item>পানছড়ি</item>
+        <item>রামগড়</item>
+    </string-array>
+
+    <string-array name="Khulna">
+        <item>বটিয়াঘাটা</item>
+        <item>Dacope</item>
+        <item>ডুমুরিয়া</item>
+        <item>দিঘলিয়া</item>
+        <item>কয়রা</item>
+        <item>পাইকগাছা</item>
+        <item>ফুলতলা</item>
+        <item>রূপশা</item>
+        <item>তেরোখাদা</item>
+    </string-array>
+
+    <string-array name="Kishoreganj">
+        <item>বাজিতপুর</item>
+        <item>ভৈরব</item>
+        <item>হোসেনপুর</item>
+        <item>Itna</item>
+        <item>করিমগঞ্জ</item>
+        <item>কটিয়াদি</item>
+        <item>কিশোরগঞ্জ সদর</item>
+        <item>কুলিয়ারচর</item>
+        <item>মিঠামইন</item>
+        <item>নিকলি</item>
+        <item>পাকুন্দিয়া</item>
+        <item>তাড়াইল</item>
+    </string-array>
+
+    <string-array name="Kurigram">
+        <item>ভুরুঙ্গামারী</item>
+        <item>চর রাজীবপুর</item>
+        <item>চিলমারী</item>
+        <item>ফুলবাড়ি</item>
+        <item>কুড়িগ্রাম সদর</item>
+        <item>নাগেশ্বরী</item>
+        <item>রাজারহাট</item>
+        <item>রওমারী</item>
+        <item>উলিপুর</item>
+    </string-array>
+
+    <string-array name="Kushtia">
+        <item>ভেড়ামারা</item>
+        <item>দৌলতপুর</item>
+        <item>খোকসা</item>
+        <item>কুমারখালী</item>
+        <item>কুষ্টিয়া সদর</item>
+        <item>মিরপুর</item>
+    </string-array>
+    <string-array name="Lakshmipur">
+        <item>লক্ষ্মীপুর সদর</item>
+        <item>রায়পুর</item>
+        <item>রামগঞ্জ</item>
+        <item>রামগতি</item>
+        <item>কমলনগর</item>
+    </string-array>
+
+    <string-array name="Lalmonirhat">
+        <item>আদিতমারী</item>
+        <item>হাতিবান্ধা</item>
+        <item>কালীগঞ্জ</item>
+        <item>লালমনিরহাট সদর</item>
+        <item>পাটগ্রাম</item>
+    </string-array>
+
+    <string-array name="Madaripur">
+        <item>রাজোইর</item>
+        <item>মাদারীপুর</item>
+        <item>কালকিনি</item>
+        <item>শিবচর</item>
+    </string-array>
+
+    <string-array name="Magura">
+        <item>মাগুরা সদর</item>
+        <item>মোহাম্মদপুর</item>
+        <item>শালিখা</item>
+        <item>শ্রীপুর</item>
+    </string-array>
+
+    <string-array name="Manikganj">
+        <item>দৌলতপুর</item>
+        <item>ঘিওর</item>
+        <item>হরিরামপুর</item>
+        <item>মানিকগঞ্জ সদর</item>
+        <item>সাটুরিয়া</item>
+        <item>শিবালয়</item>
+        <item>Singair</item>
+    </string-array>
+
+    <string-array name="Meherpur">
+        <item>গাংনি</item>
+        <item>মেহেরপুর সদর</item>
+        <item>মুজিবনগর</item>
+    </string-array>
+
+    <string-array name="Moulvibazar">
+        <item>বড়লেখা</item>
+        <item>জুরি</item>
+        <item>কমলগঞ্জ</item>
+        <item>কুলাউড়া</item>
+        <item>মৌলভীবাজার সদর</item>
+        <item>রাজনগর</item>
+        <item>শ্রীমঙ্গল</item>
+    </string-array>
+
+    <string-array name="Munshiganj">
+        <item>গজারিয়া</item>
+        <item>লৌহজং</item>
+        <item>মুন্সিগঞ্জ সদর</item>
+        <item>সিরাজদিখান</item>
+        <item>শ্রীনগর</item>
+        <item>টঙ্গিবাড়ি</item>
+    </string-array>
+
+    <string-array name="Mymensingh">
+        <item>ত্রিশাল</item>
+        <item>ধোবাউড়া</item>
+        <item>ফুলবাড়িয়া</item>
+        <item>গফরগাঁও</item>
+        <item>গৌরীপুর</item>
+        <item>হালুয়াঘাট</item>
+        <item>ঈশ্বরগঞ্জ</item>
+        <item>ময়মনসিংহ সদর</item>
+        <item>মুক্তাগাছা</item>
+        <item>নান্দাইল</item>
+        <item>ফুলপুর</item>
+        <item>ভালুকা</item>
+        <item>তারা খণ্ড</item>
+    </string-array>
+
+    <string-array name="Naogaon">
+        <item>আত্রাই</item>
+        <item>বদলগাছি</item>
+        <item>মান্দা</item>
+        <item>ধামইরহাট</item>
+        <item>মহাদেবপুর</item>
+        <item>নওগাঁ সদর</item>
+        <item>নিয়ামতপুর</item>
+        <item>পত্নীতলা</item>
+        <item>পোরশা</item>
+        <item>রাণীনগর</item>
+        <item>সাপাহার</item>
+    </string-array>
+
+    <string-array name="Narail">
+        <item>কালিয়া</item>
+        <item>লোহাগাড়া</item>
+        <item>নড়াইল সদর</item>
+        <item>নরাগতি</item>
+    </string-array>
+
+    <string-array name="Narayanganj">
+        <item>আড়াইহাজার</item>
+        <item>বন্দর</item>
+        <item>নারায়ণগঞ্জ সদর</item>
+        <item>রূপগঞ্জ</item>
+        <item>সোনারগাঁও</item>
+    </string-array>
+
+    <string-array name="Narsingdi">
+        <item>নরসিংদী সদর</item>
+        <item>বেলাবো</item>
+        <item>মনোহরদী</item>
+        <item>পলাশ</item>
+        <item>রায়পুরা</item>
+        <item>শিবপুর</item>
+    </string-array>
+
+    <string-array name="Natore">
+        <item>বাগাতিপাড়া</item>
+        <item>বড়াইগ্রাম</item>
+        <item>গুরুদাসপুর</item>
+        <item>লালপুর</item>
+        <item>নাটোর সদর</item>
+        <item>সিংড়া</item>
+        <item>নলডাঙ্গা</item>
+    </string-array>
+
+    <string-array name="Netrakona">
+        <item>আটপাড়া</item>
+        <item>বারহাট্টা</item>
+        <item>দুর্গাপুর</item>
+        <item>খালিয়াজুরি</item>
+        <item>কলমাকান্দা</item>
+        <item>কেন্দুয়া</item>
+        <item>মদন</item>
+        <item>মোহনগঞ্জ</item>
+        <item>নেত্রকোনা সদর</item>
+        <item>পূর্বধলা</item>
+    </string-array>
+
+    <string-array name="Nilphamari">
+        <item>ডিমলা</item>
+        <item>ডোমার</item>
+        <item>জলঢাকা</item>
+        <item>কিশোরগঞ্জ</item>
+        <item>নীলফামারী সদর</item>
+        <item>সৈয়দপুর</item>
+    </string-array>
+
+    <string-array name="Noakhali">
+        <item>বেগমগঞ্জ</item>
+        <item>নোয়াখালী</item>
+        <item>চাটখিল</item>
+        <item>কোম্পানীগঞ্জ</item>
+        <item>হাতিয়া</item>
+        <item>সেনবাগ</item>
+        <item>সোনাইমুড়ি</item>
+        <item>সুবর্ণাচার</item>
+        <item>কবিরহাট</item>
+    </string-array>
+
+    <string-array name="Pabna">
+        <item>আটঘরিয়া</item>
+        <item>বেরা</item>
+        <item>ভাঙ্গুড়া</item>
+        <item>চাটমোহর</item>
+        <item>ফরিদপুর</item>
+        <item>ঈশ্বরদী</item>
+        <item>পাবনা সদর</item>
+        <item>সাঁথিয়া</item>
+        <item>সুজানগর</item>
+    </string-array>
+
+    <string-array name="Panchagarh">
+        <item>আটওয়ারী</item>
+        <item>বোদা</item>
+        <item>দেবীগঞ্জ</item>
+        <item>পঞ্চগড় সদর</item>
+        <item>তেতুলিয়া</item>
+    </string-array>
+
+    <string-array name="Patuakhali">
+        <item>বাউফল</item>
+        <item>দশমিনা</item>
+        <item>গলাচিপা</item>
+        <item>কলাপাড়া</item>
+        <item>মির্জাগঞ্জ</item>
+        <item>পটুয়াখালী সদর</item>
+        <item>রাঙ্গাবালি</item>
+        <item>দুমকি</item>
+    </string-array>
+
+    <string-array name="Pirojpur">
+        <item>ভান্ডারিয়া</item>
+        <item>কাউখালি</item>
+        <item>মঠবাড়িয়া</item>
+        <item>নাজিরপুর</item>
+        <item>পিরোজপুর সদর</item>
+        <item>নেসারাবাদ (স্বরূপকাটি)</item>
+        <item>ইন্দুরকানি</item>
+    </string-array>
+
+    <string-array name="Rajshahi">
+        <item>বাঘা</item>
+        <item>বাগমারা</item>
+        <item>চারঘাট</item>
+        <item>দুর্গাপুর</item>
+        <item>গোদাগাড়ী</item>
+        <item>মোহনপুর</item>
+        <item>পাবা</item>
+        <item>পুঠিয়া</item>
+        <item>তানোরে</item>
+    </string-array>
+
+    <string-array name="Rajbari">
+        <item>বালিয়াকান্দি</item>
+        <item>গোয়ালন্দঘাট</item>
+        <item>পাংশা</item>
+        <item>রাজবাড়ী সদর</item>
+        <item>কালুখালী</item>
+    </string-array>
+
+    <string-array name="Rangamati">
+        <item>বাঘাইছড়ি</item>
+        <item>বরকল</item>
+        <item>কাউখালি (বেতবুনিয়া)</item>
+        <item>বেলাইছড়ি</item>
+        <item>কাপ্তাই</item>
+        <item>জুরাইছড়ি</item>
+        <item>লঙ্গাডু</item>
+        <item>নানিয়াচর</item>
+        <item>রাজস্থলী</item>
+        <item>রাঙ্গামাটি সদর</item>
+    </string-array>
+
+    <string-array name="Rangpur">
+        <item>বদরগঞ্জ</item>
+        <item>গঙ্গাছড়া</item>
+        <item>কাউনিয়া</item>
+        <item>রংপুর সদর</item>
+        <item>মিঠাপুকুর</item>
+        <item>পীরগাছা</item>
+        <item>পীরগঞ্জ</item>
+        <item>তারাগঞ্জ</item>
+    </string-array>
+
+    <string-array name="Satkhira">
+        <item>আসাসুনি</item>
+        <item>দেবতা</item>
+        <item>কলারোয়া</item>
+        <item>কালীগঞ্জ</item>
+        <item>সাতক্ষীরা সদর</item>
+        <item>শ্যামনগর</item>
+        <item>তালা</item>
+    </string-array>
+
+    <string-array name="Shariatpur">
+        <item>ভেদরগঞ্জ</item>
+        <item>ডামুড্যা</item>
+        <item>গোসাইরহাট</item>
+        <item>নরিয়া</item>
+        <item>শরীয়তপুর সদর</item>
+        <item>জাজিরা</item>
+        <item>শখীপুর</item>
+    </string-array>
+
+    <string-array name="Sherpur">
+        <item>ঝিনাইগাতী</item>
+        <item>নকলা</item>
+        <item>নালিতাবাড়ি</item>
+        <item>শেরপুর সদর</item>
+        <item>শ্রীবর্দী</item>
+    </string-array>
+
+    <string-array name="Sirajganj">
+        <item>বেলকুচি</item>
+        <item>চৌহালী</item>
+        <item>কামারখন্দা</item>
+        <item>কাজিপুর</item>
+        <item>রায়গঞ্জ</item>
+        <item>শাহজাদপুর</item>
+        <item>সিরাজগঞ্জ সদর</item>
+        <item>তাড়াশ</item>
+        <item>উল্লাহপাড়া</item>
+    </string-array>
+
+    <string-array name="Sunamganj">
+        <item>বিশ্বম্ভরপুর</item>
+        <item>ছাতক</item>
+        <item>দক্ষিণ সুনামগঞ্জ</item>
+        <item>দেরাই</item>
+        <item>ধর্মপাশা</item>
+        <item>দোয়ারাবাজার</item>
+        <item>জগন্নাথপুর</item>
+        <item>জামালগঞ্জ</item>
+        <item>সুল্লা</item>
+        <item>সুনামগঞ্জ সদর</item>
+        <item>তাহিরপুর</item>
+    </string-array>
+
+    <string-array name="Sylhet">
+        <item>বালাগঞ্জ</item>
+        <item>বিয়ানীবাজার</item>
+        <item>বিশ্বনাথ</item>
+        <item>কোম্পানীগঞ্জ</item>
+        <item>দক্ষিণ সুরমা</item>
+        <item>ফেঞ্চুগঞ্জ</item>
+        <item>গোলাপগঞ্জ</item>
+        <item>গোয়াইনঘাট</item>
+        <item>জৈন্তিয়াপুর</item>
+        <item>কানাইঘাট</item>
+        <item>ওসমানী নগর</item>
+        <item>সিলেট সদর</item>
+        <item>জকিগঞ্জ</item>
+    </string-array>
+
+    <string-array name="Tangail">
+        <item>গোপালপুর</item>
+        <item>বাসাইল</item>
+        <item>ভুয়াপুর</item>
+        <item>দেলদুয়ার</item>
+        <item>ঘাটাইল</item>
+        <item>কালিহাতী</item>
+        <item>মধুপুর</item>
+        <item>মির্জাপুর</item>
+        <item>নাগরপুর</item>
+        <item>সখীপুর</item>
+        <item>ধনবাড়ী</item>
+        <item>টাঙ্গাইল সদর</item>
+    </string-array>
+
+    <string-array name="Thakurgaon">
+        <item>বালিয়াডাঙ্গী</item>
+        <item>হরিপুর</item>
+        <item>পীরগঞ্জ</item>
+        <item>রানীশংকৈল</item>
+        <item>ঠাকুরগাঁও সদর</item>
+    </string-array>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="become_a_deliveryman">ডেলিভারিম্যান হওয়ার আবেদন</string>
+    <string name="home">হোম</string>
+    <string name="enter_message">মেসেজ প্রদান করুন</string>
+    <string name="place_your_nid_within_the_frame_and_take_a_photo">ফ্রেমের মধ্যে আপনার এনআইডি রাখুন এবং একটি ছবি তুলুন</string>
+    <string name="front_of_nid">এনআইডি এর সামনের অংশ</string>
+    <string name="retake">আবার তুলুন</string>
+    <string name="submit">জমা দিন</string>
+    <string name="user_type">ব্যবহারকারীর ধরন:</string>
+    <string name="upazila">উপজেলা</string>
+    <string name="update_profile">প্রফাইল আপডেট</string>
+    <string name="please_enter_your_registered_phone_number">আপনার নিবন্ধিত ফোন নম্বর লিখুন.</string>
+    <string name="we_will_send_an_otp_to_your_registered_phone_number">আমরা আপনার নিবন্ধিত ফোন নম্বরে একটি ওটিপি পাঠাব।</string>
+    <string name="next">পরবর্তী</string>
+    <string name="sign_up">সাইন আপ</string>
+    <string name="review_your_nid_information">আপনার এনআইডি তথ্য পর্যালোচনা করুন</string>
+    <string name="please_ensure_your_information_is_same_as_nid">অনুগ্রহ করে নিশ্চিত করুন যে আপনার তথ্য এনআইডি-এর মতই</string>
+    <string name="general_information">সাধারণ তথ্য</string>
+    <string name="name_bangla">নাম (বাংলায়)</string>
+    <string name="name_english">নাম (ইংরাজিতে)</string>
+    <string name="father_husband_s_name_bangla">বাবার নাম (বাংলায়)</string>
+    <string name="mother_s_name_bangla">মায়ের নাম (বাংলায়)</string>
+    <string name="date_of_birth">জন্ম তারিখ</string>
+    <string name="nid_no">এনআইডি নাম্বার.</string>
+    <string name="address">ঠিকানা</string>
+    <string name="present_address">বর্ত্মান ঠিকানা</string>
+    <string name="post_code">পোস্ট কোড</string>
+    <string name="post_office">পোস্ট অফিস</string>
+    <string name="division">বিভাগ</string>
+    <string name="other_information">অন্যান্য তথ্য</string>
+    <string name="gender">জেনডার</string>
+    <string name="occupation">পেশা</string>
+    <string name="weight_e_g_2_kg_250_gram">ভর উদ: ২ কেজি / ২৫০ গ্রাম</string>
+    <string name="receiver_contact">গ্রহিতার নাম্বার</string>
+    <string name="deliveryman_optional">ডেলিভারিম্যান (অতিরিক্ত)</string>
+    <string name="by_posting_this_ad_you_agree_to_our">এই পোস্টটি করার মধ্যমে আপনি আমাদের সকল শর্ত মেনে নিবেন</string>
+    <string name="terms_and_conditions"><![CDATA[শর্তাবলী]]></string>
+    <string name="title_apple_iphone_xs">টাইটেল: আপনার পোস্টের নাম</string>
+    <string name="posted_by_mr_x_on_30_apr_11_25_am">পোস্টদাতা মিস্টার. ক ৩০ তারিখ ২০২১</string>
+    <string name="description">বিবরন: </string>
+    <string name="weight">ওজন: </string>
+    <string name="status">স্টাটাস: </string>
+    <string name="from">থেকে: </string>
+    <string name="to">পর্যন্ত: </string>
+    <string name="chat_mr_x">কথোপকথন (মিস্টার.ক)</string>
+    <string name="email_hint">aabbcc.cse.2021@gmail.com</string>
+    <string name="add_to_cart">কার্টে যুক্ত করুন</string>
+    <string name="delete_post">পোস্টটি মুছে ফেলুন</string>
+    <string name="request_for_delivery">ডেলিভারির জন্য আবেদন করুন</string>
+    <string name="product_handover_process">পণ্য হস্তান্তর প্রক্রিয়া</string>
+    <string name="handover_the_product_from">কোথা থেকে পন্য পাঠাবেন:</string>
+    <string name="sender_to_primary_agent">প্রেরক থেকে প্রাইমারী এজেন্ট</string>
+    <string name="primary_agent_to_deliveryman">প্রাইমারী এজেন্ট থেকে ডেলিভ্যারিম্যান</string>
+    <string name="deliveryman_to_final_agent">ডেলিভ্যারীম্যান থেকে চূড়ান্ত এজেন্ট</string>
+    <string name="final_agent_to_receiver">চূড়ান্ত এজেন্ট থেকে প্রাপক</string>
+    <string name="we_will_send_an_otp_to_the_given_number_so_please_make_sure_that_you_are_staying_any_of_your_nearest_kitbag_agent">আমরা প্রদত্ত নম্বরে একটি ওটিপি পাঠাব। তাই অনুগ্রহ করে নিশ্চিত করুন যে আপনি আপনার নিকটস্থ কিটব্যাগ এজেন্টের কাছে গিয়েছেন.</string>
+    <string name="send_otp">ওটিপি পাঠান</string>
+    <string name="please_enter_a_new_password">অনুগ্রহ করে নতুন পাসওয়ার্ড দিন</string>
+    <string name="reset_password">রিসেট পাসওয়ার্ড</string>
+    <string name="now_take_a_photo_of_your_face">এখন আপনার ছবি তুলুন</string>
+    <string name="find_by_location">অবস্থান অনুসারে খুঁজুন</string>
+    <string name="search">খুজুন</string>
+    <string name="become_a_deliveryman_nin_three_easy_steps">ডেলিভারিম্যান হোন তিনটি সহজ ধাপে</string>
+    <string name="take_photo_of_your_nid">আপনার এনআইডির ছবি তুলুন</string>
+    <string name="take_a_photo_of_your_face">আপনার ছবি তুলুন</string>
+    <string name="fill_in_required_information">প্র্যোজনীয় তথ্য দিন</string>
+    <string name="proceed">সামনে</string>
+    <string name="cancel">বাতিল করুন</string>
+    <string name="please_confirm">অনুগ্রহ করে নিশ্চিত করুন!</string>
+    <string name="information_provided_for_nkitbag_deliveryman_account_nregistration_is_correct_ndeliberate_and_authentic">Information provided for\nKitBag Deliveryman Account\nRegistration is correct,\ndeliberate and authentic.</string>
+    <string name="confirm">নিশ্চিত করুন</string>
+    <string name="product_delivery_status">প্রডাক্ট ডেলিভ্যারী স্টাটাস</string>
+    <string name="sender">প্রেরক</string>
+    <string name="this_product_is_with_the_sender">প্রডাক্টটি এখন প্রেরকের কাছে.</string>
+    <string name="the_primary_agent_has_picked_nthis_product_from_sender">প্রাইমারী এজেন্ট প্রডাক্টটি প্রেরকের কাছ থেকে নিয়েছেন.</string>
+    <string name="the_deliveryman_has_picked_nthis_product_from_primary_agent">ডেলিভারিম্যান প্রডাক্টটি প্রাইমারী এজেন্টের কাছ থেকে নিয়েছেন.</string>
+    <string name="primary_agent">প্রাইমারী এজেন্ট</string>
+    <string name="deliveryman">ডেলিভ্যারীম্যান</string>
+    <string name="final_agent">চূড়ান্ত এজেন্ট</string>
+    <string name="delivered">পাঠানো সম্পন্ন হয়েছে</string>
+    <string name="dismiss">বাতিল করুন</string>
+    <string name="the_final_agent_has_picked_nthis_product_from_deliveryman">চূড়ান্ট এজেন্ট প্রডাক্টটি ডেলিভারিম্যানের কাছ থেকে নিয়েছেন.</string>
+    <string name="this_product_has_been_successfully_ndelivered_to_the_receiver">প্রডাক্টটি প্রাপকের কাছে নিশ্চিতভাবে পাঠানো হয়েছে.</string>
+    <string name="_1">১</string>
+    <string name="dhaka_sylhet">ঢাকা - সিলেট</string>
+    <string name="status_n_a">স্টাটাস: N/A</string>
+    <string name="_2_weeks_ago">২ সপ্তাহ আগে...</string>
+    <string name="send_text">তথ্য পাঠান</string>
+    <string name="connected">ইন্টারনেটের সাথে যুক্ত হয়েছেন</string>
+    <string name="no_internet_connection">ইন্টারনেট সংযোগ নায়</string>
+    <string name="or">অথবা</string>
+    <string name="aboutKitBag">কিটব্যাগ একটি ডিজিটাল কুরিয়ার সার্ভিস প্ল্যাটফর্ম। আমাদের লক্ষ্য সর্বনিম্ন সময় এবং খরচ সহ সারা দেশে পণ্য সরবরাহ করা। এবং এখানে ডেলিভারিম্যান যেকোন ব্যক্তি হতে পারে যাতে মানুষ ডেলিভারি পণ্যের মাধ্যমে সহজেই অর্থ উপার্জন করতে পারে</string>
+    <string name="AgentContact">এজেন্টের নাম্বার</string>
+</resources>

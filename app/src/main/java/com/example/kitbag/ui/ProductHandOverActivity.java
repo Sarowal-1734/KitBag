@@ -1,9 +1,12 @@
 package com.example.kitbag.ui;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -53,6 +56,8 @@ import com.r0adkll.slidr.Slidr;
 import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
+import java.util.Locale;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProductHandOverActivity extends AppCompatActivity {
@@ -93,6 +98,8 @@ public class ProductHandOverActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         binding = ActivityProductHandOverBinding.inflate(getLayoutInflater());
+        //loading chosen language as system language
+        loadLocale();
         setContentView(binding.getRoot());
 
         // For Authentication
@@ -250,17 +257,17 @@ public class ProductHandOverActivity extends AppCompatActivity {
                         finish();
                         break;
                     case R.id.nav_language:
-                        Toast.makeText(ProductHandOverActivity.this, "Language", Toast.LENGTH_SHORT).show();
+                        showChangeLanguageDialog();
                         break;
                     case R.id.nav_deliveryman:
                         registerAsDeliveryman();
                         break;
                     case R.id.nav_discover_kitbag:
-                        intentFragment.putExtra("whatToDo","discoverKitBag");
+                        intentFragment.putExtra("whatToDo", "discoverKitBag");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_terms_conditions:
-                        intentFragment.putExtra("whatToDo","termsAndCondition");
+                        intentFragment.putExtra("whatToDo", "termsAndCondition");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_contact:
@@ -268,7 +275,7 @@ public class ProductHandOverActivity extends AppCompatActivity {
                         //Todo: Have to Create a Alert Dialog For Contact Us
                         break;
                     case R.id.nav_about:
-                        intentFragment.putExtra("whatToDo","aboutUs");
+                        intentFragment.putExtra("whatToDo", "aboutUs");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_chat:
@@ -298,6 +305,50 @@ public class ProductHandOverActivity extends AppCompatActivity {
         binding.cpp.registerCarrierNumberEditText(binding.EditTextContact);
 
     } // Ending onCreate
+
+    // showing language alert Dialog to pick one language
+    private void showChangeLanguageDialog() {
+        final String[] multiLanguage = {"বাংলা", "English"};
+        builder = new AlertDialog.Builder(this);
+        builder.setTitle("Choose a Language..");
+        builder.setSingleChoiceItems(multiLanguage, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (which == 0) {
+                    setLocale("bn");
+                    recreate();
+                } else {
+                    setLocale("en");
+                    recreate();
+                }
+                dialog.dismiss();
+            }
+        });
+        dialog = builder.create();
+        dialog.show();
+    }
+
+    // setting chosen language to system
+    private void setLocale(String lang) {
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Configuration configuration = new Configuration();
+        configuration.locale = locale;
+        getBaseContext().getResources().updateConfiguration(configuration, getBaseContext().getResources().getDisplayMetrics());
+
+        // save data to SharedPreference
+        SharedPreferences.Editor editor = getSharedPreferences("settings", MODE_PRIVATE).edit();
+        editor.putString("my_lang", lang);
+        editor.apply();
+    }
+
+    // get save value from sharedPreference and set It to as local language
+    public void loadLocale() {
+        SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
+        String lang = preferences.getString("my_lang", "bn");
+        setLocale(lang);
+    }
+
 
     private void registerAsDeliveryman() {
         // inflate custom layout
@@ -511,11 +562,26 @@ public class ProductHandOverActivity extends AppCompatActivity {
                             if (modelClassPost.getStatusCurrent().equals("N/A")) {
                                 binding.SenderToPrimary.setEnabled(true);
                                 binding.SenderToPrimary.setChecked(true);
-                                binding.EditTextContact.setHint("Agent's Contact");
+
+                                // setting hint in bangla or english
+                                SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
+                                String lang = preferences.getString("my_lang", "bn");
+                                if(lang.equals("en")){
+                                    binding.EditTextContact.setHint("Agent's Contact");
+                                }else {
+                                    binding.EditTextContact.setHint("এজেন্টের নাম্বার");
+                                }
                             } else if (modelClassPost.getStatusCurrent().equals("Primary_Agent")) {
                                 binding.PrimaryToDeliveryman.setEnabled(true);
                                 binding.PrimaryToDeliveryman.setChecked(true);
-                                binding.EditTextContact.setHint("Deliveryman's Contact");
+                                // setting hint in bangla or english
+                                SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
+                                String lang = preferences.getString("my_lang", "bn");
+                                if(lang.equals("en")){
+                                    binding.EditTextContact.setHint("Deliveryman's Contact");
+                                }else {
+                                    binding.EditTextContact.setHint("ডেলিভারিম্যানের নাম্বার");
+                                }
                                 preferredDeliverymanContact = modelClassPost.getPreferredDeliverymanContact();
                                 if (!TextUtils.isEmpty(preferredDeliverymanContact)) {
                                     String phone = preferredDeliverymanContact.substring(4, 14);
@@ -524,13 +590,27 @@ public class ProductHandOverActivity extends AppCompatActivity {
                             } else if (modelClassPost.getStatusCurrent().equals("Deliveryman")) {
                                 binding.DeliverymanToFinal.setEnabled(true);
                                 binding.DeliverymanToFinal.setChecked(true);
-                                binding.EditTextContact.setHint("Agent's Contact");
+                                // setting hint in bangla or english
+                                SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
+                                String lang = preferences.getString("my_lang", "bn");
+                                if(lang.equals("en")){
+                                    binding.EditTextContact.setHint("Agent's Contact");
+                                }else {
+                                    binding.EditTextContact.setHint("এজেন্টের নাম্বার");
+                                }
                             } else if (modelClassPost.getStatusCurrent().equals("Final_Agent")) {
                                 binding.FinalToReceiver.setEnabled(true);
                                 binding.FinalToReceiver.setChecked(true);
                                 String phone = receiverContact.substring(4, 14);
                                 binding.EditTextContact.setText(phone);
-                                binding.EditTextContact.setHint("Receiver Contact");
+                                // setting hint in bangla or english
+                                SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
+                                String lang = preferences.getString("my_lang", "bn");
+                                if(lang.equals("en")){
+                                    binding.EditTextContact.setHint("Receiver Contact");
+                                }else {
+                                    binding.EditTextContact.setHint("গ্রহিতার নাম্বার");
+                                }
                             }
                         }
                     }
