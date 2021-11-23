@@ -32,6 +32,7 @@ import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityFragmentContainerBinding;
 import com.example.kitbag.fragment.AboutUsFragment;
+import com.example.kitbag.fragment.ContactUsFragment;
 import com.example.kitbag.fragment.TermsAndConditionsFragment;
 import com.example.kitbag.fragment.discover_kitbag.DiscoverKitBagFragment;
 import com.example.kitbag.model.UserModel;
@@ -102,6 +103,9 @@ public class FragmentContainerActivity extends AppCompatActivity {
         } else if (whatToDo.equals("termsAndCondition")) {
             binding.customAppBar.appbarTitle.setText(R.string.terms_and_conditions);
             loadFragment(new TermsAndConditionsFragment());
+        } else if (whatToDo.equals("contactUs")) {
+            binding.customAppBar.appbarTitle.setText(R.string.nav_contact_us);
+            loadFragment(new ContactUsFragment());
         } else {
             binding.customAppBar.appbarTitle.setText(R.string.nav_about_us);
             loadFragment(new AboutUsFragment());
@@ -212,8 +216,9 @@ public class FragmentContainerActivity extends AppCompatActivity {
                         loadFragment(new TermsAndConditionsFragment());
                         break;
                     case R.id.nav_contact:
-                        Toast.makeText(FragmentContainerActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
-                        //Todo: Have to Create a Alert Dialog For Contact Us
+                        binding.customAppBar.appbarTitle.setText(R.string.nav_contact_us);
+                        binding.drawerLayout.closeDrawer(GravityCompat.END);
+                        loadFragment(new ContactUsFragment());
                         break;
                     case R.id.nav_about:
                         binding.customAppBar.appbarTitle.setText(R.string.nav_about_us);
@@ -275,17 +280,13 @@ public class FragmentContainerActivity extends AppCompatActivity {
         Configuration configuration = new Configuration();
         configuration.locale = locale;
         getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
-
-        // save data to SharedPreference
-        SharedPreferences.Editor editor = getSharedPreferences("settings",MODE_PRIVATE).edit();
-        editor.putString("my_lang",lang);
-        editor.apply();
+        // Save data to SharedPreference
+        SharedPreference.setLanguageValue(this, lang);
     }
+
     // get save value from sharedPreference and set It to as local language
     public void loadLocale(){
-        SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
-        String lang = preferences.getString("my_lang","bn");
-        setLocale(lang);
+        setLocale(SharedPreference.getLanguageValue(this));
     }
 
 
