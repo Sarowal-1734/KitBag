@@ -1,10 +1,7 @@
 package com.example.kitbag.fragment.container;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,7 +57,6 @@ public class FragmentContainerActivity extends AppCompatActivity {
 
     private ActivityFragmentContainerBinding binding;
     private String whatToDo;
-    private FragmentTransaction fragmentTransaction;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -92,8 +89,6 @@ public class FragmentContainerActivity extends AppCompatActivity {
         binding = ActivityFragmentContainerBinding.inflate(getLayoutInflater());
         loadLocale();
         setContentView(binding.getRoot());
-
-        fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
         //get whatToDo value send from activity
         whatToDo = getIntent().getStringExtra("whatToDo");
@@ -254,25 +249,37 @@ public class FragmentContainerActivity extends AppCompatActivity {
 
     // showing language alert Dialog to pick one language
     private void showChangeLanguageDialog() {
-        final String[] multiLanguage = {"বাংলা","English"};
+        // inflate custom layout
+        View view = LayoutInflater.from(FragmentContainerActivity.this).inflate(R.layout.dialog_select_language, null);
+        // Getting view form custom dialog layout
+        RadioButton radioButtonBangla = view.findViewById(R.id.rdLanguageBangla);
+        RadioButton radioButtonEnglish = view.findViewById(R.id.rdLanguageEnglish);
+        if (SharedPreference.getLanguageValue(this).equals("bn")) {
+            radioButtonBangla.setChecked(true);
+        } else {
+            radioButtonEnglish.setChecked(true);
+        }
+        Button buttonNext = view.findViewById(R.id.buttonNextLanguage);
         builder = new AlertDialog.Builder(this);
-        builder.setTitle("Choose a Language..");
-        builder.setSingleChoiceItems(multiLanguage, -1, new DialogInterface.OnClickListener() {
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+        buttonNext.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(which == 0){
+            public void onClick(View v) {
+                if (radioButtonBangla.isChecked()) {
+                    dialog.dismiss();
                     setLocale("bn");
                     recreate();
-                }else {
+                } else {
+                    dialog.dismiss();
                     setLocale("en");
                     recreate();
                 }
-                dialog.dismiss();
             }
         });
-        dialog = builder.create();
-        dialog.show();
     }
+
     // setting chosen language to system
     private void setLocale(String lang) {
         Locale locale = new Locale(lang);

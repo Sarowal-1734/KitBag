@@ -11,14 +11,13 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Activity animation. -->
-        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
         <!-- Customize your theme here. -->
         <item name="layoutBackground">@color/white</item>
         <item name="textColor">@color/black</item>
         <item name="buttonColor">@color/app_bar</item>
         <item name="dividerColor">@color/silver</item>
-        <!--        <item name="android:windowAnimationStyle">@style/ThemeChangeAnimation</item>-->
+        <!-- Activity Animation. -->
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>
 
     <!-- LightMode (Day) theme. -->
@@ -33,8 +32,6 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Activity animation. -->
-        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
         <!-- Customize your theme here. -->
         <item name="appBarColor">@color/app_bar</item>
         <item name="layoutBackground">@color/white</item>
@@ -44,7 +41,8 @@
         <item name="textColor">@color/black</item>
         <item name="buttonColor">@color/app_bar</item>
         <item name="dividerColor">@color/gray</item>
-        <!--        <item name="android:windowAnimationStyle">@style/ThemeChangeAnimation</item>-->
+        <!-- Activity Animation. -->
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>
 
     <!-- DarkMode (Night) theme. -->
@@ -59,8 +57,6 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Activity animation. -->
-        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
         <!-- Customize your theme here. -->
         <item name="appBarColor">@color/app_bar_night</item>
         <item name="layoutBackground">@color/black</item>
@@ -70,29 +66,22 @@
         <item name="textColor">@color/white</item>
         <item name="buttonColor">@color/app_bar</item>
         <item name="dividerColor">@color/silver</item>
-        <!--        <item name="android:windowAnimationStyle">@style/ThemeChangeAnimation</item>-->
+        <!-- Activity Animation. -->
+        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>
 
-    // Activity animation
+    <!-- Activity Animation. -->
+    <style name="ThemeChangeAnimation">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+    </style>
 
+    <!-- Activity Animation. -->
     <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
         <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>
         <item name="android:activityCloseEnterAnimation">@anim/slide_in_left</item>
         <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
     </style>
-
-    // Swipe to back
-
-    <style name="Theme.KitBag.SlidrActivityTheme">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-    </style>
-
-
-    <!--    <style name="ThemeChangeAnimation">-->
-    <!--        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>-->
-    <!--        <item name="android:windowExitAnimation">@android:anim/fade_out</item>-->
-    <!--    </style>-->
 
 </resources>

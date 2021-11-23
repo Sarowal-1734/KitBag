@@ -1,11 +1,9 @@
 package com.example.kitbag.authentication;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -20,14 +18,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
 import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityResetPasswordBinding;
 import com.example.kitbag.fragment.container.FragmentContainerActivity;
 import com.example.kitbag.ui.MainActivity;
-import com.example.kitbag.ui.PostActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -39,17 +35,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.FirebaseDatabase;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 
 import java.util.Locale;
 
 public class ResetPasswordActivity extends AppCompatActivity {
 
     private ActivityResetPasswordBinding binding;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // for alert dialog
     private AlertDialog.Builder builder;
@@ -78,9 +69,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
         // Initialize FirebaseAuth
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
@@ -113,30 +101,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 binding.drawerLayout.openDrawer(GravityCompat.END);
-            }
-        });
-
-        // Active Inactive Slider to back based on drawer
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                if (getCurrentFocus() != null) {
-                    getCurrentFocus().clearFocus();
-                }
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
             }
         });
 

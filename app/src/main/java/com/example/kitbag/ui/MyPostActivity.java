@@ -3,11 +3,9 @@ package com.example.kitbag.ui;
 import static com.example.kitbag.ui.MainActivity.fromMyPostActivity;
 import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -31,7 +29,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -60,8 +57,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -73,9 +68,6 @@ public class MyPostActivity extends AppCompatActivity {
 
     private ActivityMyPostBinding binding;
     private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // Show progress dialog
     private ProgressDialog progressDialog;
@@ -121,9 +113,6 @@ public class MyPostActivity extends AppCompatActivity {
 
         // Change appBar title
         binding.customAppBar.appbarTitle.setText("My Posts");
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         // Adding back arrow in the appBar
         binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
@@ -374,27 +363,6 @@ public class MyPostActivity extends AppCompatActivity {
                 ab.setCancelable(false);
                 ab.setView(dialogView);
                 ab.show();
-            }
-        });
-
-        // Active Inactive Slider to back based on drawer
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
             }
         });
 

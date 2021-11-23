@@ -1,7 +1,6 @@
 package com.example.kitbag.ui;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -17,6 +16,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -151,7 +151,10 @@ public class MainActivity extends AppCompatActivity {
                     binding.swipeRefreshLayout.setRefreshing(false);
                 } else {
                     binding.swipeRefreshLayout.setRefreshing(true);
-                    recreate();
+                    finish();
+                    overridePendingTransition(0, 0);
+                    startActivity(getIntent());
+                    overridePendingTransition(0, 0);
                     binding.swipeRefreshLayout.setRefreshing(false);
                 }
             }
@@ -217,10 +220,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (switchDarkMode.isChecked()) {
                     SharedPreference.setDarkModeEnableValue(MainActivity.this, true);
-                    recreate();
+                    finish();
+                    overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+                    startActivity(getIntent());
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 } else {
                     SharedPreference.setDarkModeEnableValue(MainActivity.this, false);
-                    recreate();
+                    finish();
+                    overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+                    startActivity(getIntent());
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 }
             }
         });
@@ -404,9 +413,9 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
                         // smoothly reload activity
                         finish();
-                        overridePendingTransition(0,0);
+                        overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
                         startActivity(getIntent());
-                        overridePendingTransition(0,0);
+                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                         break;
                 }
                 return false;
@@ -496,25 +505,43 @@ public class MainActivity extends AppCompatActivity {
 
     // showing language alert Dialog to pick one language
     private void showChangeLanguageDialog() {
-        final String[] multiLanguage = {"বাংলা","English"};
+        // inflate custom layout
+        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_select_language, null);
+        // Getting view form custom dialog layout
+        RadioButton radioButtonBangla = view.findViewById(R.id.rdLanguageBangla);
+        RadioButton radioButtonEnglish = view.findViewById(R.id.rdLanguageEnglish);
+        if (SharedPreference.getLanguageValue(this).equals("bn")) {
+            radioButtonBangla.setChecked(true);
+        } else {
+            radioButtonEnglish.setChecked(true);
+        }
+        Button buttonNext = view.findViewById(R.id.buttonNextLanguage);
         builder = new AlertDialog.Builder(this);
-        builder.setTitle("Choose a Language..");
-        builder.setSingleChoiceItems(multiLanguage, -1, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(which == 0){
-                    setLocale("bn");
-                    recreate();
-                }else {
-                    setLocale("en");
-                    recreate();
-                }
-                dialog.dismiss();
-            }
-        });
+        builder.setView(view);
         dialog = builder.create();
         dialog.show();
+        buttonNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (radioButtonBangla.isChecked()) {
+                    dialog.dismiss();
+                    setLocale("bn");
+                    finish();
+                    overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+                    startActivity(getIntent());
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                } else {
+                    dialog.dismiss();
+                    setLocale("en");
+                    finish();
+                    overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+                    startActivity(getIntent());
+                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                }
+            }
+        });
     }
+
     // setting chosen language to system
     private void setLocale(String lang) {
         Locale locale = new Locale(lang);

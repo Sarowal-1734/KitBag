@@ -1,11 +1,9 @@
 package com.example.kitbag.authentication;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -20,7 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
 import com.example.kitbag.data.SharedPreference;
@@ -35,17 +32,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 
 import java.util.Locale;
 
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // for alert dialog
     private AlertDialog.Builder builder;
@@ -74,9 +66,6 @@ public class LoginActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         // Hide DarkMode button in drawer in MainActivity
         binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
@@ -180,29 +169,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        // Active Inactive Slider to back based on drawer
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                if (getCurrentFocus() != null) {
-                    getCurrentFocus().clearFocus();
-                }
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
     } // Ending onCreate
 
     // showing language alert Dialog to pick one language

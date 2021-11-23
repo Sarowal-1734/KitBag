@@ -39,8 +39,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.io.BufferedReader;
@@ -61,10 +59,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
 
     // Set timer to resend otp button
     private CountDownTimer countDownTimer;
-    private long timeLeftInMilliSeconds = 120000; //2 minutes
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
+    private long timeLeftInMilliSeconds = 60000;    // 1 minutes = 60,000 ms
 
     // Show progressBar
     private ProgressDialog progressDialog;
@@ -88,9 +83,6 @@ public class OtpVerificationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityOtpVerificationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         // Picking value which send from signUp activity
         whatToDo = getIntent().getStringExtra("whatToDo");

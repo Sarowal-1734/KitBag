@@ -2,12 +2,10 @@ package com.example.kitbag.ui;
 
 import static android.Manifest.permission.CALL_PHONE;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -37,7 +35,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
@@ -61,8 +58,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
@@ -72,9 +67,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class EditProfileActivity extends AppCompatActivity {
 
     private ActivityEditProfileBinding binding;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // Show progressBar
     private ProgressDialog progressDialog;
@@ -117,9 +109,6 @@ public class EditProfileActivity extends AppCompatActivity {
         binding = ActivityEditProfileBinding.inflate(getLayoutInflater());
         loadLocale();
         setContentView(binding.getRoot());
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         //setAdapter on District and Upazila
         setDistrictUpazilaOnEditText();
@@ -225,27 +214,6 @@ public class EditProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
-            }
-        });
-
-        // Active Inactive Slider to back based on drawer
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
             }
         });
 

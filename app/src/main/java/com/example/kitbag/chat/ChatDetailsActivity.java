@@ -33,8 +33,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -51,9 +49,6 @@ public class ChatDetailsActivity extends AppCompatActivity {
 
     //firebase database For storing message
     DatabaseReference databaseReference;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // For message
     private String message;
@@ -80,9 +75,6 @@ public class ChatDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityChatDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         // Get post reference from intent
         postReference = getIntent().getStringExtra("postReference");

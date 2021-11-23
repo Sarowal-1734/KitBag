@@ -1,10 +1,8 @@
 package com.example.kitbag.ui;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -22,7 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
@@ -42,8 +39,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
@@ -53,9 +48,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class NotificationsActivity extends AppCompatActivity {
 
     private ActivityNotificationsBinding binding;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // Show Progress Dialog
     private ProgressDialog progressDialog;
@@ -92,9 +84,6 @@ public class NotificationsActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -157,27 +146,6 @@ public class NotificationsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 binding.drawerLayout.openDrawer(GravityCompat.END);
-            }
-        });
-
-        // Active Inactive Slider to back based on drawer
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
             }
         });
 
