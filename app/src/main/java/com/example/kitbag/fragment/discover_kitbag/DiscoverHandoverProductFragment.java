@@ -1,13 +1,14 @@
 package com.example.kitbag.fragment.discover_kitbag;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.kitbag.R;
 import com.example.kitbag.databinding.FragmentDiscoverHandoverProductBinding;
@@ -28,8 +29,45 @@ public class DiscoverHandoverProductFragment extends Fragment {
 
         // Change AppBar Title
         TextView t = getActivity().findViewById(R.id.custom_app_bar).findViewById(R.id.appbar_title);
-        t.setText(R.string.nav_discover_kitbag);
+        t.setText(R.string.product_handover_process);
+
+        binding.SenderToPrimary.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openNestedFragment(new DiscoverSenderToPrimaryFragment());
+            }
+        });
+
+        binding.PrimaryToDeliveryman.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openNestedFragment(new DiscoverPrimaryToDeliverymanFragment());
+            }
+        });
+
+        binding.DeliverymanToFinal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openNestedFragment(new DiscoverDeliverymanToFinalFragment());
+            }
+        });
+
+        binding.FinalToReceiver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openNestedFragment(new DiscoverFinalToReceiverFragment());
+            }
+        });
 
         return binding.getRoot();
     }
+
+    private void openNestedFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+        transaction.addToBackStack(null);
+        transaction.replace(R.id.fragmentContainer, fragment).commit();
+    }
+
 }

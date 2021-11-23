@@ -397,8 +397,8 @@ public class MessageActivity extends AppCompatActivity {
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_contact:
-                        Toast.makeText(MessageActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
-                        //Todo: Have to Create a Alert Dialog For Contact Us
+                        intentFragment.putExtra("whatToDo","contactUs");
+                        startActivity(intentFragment);
                         break;
                     case R.id.nav_about:
                         intentFragment.putExtra("whatToDo","aboutUs");
@@ -460,17 +460,13 @@ public class MessageActivity extends AppCompatActivity {
         Configuration configuration = new Configuration();
         configuration.locale = locale;
         getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
-
-        // save data to SharedPreference
-        SharedPreferences.Editor editor = getSharedPreferences("settings",MODE_PRIVATE).edit();
-        editor.putString("my_lang",lang);
-        editor.apply();
+        // Save data to SharedPreference
+        SharedPreference.setLanguageValue(this, lang);
     }
+
     // get save value from sharedPreference and set It to as local language
     public void loadLocale(){
-        SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
-        String lang = preferences.getString("my_lang","bn");
-        setLocale(lang);
+        setLocale(SharedPreference.getLanguageValue(this));
     }
 
 

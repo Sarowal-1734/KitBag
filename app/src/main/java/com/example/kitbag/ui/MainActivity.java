@@ -1,10 +1,8 @@
 package com.example.kitbag.ui;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -140,10 +138,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showProgressDialog();
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(getIntent());
-                overridePendingTransition(0, 0);
+                recreate();
                 progressDialog.dismiss();
             }
         });
@@ -156,10 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     binding.swipeRefreshLayout.setRefreshing(false);
                 } else {
                     binding.swipeRefreshLayout.setRefreshing(true);
-                    finish();
-                    overridePendingTransition(0, 0);
-                    startActivity(getIntent());
-                    overridePendingTransition(0, 0);
+                    recreate();
                     binding.swipeRefreshLayout.setRefreshing(false);
                 }
             }
@@ -225,18 +217,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (switchDarkMode.isChecked()) {
                     SharedPreference.setDarkModeEnableValue(MainActivity.this, true);
-                    Toast.makeText(MainActivity.this, "Dark Mode Enabled!", Toast.LENGTH_SHORT).show();
-                    finish();
-                    overridePendingTransition(0, 0);
-                    startActivity(getIntent());
-                    overridePendingTransition(0, 0);
+                    recreate();
                 } else {
                     SharedPreference.setDarkModeEnableValue(MainActivity.this, false);
-                    Toast.makeText(MainActivity.this, "Dark Mode Disabled!", Toast.LENGTH_SHORT).show();
-                    finish();
-                    overridePendingTransition(0, 0);
-                    startActivity(getIntent());
-                    overridePendingTransition(0, 0);
+                    recreate();
                 }
             }
         });
@@ -388,19 +372,19 @@ public class MainActivity extends AppCompatActivity {
                         showChangeLanguageDialog();
                         break;
                     case R.id.nav_discover_kitbag:
-                        intentFragment.putExtra("whatToDo","discoverKitBag");
+                        intentFragment.putExtra("whatToDo", "discoverKitBag");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_terms_conditions:
-                        intentFragment.putExtra("whatToDo","termsAndCondition");
+                        intentFragment.putExtra("whatToDo", "termsAndCondition");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_contact:
-                        Toast.makeText(MainActivity.this, "Contact Us", Toast.LENGTH_SHORT).show();
-                        //Todo: Have to Create a Alert Dialog For Contact Us
+                        intentFragment.putExtra("whatToDo", "contactUs");
+                        startActivity(intentFragment);
                         break;
                     case R.id.nav_about:
-                        intentFragment.putExtra("whatToDo","aboutUs");
+                        intentFragment.putExtra("whatToDo", "aboutUs");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_chat:
@@ -537,21 +521,15 @@ public class MainActivity extends AppCompatActivity {
         Locale.setDefault(locale);
         Configuration configuration = new Configuration();
         configuration.locale = locale;
-        getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
-
-        // save data to SharedPreference
-        SharedPreferences.Editor editor = getSharedPreferences("settings",MODE_PRIVATE).edit();
-        editor.putString("my_lang",lang);
-        editor.apply();
+        getBaseContext().getResources().updateConfiguration(configuration, getBaseContext().getResources().getDisplayMetrics());
+        // Save data to SharedPreference
+        SharedPreference.setLanguageValue(this, lang);
     }
+
     // get save value from sharedPreference and set It to as local language
     public void loadLocale(){
-        SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
-        String lang = preferences.getString("my_lang","bn");
-        setLocale(lang);
+        setLocale(SharedPreference.getLanguageValue(this));
     }
-
-
 
     // Registration as deliveryman
     private void registerAsDeliveryman() {
