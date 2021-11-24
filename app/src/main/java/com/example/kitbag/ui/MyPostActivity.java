@@ -104,7 +104,6 @@ public class MyPostActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         binding = ActivityMyPostBinding.inflate(getLayoutInflater());
-        loadLocale();
         setContentView(binding.getRoot());
 
         // For Authentication
@@ -132,6 +131,8 @@ public class MyPostActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
             // Hide DarkMode button in drawer in MainActivity
             binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
+            //hiding language option from drawer
+            binding.navigationView.getMenu().findItem(R.id.nav_language).setVisible(false);
             // Get userName and image from database and set to the drawer
             collectionReference.document(currentUser.getUid()).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -161,6 +162,8 @@ public class MyPostActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
             // Hide DarkMode button in drawer in MainActivity
             binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
+            //hiding language option from drawer
+            binding.navigationView.getMenu().findItem(R.id.nav_language).setVisible(false);
         }
 
         // Initial view of dark mode button in drawer menu
@@ -375,9 +378,6 @@ public class MyPostActivity extends AppCompatActivity {
                     case R.id.nav_home:
                         finish();
                         break;
-                    case R.id.nav_language:
-                        showChangeLanguageDialog();
-                        break;
                     case R.id.nav_deliveryman:
                         registerAsDeliveryman();
                         break;
@@ -421,44 +421,6 @@ public class MyPostActivity extends AppCompatActivity {
         });
 
     }//ending on create
-    // showing language alert Dialog to pick one language
-    private void showChangeLanguageDialog() {
-        final String[] multiLanguage = {"বাংলা","English"};
-        builder = new AlertDialog.Builder(this);
-        builder.setTitle("Choose a Language..");
-        builder.setSingleChoiceItems(multiLanguage, -1, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(which == 0){
-                    setLocale("bn");
-                    recreate();
-                }else {
-                    setLocale("en");
-                    recreate();
-                }
-                dialog.dismiss();
-            }
-        });
-        dialog = builder.create();
-        dialog.show();
-    }
-    // setting chosen language to system
-    private void setLocale(String lang) {
-        Locale locale = new Locale(lang);
-        Locale.setDefault(locale);
-        Configuration configuration = new Configuration();
-        configuration.locale = locale;
-        getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
-        // Save data to SharedPreference
-        SharedPreference.setLanguageValue(this, lang);
-    }
-
-    // get save value from sharedPreference and set It to as local language
-    public void loadLocale(){
-        setLocale(SharedPreference.getLanguageValue(this));
-    }
-
-
     private void registerAsDeliveryman() {
         // inflate custom layout
         View view = LayoutInflater.from(MyPostActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);

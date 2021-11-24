@@ -63,7 +63,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         binding = ActivityResetPasswordBinding.inflate(getLayoutInflater());
-        loadLocale();
         setContentView(binding.getRoot());
 
         // Initialize FirebaseAuth
@@ -83,6 +82,8 @@ public class ResetPasswordActivity extends AppCompatActivity {
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
         // Hide DarkMode button in drawer in MainActivity
         binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
+        //hiding language option from drawer
+        binding.navigationView.getMenu().findItem(R.id.nav_language).setVisible(false);
 
         // Adding back arrow in the appBar
         binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
@@ -118,9 +119,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
                         startActivity(new Intent(ResetPasswordActivity.this, LoginActivity.class));
                         finish();
                         break;
-                    case R.id.nav_language:
-                        showChangeLanguageDialog();
-                        break;
                     case R.id.nav_discover_kitbag:
                         intentFragment.putExtra("whatToDo","discoverKitBag");
                         startActivity(intentFragment);
@@ -143,43 +141,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
         });
 
     }//ending OnCreate
-
-    // showing language alert Dialog to pick one language
-    private void showChangeLanguageDialog() {
-        final String[] multiLanguage = {"বাংলা","English"};
-        builder = new AlertDialog.Builder(this);
-        builder.setTitle("Choose a Language..");
-        builder.setSingleChoiceItems(multiLanguage, -1, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if(which == 0){
-                    setLocale("bn");
-                    recreate();
-                }else {
-                    setLocale("en");
-                    recreate();
-                }
-                dialog.dismiss();
-            }
-        });
-        dialog = builder.create();
-        dialog.show();
-    }
-    // setting chosen language to system
-    private void setLocale(String lang) {
-        Locale locale = new Locale(lang);
-        Locale.setDefault(locale);
-        Configuration configuration = new Configuration();
-        configuration.locale = locale;
-        getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
-        // Save data to SharedPreference
-        SharedPreference.setLanguageValue(this, lang);
-    }
-
-    // get save value from sharedPreference and set It to as local language
-    public void loadLocale(){
-        setLocale(SharedPreference.getLanguageValue(this));
-    }
 
     public void onResetPasswordButtonClicked(View view) {
         if (isConnected()) {
