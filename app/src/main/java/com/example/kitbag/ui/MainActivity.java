@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
     // Show progressBar
     private ProgressDialog progressDialog;
 
+    // DarkMode Button
     private SwitchCompat switchDarkMode;
 
     // For Changing Password
@@ -222,17 +223,9 @@ public class MainActivity extends AppCompatActivity {
                 if (switchDarkMode.isChecked()) {
                     SharedPreference.setDarkModeEnableValue(MainActivity.this, true);
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-//                    finish();
-//                    overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
-//                    startActivity(getIntent());
-//                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 } else {
                     SharedPreference.setDarkModeEnableValue(MainActivity.this, false);
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//                    finish();
-//                    overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
-//                    startActivity(getIntent());
-//                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 }
             }
         });

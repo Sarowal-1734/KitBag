@@ -6,6 +6,7 @@ import android.os.Handler;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.content.ContextCompat;
 
 import com.example.kitbag.R;
 import com.example.kitbag.data.SharedPreference;
@@ -18,6 +19,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
+        getWindow().setStatusBarColor(ContextCompat.getColor(this, R.color.app_bar_night_deep));
+
         if (SharedPreference.getDarkModeEnableValue(this)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         } else {
@@ -28,10 +31,12 @@ public class SplashScreenActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 startActivity(new Intent(SplashScreenActivity.this, MainActivity.class));
                 finish();
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             }
-        }, 200);
+        }, 400);
 
     }
 }
