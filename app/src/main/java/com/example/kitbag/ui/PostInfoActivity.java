@@ -36,6 +36,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 
@@ -117,10 +118,10 @@ public class PostInfoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // DarkMode Enable or Disable
-        if (SharedPreference.getDarkModeEnableValue(this)) {
-            setTheme(R.style.DarkMode);
+        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            setTheme(R.style.Theme_Night);
         } else {
-            setTheme(R.style.LightMode);
+            setTheme(R.style.Theme_Day);
         }
         super.onCreate(savedInstanceState);
         binding = ActivityPostInfoBinding.inflate(getLayoutInflater());
