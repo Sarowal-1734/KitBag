@@ -1,27 +1,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.KitBag" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/title_bar</item>
-        <item name="colorPrimaryVariant">@color/app_bar</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/app_bar</item>
-        <item name="colorSecondaryVariant">@color/app_bar</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-        <item name="layoutBackground">@color/white</item>
-        <item name="textColor">@color/black</item>
-        <item name="buttonColor">@color/app_bar</item>
-        <item name="dividerColor">@color/silver</item>
-        <!-- Activity Animation. -->
-        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
-    </style>
+<!--    <style name="Theme.KitBag" parent="Theme.MaterialComponents.DayNight.NoActionBar">-->
+<!--        &lt;!&ndash; Primary brand color. &ndash;&gt;-->
+<!--        <item name="colorPrimary">@color/title_bar</item>-->
+<!--        <item name="colorPrimaryVariant">@color/app_bar</item>-->
+<!--        <item name="colorOnPrimary">@color/white</item>-->
+<!--        &lt;!&ndash; Secondary brand color. &ndash;&gt;-->
+<!--        <item name="colorSecondary">@color/app_bar</item>-->
+<!--        <item name="colorSecondaryVariant">@color/app_bar</item>-->
+<!--        <item name="colorOnSecondary">@color/black</item>-->
+<!--        &lt;!&ndash; Status bar color. &ndash;&gt;-->
+<!--        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>-->
+<!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+<!--        <item name="layoutBackground">@color/white</item>-->
+<!--        <item name="textColor">@color/black</item>-->
+<!--        <item name="buttonColor">@color/app_bar</item>-->
+<!--        <item name="dividerColor">@color/silver</item>-->
+<!--        &lt;!&ndash; Activity Animation. &ndash;&gt;-->
+<!--        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>-->
+<!--    </style>-->
 
     <!-- LightMode (Day) theme. -->
-    <style name="LightMode" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.Day" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/title_bar</item>
         <item name="colorPrimaryVariant">@color/app_bar</item>
@@ -46,29 +46,29 @@
     </style>
 
     <!-- DarkMode (Night) theme. -->
-    <style name="DarkMode" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/title_bar_night</item>
-        <item name="colorPrimaryVariant">@color/app_bar_night</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/app_bar</item>
-        <item name="colorSecondaryVariant">@color/app_bar</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-        <!-- Customize your theme here. -->
-        <item name="appBarColor">@color/app_bar_night</item>
-        <item name="layoutBackground">@color/black</item>
-        <item name="navigationHeaderColor">@color/app_bar_night_deep</item>
-        <item name="navigationDrawerBackground">@color/darker_gray</item>
-        <item name="cardViewPostBackground">@color/darker_gray</item>
-        <item name="textColor">@color/white</item>
-        <item name="buttonColor">@color/app_bar</item>
-        <item name="dividerColor">@color/silver</item>
-        <!-- Activity Animation. -->
-        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
-    </style>
+<!--    <style name="DarkMode" parent="Theme.MaterialComponents.DayNight.NoActionBar">-->
+<!--        &lt;!&ndash; Primary brand color. &ndash;&gt;-->
+<!--        <item name="colorPrimary">@color/title_bar_night</item>-->
+<!--        <item name="colorPrimaryVariant">@color/app_bar_night</item>-->
+<!--        <item name="colorOnPrimary">@color/white</item>-->
+<!--        &lt;!&ndash; Secondary brand color. &ndash;&gt;-->
+<!--        <item name="colorSecondary">@color/app_bar</item>-->
+<!--        <item name="colorSecondaryVariant">@color/app_bar</item>-->
+<!--        <item name="colorOnSecondary">@color/black</item>-->
+<!--        &lt;!&ndash; Status bar color. &ndash;&gt;-->
+<!--        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>-->
+<!--        &lt;!&ndash; Customize your theme here. &ndash;&gt;-->
+<!--        <item name="appBarColor">@color/app_bar_night</item>-->
+<!--        <item name="layoutBackground">@color/black</item>-->
+<!--        <item name="navigationHeaderColor">@color/app_bar_night_deep</item>-->
+<!--        <item name="navigationDrawerBackground">@color/darker_gray</item>-->
+<!--        <item name="cardViewPostBackground">@color/darker_gray</item>-->
+<!--        <item name="textColor">@color/white</item>-->
+<!--        <item name="buttonColor">@color/app_bar</item>-->
+<!--        <item name="dividerColor">@color/silver</item>-->
+<!--        &lt;!&ndash; Activity Animation. &ndash;&gt;-->
+<!--        <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>-->
+<!--    </style>-->
 
     <!-- Activity Animation. -->
     <style name="ThemeChangeAnimation">

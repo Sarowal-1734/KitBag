@@ -23,6 +23,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
@@ -118,10 +119,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // DarkMode Enable or Disable
-        if (SharedPreference.getDarkModeEnableValue(this)) {
-            setTheme(R.style.DarkMode);
+        if (SharedPreference.getDarkModeEnableValue(this) || AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            setTheme(R.style.Theme_Night);
         } else {
-            setTheme(R.style.LightMode);
+            setTheme(R.style.Theme_Day);
         }
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -220,16 +221,18 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (switchDarkMode.isChecked()) {
                     SharedPreference.setDarkModeEnableValue(MainActivity.this, true);
-                    finish();
-                    overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
-                    startActivity(getIntent());
-                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//                    finish();
+//                    overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+//                    startActivity(getIntent());
+//                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 } else {
                     SharedPreference.setDarkModeEnableValue(MainActivity.this, false);
-                    finish();
-                    overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
-                    startActivity(getIntent());
-                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+//                    finish();
+//                    overridePendingTransition(R.anim.fade_out, R.anim.fade_in);
+//                    startActivity(getIntent());
+//                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 }
             }
         });

@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
@@ -51,10 +52,10 @@ public class TakeFacePhotoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // DarkMode Enable or Disable
-        if (SharedPreference.getDarkModeEnableValue(this)) {
-            setTheme(R.style.DarkMode);
+        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+            setTheme(R.style.Theme_Night);
         } else {
-            setTheme(R.style.LightMode);
+            setTheme(R.style.Theme_Day);
         }
         super.onCreate(savedInstanceState);
         binding = ActivityTakeFacePhotoBinding.inflate(getLayoutInflater());
