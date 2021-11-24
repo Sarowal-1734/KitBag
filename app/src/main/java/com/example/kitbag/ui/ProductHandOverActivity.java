@@ -99,7 +99,6 @@ public class ProductHandOverActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityProductHandOverBinding.inflate(getLayoutInflater());
         //loading chosen language as system language
-        loadLocale();
         setContentView(binding.getRoot());
 
         // For Authentication
@@ -133,6 +132,8 @@ public class ProductHandOverActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
             // Hide DarkMode button in drawer in MainActivity
             binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
+            //hiding language option from drawer
+            binding.navigationView.getMenu().findItem(R.id.nav_language).setVisible(false);
             // Get userName and image from database and set to the drawer
             db.collection("Users").document(currentUser.getUid()).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -162,6 +163,8 @@ public class ProductHandOverActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
             // Hide DarkMode button in drawer in MainActivity
             binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
+            //hiding language option from drawer
+            binding.navigationView.getMenu().findItem(R.id.nav_language).setVisible(false);
         }
 
         // Get postStatus info from database and Set Hint On EditText
@@ -256,9 +259,6 @@ public class ProductHandOverActivity extends AppCompatActivity {
                         startActivity(new Intent(ProductHandOverActivity.this, MainActivity.class));
                         finish();
                         break;
-                    case R.id.nav_language:
-                        showChangeLanguageDialog();
-                        break;
                     case R.id.nav_deliveryman:
                         registerAsDeliveryman();
                         break;
@@ -305,44 +305,6 @@ public class ProductHandOverActivity extends AppCompatActivity {
         binding.cpp.registerCarrierNumberEditText(binding.EditTextContact);
 
     } // Ending onCreate
-
-    // showing language alert Dialog to pick one language
-    private void showChangeLanguageDialog() {
-        final String[] multiLanguage = {"বাংলা", "English"};
-        builder = new AlertDialog.Builder(this);
-        builder.setTitle("Choose a Language..");
-        builder.setSingleChoiceItems(multiLanguage, -1, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (which == 0) {
-                    setLocale("bn");
-                    recreate();
-                } else {
-                    setLocale("en");
-                    recreate();
-                }
-                dialog.dismiss();
-            }
-        });
-        dialog = builder.create();
-        dialog.show();
-    }
-
-    // setting chosen language to system
-    private void setLocale(String lang) {
-        Locale locale = new Locale(lang);
-        Locale.setDefault(locale);
-        Configuration configuration = new Configuration();
-        configuration.locale = locale;
-        getBaseContext().getResources().updateConfiguration(configuration, getBaseContext().getResources().getDisplayMetrics());
-        // Save data to SharedPreference
-        SharedPreference.setLanguageValue(this, lang);
-    }
-
-    // get save value from sharedPreference and set It to as local language
-    public void loadLocale(){
-        setLocale(SharedPreference.getLanguageValue(this));
-    }
 
     private void registerAsDeliveryman() {
         // inflate custom layout
