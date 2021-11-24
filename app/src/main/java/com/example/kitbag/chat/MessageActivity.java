@@ -1,10 +1,8 @@
 package com.example.kitbag.chat;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -23,7 +21,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,7 +42,6 @@ import com.example.kitbag.ui.MainActivity;
 import com.example.kitbag.ui.MyCartActivity;
 import com.example.kitbag.ui.MyPostActivity;
 import com.example.kitbag.ui.NotificationsActivity;
-import com.example.kitbag.ui.PostActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -64,8 +60,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -85,9 +79,6 @@ public class MessageActivity extends AppCompatActivity {
     private UserModel userModel;
 
     private String postReference;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // Dialog Declaration
     private AlertDialog.Builder builder;
@@ -127,9 +118,6 @@ public class MessageActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
-
         // Customize Toolbar Dynamically
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
         // Adding back arrow in the appBar
@@ -149,27 +137,6 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 binding.drawerLayout.openDrawer(GravityCompat.END);
-            }
-        });
-
-        // Active Inactive Slider to back based on drawer
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
             }
         });
 

@@ -66,8 +66,6 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     // pinView library dependency
     implementation 'com.github.GoodieBag:Pinview:v1.4'
-    // Swipe to back
-    implementation 'com.r0adkll:slidableactivity:2.0.6'
     // ProgressBar
     implementation 'com.github.ybq:Android-SpinKit:1.4.0'
     // Download image from firebase

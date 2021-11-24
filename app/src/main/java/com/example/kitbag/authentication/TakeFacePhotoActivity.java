@@ -28,8 +28,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -38,10 +36,6 @@ import java.util.concurrent.ExecutionException;
 public class TakeFacePhotoActivity extends AppCompatActivity {
 
     private ActivityTakeFacePhotoBinding binding;
-
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -76,9 +70,6 @@ public class TakeFacePhotoActivity extends AppCompatActivity {
 
         // Change appBar title
         binding.customAppBar.appbarTitle.setText("Take Face Photo");
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         // Adding back arrow in the appBar
         binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));

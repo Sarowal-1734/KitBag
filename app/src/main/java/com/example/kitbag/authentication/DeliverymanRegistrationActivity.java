@@ -33,8 +33,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -44,9 +42,6 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
 
     // Binding our activity
     private ActivityDeliverymanRegistrationBinding binding;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // For Authentication
     private FirebaseAuth mAuth;
@@ -85,9 +80,6 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
 
         // Change appBar title
         binding.customAppBar.appbarTitle.setText("Take NID Photo");
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         // Adding back arrow in the appBar
         binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));

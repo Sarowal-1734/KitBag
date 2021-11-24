@@ -27,7 +27,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
@@ -52,8 +51,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.util.Locale;
@@ -63,9 +60,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ProductHandOverActivity extends AppCompatActivity {
 
     private ActivityProductHandOverBinding binding;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // Show Progress Dialog
     private ProgressDialog progressDialog;
@@ -107,9 +101,6 @@ public class ProductHandOverActivity extends AppCompatActivity {
 
         // Change appBar title
         binding.customAppBar.appbarTitle.setText("Handover Product");
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         // Adding back arrow in the appBar
         binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
@@ -169,27 +160,6 @@ public class ProductHandOverActivity extends AppCompatActivity {
 
         // Get postStatus info from database and Set Hint On EditText
         init();
-
-        // Active Inactive Slider to back based on drawer
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
 
         // Initial view of dark mode button in drawer menu
         SwitchCompat switchDarkMode = MenuItemCompat.getActionView(binding.navigationView.getMenu().findItem(R.id.nav_dark_mode)).findViewById(R.id.switch_dark_mode);

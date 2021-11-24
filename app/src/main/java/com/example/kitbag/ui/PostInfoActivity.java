@@ -8,13 +8,11 @@ import static com.example.kitbag.ui.MainActivity.fromMyPostActivity;
 import static com.example.kitbag.ui.MainActivity.fromOtpVerificationActivity;
 import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -40,7 +38,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.kitbag.R;
@@ -72,8 +69,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
@@ -87,9 +82,6 @@ public class PostInfoActivity extends AppCompatActivity {
 
     private ModelClassPost modelClassPost;
     private UserModel userModel;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // Show progressBar
     private ProgressDialog progressDialog;
@@ -141,9 +133,6 @@ public class PostInfoActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         viewStatusDetails = LayoutInflater.from(PostInfoActivity.this).inflate(R.layout.dialog_product_status_track, null);
         builder = new AlertDialog.Builder(PostInfoActivity.this);
@@ -260,36 +249,12 @@ public class PostInfoActivity extends AppCompatActivity {
             }
         });
 
-        // Reason: otherwise back to the same postInfo activity
-        if (getIntent().getStringExtra(getOpenFromActivity).equals(fromOtpVerificationActivity)) {
-            slidrInterface.lock();
-        }
+        // Dynamically visible request deliver button
         if (getIntent().getStringExtra("statusCurrent").equals("Deliveryman")
                 || getIntent().getStringExtra("statusCurrent").equals("Final_Agent")
                 || getIntent().getStringExtra("statusCurrent").equals("Delivered")) {
             binding.buttonRequestDelivery.setVisibility(View.GONE);
         }
-
-        // Active Inactive Slider to back based on drawer
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
 
         // On Edit profile icon clicked
         View view = binding.navigationView.getHeaderView(0);

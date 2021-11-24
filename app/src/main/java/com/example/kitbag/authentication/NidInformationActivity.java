@@ -36,8 +36,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.io.BufferedReader;
@@ -52,9 +50,6 @@ import java.util.Date;
 public class NidInformationActivity extends AppCompatActivity {
 
     private ActivityNidInformationBinding binding;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // Show progressBar
     private ProgressDialog progressDialog;
@@ -95,9 +90,6 @@ public class NidInformationActivity extends AppCompatActivity {
 
         // Change appBar title
         binding.customAppBar.appbarTitle.setText("NID Information");
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         // Adding back arrow in the appBar
         binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));

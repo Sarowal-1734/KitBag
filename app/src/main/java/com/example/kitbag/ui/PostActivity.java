@@ -1,12 +1,10 @@
 package com.example.kitbag.ui;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -37,7 +35,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.example.kitbag.R;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
@@ -68,8 +65,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.r0adkll.slidr.Slidr;
-import com.r0adkll.slidr.model.SlidrInterface;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -85,9 +80,6 @@ public class PostActivity extends AppCompatActivity {
     private String receiverPhoneNumber;
 
     private ActivityPostBinding binding;
-
-    // Swipe to back
-    private SlidrInterface slidrInterface;
 
     // Show progressBar
     private ProgressDialog progressDialog;
@@ -136,9 +128,6 @@ public class PostActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
-
-        // Swipe to back
-        slidrInterface = Slidr.attach(this);
 
         // Attach full number from edittext with cpp
         binding.cppReceiverPhoneNumber.registerCarrierNumberEditText(binding.EditTextReceiverPhoneNumber);
@@ -247,30 +236,6 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
-        // Active Inactive Slider to back based on drawer
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                if (getCurrentFocus() != null) {
-                    getCurrentFocus().clearFocus();
-                }
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
-
         // On Edit profile icon clicked
         View view = binding.navigationView.getHeaderView(0);
         ImageView imageView = view.findViewById(R.id.nav_edit_profile);
@@ -280,27 +245,6 @@ public class PostActivity extends AppCompatActivity {
                 Intent intent = new Intent(PostActivity.this, EditProfileActivity.class);
                 intent.putExtra("userId", currentUser.getUid());
                 startActivity(intent);
-            }
-        });
-
-        // Active Inactive Slider to back based on drawer
-        binding.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(@NonNull View drawerView) {
-                slidrInterface.lock();
-            }
-
-            @Override
-            public void onDrawerClosed(@NonNull View drawerView) {
-                slidrInterface.unlock();
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
             }
         });
 
