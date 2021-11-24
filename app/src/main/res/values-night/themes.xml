@@ -20,6 +20,7 @@
         <item name="textColor">@color/white</item>
         <item name="buttonColor">@color/app_bar</item>
         <item name="dividerColor">@color/silver</item>
+        <item name="enableDisableBackground">@color/darker_gray</item>
         <!-- Activity Animation. -->
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>

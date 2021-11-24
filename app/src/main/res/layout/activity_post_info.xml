@@ -358,7 +358,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
-                        android:backgroundTint="@color/app_bar"
                         android:onClick="onRequestDeliveryButtonClick"
                         android:text="@string/request_for_delivery"
                         android:textAllCaps="false" />
@@ -368,7 +367,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:layout_marginTop="8dp"
-                        android:backgroundTint="@color/silver"
                         android:enabled="false"
                         android:onClick="onProductHandoverButtonClick"
                         android:text="@string/product_handover_process"

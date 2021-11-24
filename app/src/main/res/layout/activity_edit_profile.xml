@@ -84,7 +84,7 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:hint="@string/user_type"
-                            android:textColor="?attr/textColor"
+                            android:textColor="?attr/dividerColor"
                             android:inputType="text" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -114,7 +114,7 @@
                                 android:enabled="false"
                                 android:focusable="false"
                                 android:hint="@string/contact"
-                                android:textColor="?attr/textColor" />
+                                android:textColor="?attr/dividerColor" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <ImageView

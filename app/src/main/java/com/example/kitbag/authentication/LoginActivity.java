@@ -67,9 +67,6 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
-        // Hide DarkMode button in drawer in MainActivity
-        binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
-
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
             // User is signed in

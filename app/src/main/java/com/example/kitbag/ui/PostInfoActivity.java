@@ -14,7 +14,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -46,7 +45,6 @@ import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.authentication.LoginActivity;
 import com.example.kitbag.chat.ChatDetailsActivity;
 import com.example.kitbag.chat.MessageActivity;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
 import com.example.kitbag.fragment.container.FragmentContainerActivity;
 import com.example.kitbag.model.ModelClassPost;
@@ -128,17 +126,19 @@ public class PostInfoActivity extends AppCompatActivity {
         // loading chosen language from multiple language option
         setContentView(binding.getRoot());
 
-        // remove search icon from appBar
+        // Remove search icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
 
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
 
+        // Inflate Status Details Info
         viewStatusDetails = LayoutInflater.from(PostInfoActivity.this).inflate(R.layout.dialog_product_status_track, null);
         builder = new AlertDialog.Builder(PostInfoActivity.this);
         builder.setView(viewStatusDetails);
         dialog = builder.create();
+
         // Time
         senderTime = viewStatusDetails.findViewById(R.id.textViewSenderTime);
         primaryAgentTime = viewStatusDetails.findViewById(R.id.textViewPrimaryAgentTime);
@@ -169,6 +169,14 @@ public class PostInfoActivity extends AppCompatActivity {
         binding.imageViewMail.setColorFilter(Color.parseColor("#DC6363"));
         binding.imageViewChat.setColorFilter(Color.parseColor("#1754B6"));
 
+        // On notification icon click
+        binding.customAppBar.appbarNotificationIcon.notificationIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(PostInfoActivity.this, NotificationsActivity.class));
+            }
+        });
+
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
             // User is signed in
@@ -191,7 +199,6 @@ public class PostInfoActivity extends AppCompatActivity {
                             // Inactive the delivery button if the user is not an Agent or Deliveryman
                             if (user.getUserType().equals("GENERAL_USER")) {
                                 binding.buttonRequestDelivery.setEnabled(false);
-                                binding.buttonRequestDelivery.setBackgroundColor(getResources().getColor(R.color.silver));
                             }
                             if (user.getUserType().equals("Deliveryman") || user.getUserType().equals("Agent")) {
                                 binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
@@ -221,13 +228,11 @@ public class PostInfoActivity extends AppCompatActivity {
             binding.navigationView.getMenu().findItem(R.id.nav_language).setVisible(false);
             // Inactive Delivery Request & Product Handover Button
             binding.buttonRequestDelivery.setEnabled(false);
-            binding.buttonRequestDelivery.setBackgroundColor(getResources().getColor(R.color.silver));
         }
 
         // Inactive Delivery Request Button if My Post
         if (currentUser != null && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
             binding.buttonRequestDelivery.setEnabled(false);
-            binding.buttonRequestDelivery.setBackgroundColor(getResources().getColor(R.color.silver));
         }
 
         // Adding back arrow in the appBar
@@ -630,7 +635,7 @@ public class PostInfoActivity extends AppCompatActivity {
         receiverTime.setText(getDateTimeFormat(modelClassPost.getStatusReceiverPhoneNumberTime()));
         setName(receiver, "Delivered", modelClassPost.getReceiverPhoneNumber());
         receiver.setTextColor(Color.parseColor("#1754B6"));
-        receiverDescription.setTextColor(Color.BLACK);
+        receiverDescription.setTextColor(Color.parseColor("#1754B6"));
     }
 
     private void updateFinalAgentInfo() {
@@ -639,7 +644,7 @@ public class PostInfoActivity extends AppCompatActivity {
         finalAgentTime.setText(getDateTimeFormat(modelClassPost.getStatusFinalAgentTime()));
         setName(finalAgent, "Final Agent", modelClassPost.getStatusFinalAgent());
         finalAgent.setTextColor(Color.parseColor("#1754B6"));
-        finalAgentDescription.setTextColor(Color.BLACK);
+        finalAgentDescription.setTextColor(Color.parseColor("#1754B6"));
     }
 
     private void updateDeliverymanInfo() {
@@ -648,7 +653,7 @@ public class PostInfoActivity extends AppCompatActivity {
         deliverymanTime.setText(getDateTimeFormat(modelClassPost.getStatusDeliverymanTime()));
         setName(deliveryman, "Deliveryman", modelClassPost.getStatusDeliveryman());
         deliveryman.setTextColor(Color.parseColor("#1754B6"));
-        deliverymanDescription.setTextColor(Color.BLACK);
+        deliverymanDescription.setTextColor(Color.parseColor("#1754B6"));
     }
 
     private void updatePrimaryAgentInfo() {
@@ -657,7 +662,7 @@ public class PostInfoActivity extends AppCompatActivity {
         primaryAgentTime.setText(getDateTimeFormat(modelClassPost.getStatusPrimaryAgentTime()));
         setName(primaryAgent, "Primary Agent", modelClassPost.getStatusPrimaryAgent());
         primaryAgent.setTextColor(Color.parseColor("#1754B6"));
-        primaryAgentDescription.setTextColor(Color.BLACK);
+        primaryAgentDescription.setTextColor(Color.parseColor("#1754B6"));
     }
 
     private void updateSenderInfo() {
@@ -665,7 +670,7 @@ public class PostInfoActivity extends AppCompatActivity {
         senderNode.setColorFilter(Color.parseColor("#1754B6")); // app_bar_color
         setName(sender, "Sender", modelClassPost.getPhoneNumber());
         sender.setTextColor(Color.parseColor("#1754B6"));
-        senderDescription.setTextColor(Color.BLACK);
+        senderDescription.setTextColor(Color.parseColor("#1754B6"));
     }
 
     private void setName(TextView textViewName, String statusName, String statusNumber) {
@@ -705,7 +710,6 @@ public class PostInfoActivity extends AppCompatActivity {
         if (modelClassPost.getStatusCurrent().equals("N/A")) {
             if (currentUser.getUid().equals(modelClassPost.getUserId())) {
                 binding.buttonProductHandover.setEnabled(true);
-                binding.buttonProductHandover.setBackgroundColor(Color.parseColor("#1754B6"));
             }
         } else if (modelClassPost.getStatusCurrent().equals("Primary_Agent")) {
             collectionReference.document(currentUser.getUid()).get()
@@ -715,7 +719,6 @@ public class PostInfoActivity extends AppCompatActivity {
                             UserModel user = documentSnapshot.toObject(UserModel.class);
                             if (user.getPhoneNumber().equals(modelClassPost.getStatusPrimaryAgent())) {
                                 binding.buttonProductHandover.setEnabled(true);
-                                binding.buttonProductHandover.setBackgroundColor(Color.parseColor("#1754B6"));
                             }
                         }
                     });
@@ -727,7 +730,6 @@ public class PostInfoActivity extends AppCompatActivity {
                             UserModel user = documentSnapshot.toObject(UserModel.class);
                             if (user.getPhoneNumber().equals(modelClassPost.getStatusDeliveryman())) {
                                 binding.buttonProductHandover.setEnabled(true);
-                                binding.buttonProductHandover.setBackgroundColor(Color.parseColor("#1754B6"));
                             }
                         }
                     });
@@ -739,7 +741,6 @@ public class PostInfoActivity extends AppCompatActivity {
                             UserModel user = documentSnapshot.toObject(UserModel.class);
                             if (user.getPhoneNumber().equals(modelClassPost.getStatusFinalAgent())) {
                                 binding.buttonProductHandover.setEnabled(true);
-                                binding.buttonProductHandover.setBackgroundColor(Color.parseColor("#1754B6"));
                             }
                         }
                     });

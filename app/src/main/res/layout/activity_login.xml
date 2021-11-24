@@ -46,8 +46,8 @@
                         android:padding="60dp">
 
                         <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="120dp"
-                            android:layout_height="120dp"
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
                             android:src="@drawable/logo"
                             app:civ_border_color="@color/silver"
                             app:civ_border_width="1dp" />
@@ -66,6 +66,8 @@
                             android:layout_marginTop="5dp"
                             android:gravity="center"
                             app:ccp_arrowColor="?attr/textColor"
+                            app:ccpDialog_backgroundColor="?attr/navigationDrawerBackground"
+                            app:ccpDialog_textColor="?attr/textColor"
                             android:layout_marginEnd="1dp"
                             app:ccp_autoDetectCountry="true"
                             app:ccp_contentColor="?attr/textColor"

@@ -41,6 +41,7 @@
         <item name="textColor">@color/black</item>
         <item name="buttonColor">@color/app_bar</item>
         <item name="dividerColor">@color/gray</item>
+        <item name="enableDisableBackground">@color/silver</item>
         <!-- Activity Animation. -->
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>

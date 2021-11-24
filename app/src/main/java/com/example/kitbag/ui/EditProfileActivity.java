@@ -4,10 +4,8 @@ import static android.Manifest.permission.CALL_PHONE;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -40,7 +38,6 @@ import androidx.core.view.GravityCompat;
 import com.example.kitbag.R;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.chat.MessageActivity;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityEditProfileBinding;
 import com.example.kitbag.fragment.container.FragmentContainerActivity;
 import com.example.kitbag.model.UserModel;
@@ -60,8 +57,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
-
-import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -139,6 +134,7 @@ public class EditProfileActivity extends AppCompatActivity {
             binding.imageViewMail.setVisibility(View.VISIBLE);
             binding.imageViewMail.setColorFilter(Color.parseColor("#DC6363"));
         }
+
         // on Call icon clicked
         binding.imageViewCall.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
@@ -280,14 +276,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        // User will be always signed in here
-        binding.navigationView.getMenu().clear();
-        binding.navigationView.inflateMenu(R.menu.drawer_menu_login);
-        binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.VISIBLE);
-        binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
-        //hiding language option from drawer
-        binding.navigationView.getMenu().findItem(R.id.nav_language).setVisible(false);
+        
         // Get userName and image from database and set to the drawer and hide or visible the deliveryman text
         collectionReference.document(getIntent().getStringExtra("userId")).get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
