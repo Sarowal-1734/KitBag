@@ -27,6 +27,8 @@ public class SplashScreenActivity extends AppCompatActivity {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 
+        SharedPreference.setConnectionCheckupValue(this, true);
+
         // Close this Splash-Screen after 0.2 seconds.
         new Handler().postDelayed(new Runnable() {
             @Override

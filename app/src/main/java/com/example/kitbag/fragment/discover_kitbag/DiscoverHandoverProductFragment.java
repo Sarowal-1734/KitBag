@@ -34,40 +34,40 @@ public class DiscoverHandoverProductFragment extends Fragment {
         binding.SenderToPrimary.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openNestedFragment(new DiscoverSenderToPrimaryFragment());
+                openNestedFragment(new DiscoverSenderToPrimaryFragment(), "discoverKitBag");
             }
         });
 
         binding.PrimaryToDeliveryman.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openNestedFragment(new DiscoverPrimaryToDeliverymanFragment());
+                openNestedFragment(new DiscoverPrimaryToDeliverymanFragment(), "discoverKitBag");
             }
         });
 
         binding.DeliverymanToFinal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openNestedFragment(new DiscoverDeliverymanToFinalFragment());
+                openNestedFragment(new DiscoverDeliverymanToFinalFragment(), "discoverKitBag");
             }
         });
 
         binding.FinalToReceiver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openNestedFragment(new DiscoverFinalToReceiverFragment());
+                openNestedFragment(new DiscoverFinalToReceiverFragment(), "discoverKitBag");
             }
         });
 
         return binding.getRoot();
     }
 
-    private void openNestedFragment(Fragment fragment) {
+    private void openNestedFragment(Fragment fragment, String tag) {
         FragmentManager fragmentManager = getParentFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
         transaction.addToBackStack(null);
-        transaction.replace(R.id.fragmentContainer, fragment).commit();
+        transaction.replace(R.id.fragmentContainer, fragment, tag).commit();
     }
 
 }

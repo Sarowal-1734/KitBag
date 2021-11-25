@@ -368,6 +368,8 @@ public class PostInfoActivity extends AppCompatActivity {
                         || getIntent().getStringExtra("statusCurrent").equals("Delivered")) {
                     binding.buttonAddToCart.setEnabled(false);
                     binding.buttonDeleteItem.setEnabled(false);
+                } else if (getIntent().getStringExtra("statusCurrent").equals("Primary_Agent")) {
+                    binding.buttonDeleteItem.setEnabled(false);
                 } else {
                     binding.buttonDeleteItem.setBackgroundColor(getResources().getColor(R.color.red));
                 }
@@ -856,6 +858,7 @@ public class PostInfoActivity extends AppCompatActivity {
                     Intent intent = new Intent(PostInfoActivity.this, PostActivity.class);
                     intent.putExtra("whatToDo", "EditPost");
                     intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
+                    intent.putExtra("statusCurrent", getIntent().getStringExtra("statusCurrent"));
                     startActivity(intent);
                     return;
                 }

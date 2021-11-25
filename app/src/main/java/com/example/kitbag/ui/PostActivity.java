@@ -74,7 +74,7 @@ public class PostActivity extends AppCompatActivity {
 
     private ModelClassPost modelClassPost;
 
-    private String receiverPhoneNumber;
+    private String receiverPhoneNumber, postOwnersPhoneNumber;
 
     private ActivityPostBinding binding;
 
@@ -135,6 +135,11 @@ public class PostActivity extends AppCompatActivity {
             binding.layoutPreferredDeliveryman.setVisibility(View.GONE);
         }
 
+        // Disable the views if currentPostStatus is Primary_Agent
+        if (getIntent().getStringExtra("statusCurrent") != null) {
+            disableViewsBasedOnStatusCurrent(getIntent().getStringExtra("statusCurrent"));
+        }
+
         // Change the title of the appBar according to Edit or Create post
         if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
             binding.customAppBar.appbarTitle.setText("Edit Post");
@@ -153,6 +158,7 @@ public class PostActivity extends AppCompatActivity {
                         binding.EditTextFromUpazila.setText(modelClassPost.getFromUpazilla());
                         binding.EditTextToDistrict.setText(modelClassPost.getToDistrict());
                         binding.EditTextToUpazila.setText(modelClassPost.getToUpazilla());
+                        postOwnersPhoneNumber = modelClassPost.getPhoneNumber();
                         String receiverPhone = modelClassPost.getReceiverPhoneNumber().substring(4);
                         binding.EditTextReceiverPhoneNumber.setText(receiverPhone);
                         String deliverymanPhone = modelClassPost.getPreferredDeliverymanContact();
@@ -357,6 +363,19 @@ public class PostActivity extends AppCompatActivity {
         });
 
     } // Ending onCreate
+
+    private void disableViewsBasedOnStatusCurrent(String statusCurrent) {
+        if (statusCurrent.equals("Primary_Agent")) {
+            binding.imageViewAddPhoto.setEnabled(false);
+            binding.EditTextPostTitle.setEnabled(false);
+            binding.EditTextPostWeight.setEnabled(false);
+            binding.EditTextPostDescription.setEnabled(false);
+            binding.EditTextFromDistrict.setEnabled(false);
+            binding.EditTextFromUpazila.setEnabled(false);
+            binding.EditTextToDistrict.setEnabled(false);
+            binding.EditTextToUpazila.setEnabled(false);
+        }
+    }
 
     // Verify Receiver Phone Number is a User or Not and Continue to create post
     private void verifyRecieverPhoneNumber(String phone) {
@@ -740,6 +759,9 @@ public class PostActivity extends AppCompatActivity {
 
     // EditText Validation
     private boolean valid() {
+        if (postOwnersPhoneNumber == null) {
+            postOwnersPhoneNumber = userModel.getPhoneNumber();
+        }
         if (TextUtils.isEmpty(binding.EditTextPostTitle.getText().toString())) {
             binding.EditTextPostTitle.setError("Required");
             binding.EditTextPostTitle.requestFocus();
@@ -782,8 +804,8 @@ public class PostActivity extends AppCompatActivity {
             return false;
         }
         if (binding.cppReceiverPhoneNumber.getFullNumberWithPlus().trim()
-                .equals(modelClassPost.getPhoneNumber())) {
-            binding.EditTextReceiverPhoneNumber.setError("Wrong Number");
+                .equals(postOwnersPhoneNumber)) {
+            binding.EditTextReceiverPhoneNumber.setError("It's your number");
             binding.EditTextReceiverPhoneNumber.requestFocus();
             return false;
         }

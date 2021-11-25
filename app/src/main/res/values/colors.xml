@@ -4,7 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="silver">#AFAFAF</color>
     <color name="gray">#555353</color>
-    <color name="darker_gray">#272525</color>
+    <color name="darker_gray">#1B1B1B</color>
     <color name="app_bar">#1754B6</color>
     <color name="app_bar_deep">#0842A1</color>
     <color name="title_bar">#0C47A6</color>

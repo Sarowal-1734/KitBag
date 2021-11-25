@@ -2,9 +2,7 @@ package com.example.kitbag.authentication;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -15,13 +13,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.GravityCompat;
 
 import com.example.kitbag.R;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityLoginBinding;
 import com.example.kitbag.fragment.container.FragmentContainerActivity;
 import com.example.kitbag.ui.MainActivity;
@@ -34,15 +30,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
 
-import java.util.Locale;
-
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
-
-    // for alert dialog
-    private AlertDialog.Builder builder;
-    private AlertDialog dialog;
 
     // Show progressBar
     private ProgressDialog progressDialog;
