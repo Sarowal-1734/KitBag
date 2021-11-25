@@ -3,11 +3,16 @@ package com.example.kitbag.chat;
 import static com.example.kitbag.ui.MainActivity.fromChatDetailsActivity;
 import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +29,7 @@ import com.example.kitbag.model.UserModel;
 import com.example.kitbag.ui.EditProfileActivity;
 import com.example.kitbag.ui.PostInfoActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -159,20 +165,51 @@ public class ChatDetailsActivity extends AppCompatActivity {
         binding.buttonSendMessage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                message = binding.editTextSendText.getText().toString().trim();
-                // Select the receiver user id
-                if (!currentUser.getUid().equals(postedBy)) {
-                    receiverId = postedBy;
+                if (currentUser != null) {
+                    if (isConnected()) {
+                        message = binding.editTextSendText.getText().toString().trim();
+                        // Select the receiver user id
+                        if (!currentUser.getUid().equals(postedBy)) {
+                            receiverId = postedBy;
+                        } else {
+                            receiverId = childKeyUserId;
+                        }
+                        sendMessage(currentUser.getUid(), receiverId, message);
+                        binding.editTextSendText.setText("");
+                    } else {
+                        displayNoConnection();
+                    }
                 } else {
-                    receiverId = childKeyUserId;
+                    Toast.makeText(ChatDetailsActivity.this, "Please login", Toast.LENGTH_SHORT).show();
                 }
-                sendMessage(currentUser.getUid(), receiverId, message);
-                binding.editTextSendText.setText("");
             }
         });
 
         // Read Message and show into recyclerview
         showMessage();
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void displayNoConnection() {
+        View parentLayout = findViewById(R.id.snackBarContainer);
+        // create an instance of the snackBar
+        final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+        // inflate the custom_snackBar_view created previously
+        View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
+        // set the background of the default snackBar as transparent
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        // now change the layout of the snackBar
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        // set padding of the all corners as 0
+        snackbarLayout.setPadding(0, 0, 0, 0);
+        // add the custom snack bar layout to snackbar layout
+        snackbarLayout.addView(customSnackView, 0);
+        snackbar.show();
     }
 
     // Display username, postType and user image in toolbar

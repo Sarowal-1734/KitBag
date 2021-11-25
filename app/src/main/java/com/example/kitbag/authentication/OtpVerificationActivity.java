@@ -85,6 +85,11 @@ public class OtpVerificationActivity extends AppCompatActivity {
         binding = ActivityOtpVerificationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Initially Check Internet Connection
+        if (!isConnected()) {
+            showMessageNoConnection();
+        }
+
         // Picking value which send from signUp activity
         whatToDo = getIntent().getStringExtra("whatToDo");
         phoneNumber = getIntent().getStringExtra("phoneNumber");

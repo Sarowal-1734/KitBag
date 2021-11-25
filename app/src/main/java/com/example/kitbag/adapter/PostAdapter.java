@@ -1,7 +1,6 @@
 package com.example.kitbag.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +15,6 @@ import com.bumptech.glide.Glide;
 import com.example.kitbag.R;
 import com.example.kitbag.effect.ShimmerEffect;
 import com.example.kitbag.model.ModelClassPost;
-import com.facebook.shimmer.Shimmer;
-import com.facebook.shimmer.ShimmerDrawable;
 
 import java.util.ArrayList;
 
@@ -56,6 +53,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         holder.titleTV.setText(post.getTitle());
         String destination = post.getFromDistrict() + " - " + post.getToDistrict();
         holder.destinationTV.setText(destination);
+        holder.statusCurrent.setText(post.getStatusCurrent());
         // Adding time ago format
         String timeAgo = (String) DateUtils.getRelativeTimeSpanString(post.getTimeAdded().getSeconds() * 1000);
         holder.timeAddedTV.setText(timeAgo);
@@ -67,8 +65,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
-        private ImageView imageView;
-        private TextView destinationTV, titleTV, timeAddedTV;
+        ImageView imageView;
+        TextView destinationTV, titleTV, timeAddedTV, statusCurrent;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -76,6 +74,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
             titleTV = itemView.findViewById(R.id.postTitle);
             destinationTV = itemView.findViewById(R.id.from_to);
             timeAddedTV = itemView.findViewById(R.id.postDate);
+            statusCurrent = itemView.findViewById(R.id.statusCurrent);
 
             //for use onItemClickListener from MainActivity
             itemView.setOnClickListener(new View.OnClickListener() {

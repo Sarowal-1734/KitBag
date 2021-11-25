@@ -45,6 +45,7 @@
             android:text="@string/dhaka_sylhet" />
 
         <TextView
+            android:id="@+id/statusCurrent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textColor="?attr/textColor"

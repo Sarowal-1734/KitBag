@@ -1,12 +1,9 @@
 package com.example.kitbag.ui;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -29,12 +26,13 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.kitbag.R;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.authentication.OtpVerificationActivity;
 import com.example.kitbag.chat.MessageActivity;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityProductHandOverBinding;
+import com.example.kitbag.effect.ShimmerEffect;
 import com.example.kitbag.fragment.container.FragmentContainerActivity;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
@@ -53,8 +51,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
-
-import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -96,6 +92,11 @@ public class ProductHandOverActivity extends AppCompatActivity {
         //loading chosen language as system language
         setContentView(binding.getRoot());
 
+        // Initially Check Internet Connection
+        if (!isConnected()) {
+            showMessageNoConnection();
+        }
+
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
@@ -112,6 +113,7 @@ public class ProductHandOverActivity extends AppCompatActivity {
             }
         });
 
+        // Hide Notification and Search Icon
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
 
@@ -311,13 +313,21 @@ public class ProductHandOverActivity extends AppCompatActivity {
     private void FinalToReceiver(String phoneNumber) {
         // Check receiver number
         if (phoneNumber.equals(receiverContact)) {
-            // Send an OTP to the agent number and verify
-            Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
-            intent.putExtra("whatToDo", "verifyReceiver");
-            intent.putExtra("phoneNumber", phoneNumber);
-            intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
-            startActivity(intent);
-            finish();
+            showDialog();
+            db.collection("Users")
+                    .whereEqualTo("phoneNumber", phoneNumber)
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot snapshot = task.getResult().getDocuments().get(0);
+                                progressDialog.dismiss();
+                                // Send an OTP to the agent number and verify
+                                dialogDisplayPhoto(phoneNumber, "verifyReceiver", snapshot.getString("userId"), "Users");
+                            }
+                        }
+                    });
         } else {
             binding.EditTextContact.setError("Receiver Contact Doesn't Match");
             binding.EditTextContact.requestFocus();
@@ -337,14 +347,9 @@ public class ProductHandOverActivity extends AppCompatActivity {
                             if (!task.getResult().getDocuments().isEmpty()) {
                                 DocumentSnapshot snapshot = task.getResult().getDocuments().get(0);
                                 if (snapshot.getString("userType").equals("Agent")) {
-                                    // Send an OTP to the agent number and verify
-                                    Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
-                                    intent.putExtra("whatToDo", "verifyFinalAgent");
-                                    intent.putExtra("phoneNumber", phoneNumber);
-                                    intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
                                     progressDialog.dismiss();
-                                    startActivity(intent);
-                                    finish();
+                                    // Send an OTP to the agent number and verify
+                                    dialogDisplayPhoto(phoneNumber, "verifyFinalAgent", snapshot.getString("userId"), "Agents");
                                 } else {
                                     // Not an Agent
                                     binding.EditTextContact.setError("Agent Not Found");
@@ -390,13 +395,8 @@ public class ProductHandOverActivity extends AppCompatActivity {
                                 DocumentSnapshot snapshot = task.getResult().getDocuments().get(0);
                                 if (snapshot.getString("userType").equals("Deliveryman") || snapshot.getString("userType").equals("Agent")) {
                                     // Send an OTP to the deliveryman number and verify
-                                    Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
-                                    intent.putExtra("whatToDo", "verifyDeliveryman");
-                                    intent.putExtra("phoneNumber", phoneNumber);
-                                    intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
                                     progressDialog.dismiss();
-                                    startActivity(intent);
-                                    finish();
+                                    dialogDisplayPhoto(phoneNumber, "verifyDeliveryman", snapshot.getString("userId"), "Deliveryman");
                                 } else {
                                     // Not an Deliveryman
                                     binding.EditTextContact.setError("Deliveryman Not Found");
@@ -427,14 +427,9 @@ public class ProductHandOverActivity extends AppCompatActivity {
                             if (!task.getResult().getDocuments().isEmpty()) {
                                 DocumentSnapshot snapshot = task.getResult().getDocuments().get(0);
                                 if (snapshot.getString("userType").equals("Agent")) {
-                                    // Send an OTP to the agent number and verify
-                                    Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
-                                    intent.putExtra("whatToDo", "verifyPrimaryAgent");
-                                    intent.putExtra("phoneNumber", phoneNumber);
-                                    intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
                                     progressDialog.dismiss();
-                                    startActivity(intent);
-                                    finish();
+                                    // Send an OTP to the agent number and verify
+                                    dialogDisplayPhoto(phoneNumber, "verifyPrimaryAgent", snapshot.getString("userId"), "Agents");
                                 } else {
                                     // Not an Agent
                                     binding.EditTextContact.setError("Agent Not Found");
@@ -450,6 +445,52 @@ public class ProductHandOverActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void dialogDisplayPhoto(String phoneNumber, String whatToDo, String userId, String collectionRef) {
+        // inflate custom layout
+        View view = LayoutInflater.from(ProductHandOverActivity.this).inflate(R.layout.dialog_handover_person_verify, null);
+        // Getting view form custom dialog layout
+        ImageView imageViewPerson = view.findViewById(R.id.imageViewPerson);
+        TextView name = view.findViewById(R.id.textViewName);
+        TextView userType = view.findViewById(R.id.textViewUserType);
+        Button buttonCancel = view.findViewById(R.id.buttonCancel);
+        Button buttonConfirm = view.findViewById(R.id.buttonConfirm);
+        // Get userName and image from database and set to the drawer
+        db.collection(collectionRef).document(userId).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        name.setText(documentSnapshot.getString("nameEnglish"));
+                        userType.setText(documentSnapshot.getString("thana"));
+                        Glide.with(ProductHandOverActivity.this).load(documentSnapshot.getString("imageUrlUserFace"))
+                                .placeholder(ShimmerEffect.get())
+                                .into(imageViewPerson);
+                    }
+                });
+        builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        buttonConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Send an OTP to the agent number and verify
+                Intent intent = new Intent(ProductHandOverActivity.this, OtpVerificationActivity.class);
+                intent.putExtra("whatToDo", whatToDo);
+                intent.putExtra("phoneNumber", phoneNumber);
+                intent.putExtra("postReference", getIntent().getStringExtra("postReference"));
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 
     private void showDialog() {
@@ -489,26 +530,11 @@ public class ProductHandOverActivity extends AppCompatActivity {
                             if (modelClassPost.getStatusCurrent().equals("N/A")) {
                                 binding.SenderToPrimary.setEnabled(true);
                                 binding.SenderToPrimary.setChecked(true);
-
-                                // setting hint in bangla or english
-                                SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
-                                String lang = preferences.getString("my_lang", "bn");
-                                if(lang.equals("en")){
-                                    binding.EditTextContact.setHint("Agent's Contact");
-                                }else {
-                                    binding.EditTextContact.setHint("এজেন্টের নাম্বার");
-                                }
+                                binding.EditTextContact.setHint(R.string.agent_s_contact);
                             } else if (modelClassPost.getStatusCurrent().equals("Primary_Agent")) {
                                 binding.PrimaryToDeliveryman.setEnabled(true);
                                 binding.PrimaryToDeliveryman.setChecked(true);
-                                // setting hint in bangla or english
-                                SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
-                                String lang = preferences.getString("my_lang", "bn");
-                                if(lang.equals("en")){
-                                    binding.EditTextContact.setHint("Deliveryman's Contact");
-                                }else {
-                                    binding.EditTextContact.setHint("ডেলিভারিম্যানের নাম্বার");
-                                }
+                                binding.EditTextContact.setHint(R.string.deliveryman_s_contact);
                                 preferredDeliverymanContact = modelClassPost.getPreferredDeliverymanContact();
                                 if (!TextUtils.isEmpty(preferredDeliverymanContact)) {
                                     String phone = preferredDeliverymanContact.substring(4, 14);
@@ -517,27 +543,13 @@ public class ProductHandOverActivity extends AppCompatActivity {
                             } else if (modelClassPost.getStatusCurrent().equals("Deliveryman")) {
                                 binding.DeliverymanToFinal.setEnabled(true);
                                 binding.DeliverymanToFinal.setChecked(true);
-                                // setting hint in bangla or english
-                                SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
-                                String lang = preferences.getString("my_lang", "bn");
-                                if(lang.equals("en")){
-                                    binding.EditTextContact.setHint("Agent's Contact");
-                                }else {
-                                    binding.EditTextContact.setHint("এজেন্টের নাম্বার");
-                                }
+                                binding.EditTextContact.setHint(R.string.agent_s_contact);
                             } else if (modelClassPost.getStatusCurrent().equals("Final_Agent")) {
                                 binding.FinalToReceiver.setEnabled(true);
                                 binding.FinalToReceiver.setChecked(true);
                                 String phone = receiverContact.substring(4, 14);
                                 binding.EditTextContact.setText(phone);
-                                // setting hint in bangla or english
-                                SharedPreferences preferences = getSharedPreferences("settings", Activity.MODE_PRIVATE);
-                                String lang = preferences.getString("my_lang", "bn");
-                                if(lang.equals("en")){
-                                    binding.EditTextContact.setHint("Receiver Contact");
-                                }else {
-                                    binding.EditTextContact.setHint("গ্রহিতার নাম্বার");
-                                }
+                                binding.EditTextContact.setHint(R.string.receiver_contact);
                             }
                         }
                     }

@@ -888,4 +888,6 @@
     <string name="developed_by">Developed by</string>
     <string name="kitbag_courier_service">KitBag Courier Service</string>
     <string name="ok">Ok</string>
+    <string name="agent_s_contact">Agent\'s Contact</string>
+    <string name="deliveryman_s_contact">Deliveryman\'s Contact</string>
 </resources>

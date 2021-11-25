@@ -125,6 +125,11 @@ public class PostInfoActivity extends AppCompatActivity {
         // loading chosen language from multiple language option
         setContentView(binding.getRoot());
 
+        // Initially Check Internet Connection
+        if (!isConnected()) {
+            displayNoConnection();
+        }
+
         // Remove search icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
 
