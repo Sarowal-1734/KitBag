@@ -56,31 +56,31 @@ public class DiscoverKitBagFragment extends Fragment {
             public void onItemClick(int position) {
                 switch (position) {
                     case 0:
-                        openNestedFragment(new DiscoverCreateAccountFragment());
+                        openNestedFragment(new DiscoverCreateAccountFragment(), "discoverKitBag");
                         break;
                     case 1:
-                        openNestedFragment(new DiscoverEditProfileFragment());
+                        openNestedFragment(new DiscoverEditProfileFragment(), "discoverKitBag");
                         break;
                     case 2:
-                        openNestedFragment(new DiscoverRecoverPasswordFragment());
+                        openNestedFragment(new DiscoverRecoverPasswordFragment(), "discoverKitBag");
                         break;
                     case 3:
-                        openNestedFragment(new DiscoverChangePasswordFragment());
+                        openNestedFragment(new DiscoverChangePasswordFragment(), "discoverKitBag");
                         break;
                     case 4:
-                        openNestedFragment(new DiscoverPostItemFragment());
+                        openNestedFragment(new DiscoverPostItemFragment(), "discoverKitBag");
                         break;
                     case 5:
-                        openNestedFragment(new DiscoverEditPostFragment());
+                        openNestedFragment(new DiscoverEditPostFragment(), "discoverKitBag");
                         break;
                     case 6:
-                        openNestedFragment(new DiscoverDeletePostFragment());
+                        openNestedFragment(new DiscoverDeletePostFragment(), "discoverKitBag");
                         break;
                     case 7:
-                        openNestedFragment(new DiscoverBecomeDeliverymanFragment());
+                        openNestedFragment(new DiscoverBecomeDeliverymanFragment(), "discoverKitBag");
                         break;
                     case 8:
-                        openNestedFragment(new DiscoverHandoverProductFragment());
+                        openNestedFragment(new DiscoverHandoverProductFragment(), "discoverKitBag");
                         break;
                 }
             }
@@ -89,11 +89,11 @@ public class DiscoverKitBagFragment extends Fragment {
         return binding.getRoot();
     }
 
-    private void openNestedFragment(Fragment fragment) {
+    private void openNestedFragment(Fragment fragment, String tag) {
         FragmentManager fragmentManager = getParentFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
         transaction.addToBackStack(null);
-        transaction.replace(R.id.fragmentContainer, fragment).commit();
+        transaction.replace(R.id.fragmentContainer, fragment, tag).commit();
     }
 }

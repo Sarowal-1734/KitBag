@@ -88,16 +88,16 @@ public class FragmentContainerActivity extends AppCompatActivity {
         whatToDo = getIntent().getStringExtra("whatToDo");
         if (whatToDo.equals("discoverKitBag")) {
             binding.customAppBar.appbarTitle.setText(R.string.nav_discover_kitbag);
-            loadFragment(new DiscoverKitBagFragment());
+            loadFragment(new DiscoverKitBagFragment(), "discoverKitBag");
         } else if (whatToDo.equals("termsAndCondition")) {
             binding.customAppBar.appbarTitle.setText(R.string.terms_and_conditions);
-            loadFragment(new TermsAndConditionsFragment());
+            loadFragment(new TermsAndConditionsFragment(), "termsAndCondition");
         } else if (whatToDo.equals("contactUs")) {
             binding.customAppBar.appbarTitle.setText(R.string.nav_contact_us);
-            loadFragment(new ContactUsFragment());
+            loadFragment(new ContactUsFragment(), "contactUs");
         } else {
             binding.customAppBar.appbarTitle.setText(R.string.nav_about_us);
-            loadFragment(new AboutUsFragment());
+            loadFragment(new AboutUsFragment(), "aboutUs");
         }
 
         // For Authentication
@@ -185,6 +185,8 @@ public class FragmentContainerActivity extends AppCompatActivity {
         binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                binding.drawerLayout.closeDrawer(GravityCompat.END);
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainer);
                 switch (item.getItemId()) {
                     case R.id.nav_home:
                         finish();
@@ -196,24 +198,28 @@ public class FragmentContainerActivity extends AppCompatActivity {
                         registerAsDeliveryman();
                         break;
                     case R.id.nav_discover_kitbag:
-                        binding.customAppBar.appbarTitle.setText(R.string.nav_discover_kitbag);
-                        binding.drawerLayout.closeDrawer(GravityCompat.END);
-                        loadFragment(new DiscoverKitBagFragment());
+                        if (!currentFragment.getTag().equals("discoverKitBag")) {
+                            binding.customAppBar.appbarTitle.setText(R.string.nav_discover_kitbag);
+                            loadFragment(new DiscoverKitBagFragment(), "discoverKitBag");
+                        }
                         break;
                     case R.id.nav_terms_conditions:
-                        binding.customAppBar.appbarTitle.setText(R.string.nav_terms_conditions);
-                        binding.drawerLayout.closeDrawer(GravityCompat.END);
-                        loadFragment(new TermsAndConditionsFragment());
+                        if (!currentFragment.getTag().equals("termsAndCondition")) {
+                            binding.customAppBar.appbarTitle.setText(R.string.nav_terms_conditions);
+                            loadFragment(new TermsAndConditionsFragment(), "termsAndCondition");
+                        }
                         break;
                     case R.id.nav_contact:
-                        binding.customAppBar.appbarTitle.setText(R.string.nav_contact_us);
-                        binding.drawerLayout.closeDrawer(GravityCompat.END);
-                        loadFragment(new ContactUsFragment());
+                        if (!currentFragment.getTag().equals("contactUs")) {
+                            binding.customAppBar.appbarTitle.setText(R.string.nav_contact_us);
+                            loadFragment(new ContactUsFragment(), "contactUs");
+                        }
                         break;
                     case R.id.nav_about:
-                        binding.customAppBar.appbarTitle.setText(R.string.nav_about_us);
-                        binding.drawerLayout.closeDrawer(GravityCompat.END);
-                        loadFragment(new AboutUsFragment());
+                        if (!currentFragment.getTag().equals("aboutUs")) {
+                            binding.customAppBar.appbarTitle.setText(R.string.nav_about_us);
+                            loadFragment(new AboutUsFragment(), "aboutUs");
+                        }
                         break;
                     case R.id.nav_chat:
                         startActivity(new Intent(FragmentContainerActivity.this, MessageActivity.class));
@@ -243,11 +249,11 @@ public class FragmentContainerActivity extends AppCompatActivity {
     }//ending onCreate
 
     // Dynamically Replace Fragment
-    private void loadFragment(Fragment fragment) {
+    private void loadFragment(Fragment fragment, String tag) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
         transaction.addToBackStack(null);
-        transaction.replace(R.id.fragmentContainer, fragment).commit();
+        transaction.replace(R.id.fragmentContainer, fragment, tag).commit();
     }
 
     // Registration as deliveryman

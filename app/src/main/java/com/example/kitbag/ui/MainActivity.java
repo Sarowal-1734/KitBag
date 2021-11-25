@@ -1,9 +1,12 @@
 package com.example.kitbag.ui;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -47,6 +50,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -102,12 +106,12 @@ public class MainActivity extends AppCompatActivity {
     private int limit = 8;
     private DocumentSnapshot lastVisible;
 
-    public static String getOpenFromActivity = "getOpenFromActivity";
-    public static String fromMainActivity = "MainActivity";
-    public static String fromMyPostActivity = "MyPostActivity";
-    public static String fromMyCartActivity = "MyCartActivity";
-    public static String fromChatDetailsActivity = "ChatDetailsActivity";
-    public static String fromOtpVerificationActivity = "OtpVerificationActivity";
+    public static final String getOpenFromActivity = "getOpenFromActivity";
+    public static final String fromMainActivity = "MainActivity";
+    public static final String fromMyPostActivity = "MyPostActivity";
+    public static final String fromMyCartActivity = "MyCartActivity";
+    public static final String fromChatDetailsActivity = "ChatDetailsActivity";
+    public static final String fromOtpVerificationActivity = "OtpVerificationActivity";
 
     // Check is searching or not
     private boolean searching = false;
@@ -134,6 +138,12 @@ public class MainActivity extends AppCompatActivity {
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
+
+        // Initially Check Internet Connection
+        if (SharedPreference.getConnectionCheckupValue(this)) {
+            SharedPreference.setConnectionCheckupValue(this, false);
+            checkInternetConnection();
+        }
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {
@@ -197,7 +207,11 @@ public class MainActivity extends AppCompatActivity {
                     binding.swipeRefreshLayout.setRefreshing(false);
                 } else {
                     binding.swipeRefreshLayout.setRefreshing(true);
-                    restartApp();
+                    if (isConnected()) {
+                        restartApp();
+                    } else {
+                        displayNoConnection();
+                    }
                     binding.swipeRefreshLayout.setRefreshing(false);
                 }
             }
@@ -208,7 +222,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showProgressDialog();
-                restartApp();
+                if (isConnected()) {
+                    restartApp();
+                } else {
+                    displayNoConnection();
+                }
                 progressDialog.dismiss();
             }
         });
@@ -408,6 +426,56 @@ public class MainActivity extends AppCompatActivity {
         });
 
     } // Ending onCreate
+
+    // Init Check Internet Connection
+    private void checkInternetConnection() {
+        if (isConnected()) {
+            displayConnected();
+        } else {
+            displayNoConnection();
+        }
+    }
+
+    private void displayNoConnection() {
+        View parentLayout = findViewById(R.id.snackBarContainer);
+        // create an instance of the snackBar
+        final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+        // inflate the custom_snackBar_view created previously
+        View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
+        // set the background of the default snackBar as transparent
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        // now change the layout of the snackBar
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        // set padding of the all corners as 0
+        snackbarLayout.setPadding(0, 0, 0, 0);
+        // add the custom snack bar layout to snackbar layout
+        snackbarLayout.addView(customSnackView, 0);
+        snackbar.show();
+    }
+
+    private void displayConnected() {
+        View parentLayout = findViewById(R.id.snackBarContainer);
+        // create an instance of the snackBar
+        final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+        // inflate the custom_snackBar_view created previously
+        View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_connected, null);
+        // set the background of the default snackBar as transparent
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        // now change the layout of the snackBar
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        // set padding of the all corners as 0
+        snackbarLayout.setPadding(0, 0, 0, 0);
+        // add the custom snack bar layout to snackbar layout
+        snackbarLayout.addView(customSnackView, 0);
+        snackbar.show();
+    }
+
+    // Check the internet connection
+    public boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 
     private void restartApp() {
         finish();
