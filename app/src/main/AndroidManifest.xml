@@ -97,7 +97,8 @@
             android:parentActivityName=".ui.MainActivity" />
         <activity
             android:name=".ui.MainActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:parentActivityName=".splash.SplashScreenActivity" />
         <activity
             android:name=".splash.SplashScreenActivity"
             android:launchMode="singleTop">

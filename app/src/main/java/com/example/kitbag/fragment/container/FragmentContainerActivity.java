@@ -2,7 +2,6 @@ package com.example.kitbag.fragment.container;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,7 +11,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,7 +26,6 @@ import com.example.kitbag.R;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.authentication.LoginActivity;
 import com.example.kitbag.chat.MessageActivity;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityFragmentContainerBinding;
 import com.example.kitbag.fragment.AboutUsFragment;
 import com.example.kitbag.fragment.ContactUsFragment;
@@ -49,8 +46,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
-
-import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -87,7 +82,6 @@ public class FragmentContainerActivity extends AppCompatActivity {
         }
         super.onCreate(savedInstanceState);
         binding = ActivityFragmentContainerBinding.inflate(getLayoutInflater());
-        loadLocale();
         setContentView(binding.getRoot());
 
         //get whatToDo value send from activity
@@ -132,6 +126,8 @@ public class FragmentContainerActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.VISIBLE);
             // Hide DarkMode button in drawer in MainActivity
             binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
+            //hiding language option from drawer
+            binding.navigationView.getMenu().findItem(R.id.nav_language).setVisible(false);
             // Get userName and image from database and set to the drawer
             db.collection("Users").document(currentUser.getUid()).get()
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -161,6 +157,8 @@ public class FragmentContainerActivity extends AppCompatActivity {
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
             // Hide DarkMode button in drawer in MainActivity
             binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
+            //hiding language option from drawer
+            binding.navigationView.getMenu().findItem(R.id.nav_language).setVisible(false);
         }
 
         // Click profile to open drawer
@@ -196,9 +194,6 @@ public class FragmentContainerActivity extends AppCompatActivity {
                         break;
                     case R.id.nav_deliveryman:
                         registerAsDeliveryman();
-                        break;
-                    case R.id.nav_language:
-                        showChangeLanguageDialog();
                         break;
                     case R.id.nav_discover_kitbag:
                         binding.customAppBar.appbarTitle.setText(R.string.nav_discover_kitbag);
@@ -246,56 +241,6 @@ public class FragmentContainerActivity extends AppCompatActivity {
             }
         });
     }//ending onCreate
-
-    // showing language alert Dialog to pick one language
-    private void showChangeLanguageDialog() {
-        // inflate custom layout
-        View view = LayoutInflater.from(FragmentContainerActivity.this).inflate(R.layout.dialog_select_language, null);
-        // Getting view form custom dialog layout
-        RadioButton radioButtonBangla = view.findViewById(R.id.rdLanguageBangla);
-        RadioButton radioButtonEnglish = view.findViewById(R.id.rdLanguageEnglish);
-        if (SharedPreference.getLanguageValue(this).equals("bn")) {
-            radioButtonBangla.setChecked(true);
-        } else {
-            radioButtonEnglish.setChecked(true);
-        }
-        Button buttonNext = view.findViewById(R.id.buttonNextLanguage);
-        builder = new AlertDialog.Builder(this);
-        builder.setView(view);
-        dialog = builder.create();
-        dialog.show();
-        buttonNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (radioButtonBangla.isChecked()) {
-                    dialog.dismiss();
-                    setLocale("bn");
-                    recreate();
-                } else {
-                    dialog.dismiss();
-                    setLocale("en");
-                    recreate();
-                }
-            }
-        });
-    }
-
-    // setting chosen language to system
-    private void setLocale(String lang) {
-        Locale locale = new Locale(lang);
-        Locale.setDefault(locale);
-        Configuration configuration = new Configuration();
-        configuration.locale = locale;
-        getBaseContext().getResources().updateConfiguration(configuration,getBaseContext().getResources().getDisplayMetrics());
-        // Save data to SharedPreference
-        SharedPreference.setLanguageValue(this, lang);
-    }
-
-    // get save value from sharedPreference and set It to as local language
-    public void loadLocale(){
-        setLocale(SharedPreference.getLanguageValue(this));
-    }
-
 
     // Dynamically Replace Fragment
     private void loadFragment(Fragment fragment) {

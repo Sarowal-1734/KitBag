@@ -1,4 +1,4 @@
-package com.example.kitbag.adapter;
+package com.example.kitbag.effect;
 
 
 import com.bumptech.glide.annotation.GlideModule;

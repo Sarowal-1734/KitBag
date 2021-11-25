@@ -186,6 +186,79 @@ public class MyCartActivity extends AppCompatActivity {
         });
 
         // Get data from fireStore and set to the recyclerView
+        displayInfo();
+
+        // Click profile to open drawer
+        binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.drawerLayout.openDrawer(GravityCompat.END);
+            }
+        });
+
+        // Open notifications Activity
+        findViewById(R.id.appbar_notification_icon).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MyCartActivity.this, NotificationsActivity.class));
+            }
+        });
+
+        // On drawer menu item clicked
+        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intentFragment = new Intent(MyCartActivity.this, FragmentContainerActivity.class);
+                switch (item.getItemId()) {
+                    case R.id.nav_home:
+                        startActivity(new Intent(MyCartActivity.this, MainActivity.class));
+                        finish();
+                        break;
+                    case R.id.nav_deliveryman:
+                        registerAsDeliveryman();
+                        break;
+                    case R.id.nav_discover_kitbag:
+                        intentFragment.putExtra("whatToDo","discoverKitBag");
+                        startActivity(intentFragment);
+                        break;
+                    case R.id.nav_terms_conditions:
+                        intentFragment.putExtra("whatToDo","termsAndCondition");
+                        startActivity(intentFragment);
+                        break;
+                    case R.id.nav_contact:
+                        intentFragment.putExtra("whatToDo","contactUs");
+                        startActivity(intentFragment);
+                        break;
+                    case R.id.nav_about:
+                        intentFragment.putExtra("whatToDo","aboutUs");
+                        startActivity(intentFragment);
+                        break;
+                    case R.id.nav_chat:
+                        startActivity(new Intent(MyCartActivity.this, MessageActivity.class));
+                        break;
+                    case R.id.nav_my_post:
+                        startActivity(new Intent(MyCartActivity.this, MyPostActivity.class));
+                        break;
+                    case R.id.nav_my_cart:
+                        binding.drawerLayout.closeDrawer(GravityCompat.END);
+                        break;
+                    case R.id.nav_change_password:
+                        validationUpdatePassword();
+                        break;
+                    case R.id.nav_logout:
+                        mAuth.signOut();
+                        Toast.makeText(MyCartActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MyCartActivity.this, MainActivity.class));
+                        finish();
+                        break;
+                }
+                return false;
+            }
+        });
+    } // Ending onCreate
+
+    // Get data from fireStore and set to the recyclerView
+    private void displayInfo() {
         PostAdapter postAdapter = new PostAdapter(MyCartActivity.this, postList);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(MyCartActivity.this, 2, GridLayoutManager.VERTICAL, false);
         binding.recyclerViewPostLists.setLayoutManager(gridLayoutManager);
@@ -281,85 +354,8 @@ public class MyCartActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
 
-        // Click profile to open drawer
-        binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                binding.drawerLayout.openDrawer(GravityCompat.END);
-            }
-        });
-
-        // Open notifications Activity
-        findViewById(R.id.appbar_notification_icon).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MyCartActivity.this, NotificationsActivity.class));
-            }
-        });
-
-        // On Edit profile icon clicked
-        View view1 = binding.navigationView.getHeaderView(0);
-        ImageView imageView1 = view1.findViewById(R.id.nav_edit_profile);
-        imageView1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MyCartActivity.this, EditProfileActivity.class));
-            }
-        });
-
-        // On drawer menu item clicked
-        binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Intent intentFragment = new Intent(MyCartActivity.this, FragmentContainerActivity.class);
-                switch (item.getItemId()) {
-                    case R.id.nav_home:
-                        startActivity(new Intent(MyCartActivity.this, MainActivity.class));
-                        finish();
-                        break;
-                    case R.id.nav_deliveryman:
-                        registerAsDeliveryman();
-                        break;
-                    case R.id.nav_discover_kitbag:
-                        intentFragment.putExtra("whatToDo","discoverKitBag");
-                        startActivity(intentFragment);
-                        break;
-                    case R.id.nav_terms_conditions:
-                        intentFragment.putExtra("whatToDo","termsAndCondition");
-                        startActivity(intentFragment);
-                        break;
-                    case R.id.nav_contact:
-                        intentFragment.putExtra("whatToDo","contactUs");
-                        startActivity(intentFragment);
-                        break;
-                    case R.id.nav_about:
-                        intentFragment.putExtra("whatToDo","aboutUs");
-                        startActivity(intentFragment);
-                        break;
-                    case R.id.nav_chat:
-                        startActivity(new Intent(MyCartActivity.this, MessageActivity.class));
-                        break;
-                    case R.id.nav_my_post:
-                        startActivity(new Intent(MyCartActivity.this, MyPostActivity.class));
-                        break;
-                    case R.id.nav_my_cart:
-                        binding.drawerLayout.closeDrawer(GravityCompat.END);
-                        break;
-                    case R.id.nav_change_password:
-                        validationUpdatePassword();
-                        break;
-                    case R.id.nav_logout:
-                        mAuth.signOut();
-                        Toast.makeText(MyCartActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(MyCartActivity.this, MainActivity.class));
-                        finish();
-                        break;
-                }
-                return false;
-            }
-        });
-    } // Ending onCreate
     private void registerAsDeliveryman() {
         // inflate custom layout
         View view = LayoutInflater.from(MyCartActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
