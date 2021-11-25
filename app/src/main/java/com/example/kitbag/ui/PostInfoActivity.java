@@ -363,7 +363,9 @@ public class PostInfoActivity extends AppCompatActivity {
                 binding.buttonAddToCart.setText("Edit Post");
                 binding.buttonDeleteItem.setVisibility(View.VISIBLE);
                 // Dynamic Edit Delete Button According to current postStatus
-                if (!getIntent().getStringExtra("statusCurrent").equals("N/A")) {
+                if (getIntent().getStringExtra("statusCurrent").equals("Deliveryman")
+                        || getIntent().getStringExtra("statusCurrent").equals("Final_Agent")
+                        || getIntent().getStringExtra("statusCurrent").equals("Delivered")) {
                     binding.buttonAddToCart.setEnabled(false);
                     binding.buttonDeleteItem.setEnabled(false);
                 } else {
