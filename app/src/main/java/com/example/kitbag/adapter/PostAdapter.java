@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.kitbag.R;
+import com.example.kitbag.effect.ShimmerEffect;
 import com.example.kitbag.model.ModelClassPost;
 import com.facebook.shimmer.Shimmer;
 import com.facebook.shimmer.ShimmerDrawable;
@@ -48,21 +49,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.MyViewHolder> 
         ModelClassPost post = postList.get(position);
         String imageUrl = post.getImageUrl();
 
-        // Initialize shimmer
-        Shimmer shimmer = new Shimmer.ColorHighlightBuilder()
-                .setBaseColor(Color.parseColor("#AEADAD"))
-                .setBaseAlpha(1)
-                .setHighlightColor(Color.parseColor("#E7E7E7"))
-                .setHighlightAlpha(1)
-                .setDropoff(50)
-                .build();
-        // Initialize shimmer drawable
-        ShimmerDrawable shimmerDrawable = new ShimmerDrawable();
-        // Set shimmer
-        shimmerDrawable.setShimmer(shimmer);
-
         Glide.with(context).load(imageUrl)
-                .placeholder(shimmerDrawable)
+                .placeholder(ShimmerEffect.get())
                 .into(holder.imageView);
 
         holder.titleTV.setText(post.getTitle());

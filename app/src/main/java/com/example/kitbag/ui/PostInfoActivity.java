@@ -46,11 +46,10 @@ import com.example.kitbag.authentication.LoginActivity;
 import com.example.kitbag.chat.ChatDetailsActivity;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
+import com.example.kitbag.effect.ShimmerEffect;
 import com.example.kitbag.fragment.container.FragmentContainerActivity;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
-import com.facebook.shimmer.Shimmer;
-import com.facebook.shimmer.ShimmerDrawable;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -339,9 +338,8 @@ public class PostInfoActivity extends AppCompatActivity {
                 if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
                     // This is my post so disable addToCart and remove delete button
                     binding.buttonAddToCart.setEnabled(false);
-                }
-                // Checking already has this post in my cart or not
-                if (getIntent().getStringExtra(getOpenFromActivity).equals(fromMainActivity)) {
+                } else {
+                    // Checking already has this post in my cart or not
                     db.collection("My_Cart").document(currentUser.getUid())
                             .collection("Cart_Lists")
                             .whereEqualTo("postReference", getIntent().getStringExtra("postReference"))
@@ -364,6 +362,13 @@ public class PostInfoActivity extends AppCompatActivity {
                     && getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
                 binding.buttonAddToCart.setText("Edit Post");
                 binding.buttonDeleteItem.setVisibility(View.VISIBLE);
+                // Dynamic Edit Delete Button According to current postStatus
+                if (!getIntent().getStringExtra("statusCurrent").equals("N/A")) {
+                    binding.buttonAddToCart.setEnabled(false);
+                    binding.buttonDeleteItem.setEnabled(false);
+                } else {
+                    binding.buttonDeleteItem.setBackgroundColor(getResources().getColor(R.color.red));
+                }
             }
             // Here came from my_cart. Now remove the item from my cart
             if (getIntent().getStringExtra(getOpenFromActivity).equals(fromMyCartActivity)) {
@@ -394,18 +399,6 @@ public class PostInfoActivity extends AppCompatActivity {
 
         // Display all the info to the activity
         displayPostInfo();
-
-        // TODO Later
-        /*/ Dynamic Edit Delete Button According to current postStatus
-        if (modelClassPost.getStatusCurrent().equals("N/A") || modelClassPost.getStatusCurrent().equals("Primary_Agent")) {
-            binding.buttonAddToCart.setVisibility(View.VISIBLE);
-            binding.buttonDeleteItem.setVisibility(View.VISIBLE);
-        }
-        if (currentUser == null) {
-            binding.buttonAddToCart.setVisibility(View.VISIBLE);
-        } else if (!modelClassPost.getUserId().equals(currentUser.getUid())) {
-            binding.buttonAddToCart.setVisibility(View.VISIBLE);
-        }*/
 
         // Adding onClickListener on Status text click
         binding.textViewStatus.setOnClickListener(new View.OnClickListener() {
@@ -531,21 +524,9 @@ public class PostInfoActivity extends AppCompatActivity {
                             binding.shimmerContainer.stopShimmer();
                             binding.shimmerContainer.setVisibility(View.GONE);
                             binding.view.setVisibility(View.GONE);
-                            // Initialize shimmer for loading the image
-                            Shimmer shimmer = new Shimmer.ColorHighlightBuilder()
-                                    .setBaseColor(Color.parseColor("#AEADAD"))
-                                    .setBaseAlpha(1)
-                                    .setHighlightColor(Color.parseColor("#E7E7E7"))
-                                    .setHighlightAlpha(1)
-                                    .setDropoff(50)
-                                    .build();
-                            // Initialize shimmer drawable
-                            ShimmerDrawable shimmerDrawable = new ShimmerDrawable();
-                            // Set shimmer
-                            shimmerDrawable.setShimmer(shimmer);
 
                             Glide.with(PostInfoActivity.this).load(modelClassPost.getImageUrl())
-                                    .placeholder(shimmerDrawable)
+                                    .placeholder(ShimmerEffect.get())
                                     .into(binding.photoView);
                             return;
                         }
