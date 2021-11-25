@@ -25,7 +25,6 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.example.kitbag.R;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityDeliverymanRegistrationBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -168,10 +167,8 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
         binding.cardViewPreviewView.setVisibility(View.VISIBLE);
         binding.imageViewCaptureImage.setEnabled(true);
         binding.imageViewCaptureImage.clearColorFilter();
-        binding.textViewSubmit.setEnabled(false);
-        binding.textViewSubmit.setTextColor(Color.GRAY);
-        binding.textViewReTake.setEnabled(false);
-        binding.textViewReTake.setTextColor(Color.GRAY);
+        binding.textViewSubmit.setVisibility(View.GONE);
+        binding.textViewReTake.setVisibility(View.GONE);
     }
 
     private void takePicture() {
@@ -192,10 +189,8 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
                         binding.imageViewPreviewImage.setImageURI(imageUri);
                         binding.imageViewCaptureImage.setEnabled(false);
                         binding.imageViewCaptureImage.setColorFilter(Color.GRAY);
-                        binding.textViewSubmit.setEnabled(true);
-                        binding.textViewSubmit.setTextColor(Color.BLACK);
-                        binding.textViewReTake.setEnabled(true);
-                        binding.textViewReTake.setTextColor(Color.BLACK);
+                        binding.textViewSubmit.setVisibility(View.VISIBLE);
+                        binding.textViewReTake.setVisibility(View.VISIBLE);
                     }
 
                     @Override

@@ -79,14 +79,14 @@
                 android:layout_weight="1"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
-                android:enabled="false"
                 android:focusable="true"
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="@string/retake"
                 android:textColor="?attr/textColor"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/imageViewCaptureImage"
@@ -105,14 +105,14 @@
                 android:layout_weight="1"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:clickable="true"
-                android:enabled="false"
                 android:focusable="true"
                 android:gravity="center"
                 android:padding="8dp"
                 android:text="@string/submit"
                 android:textColor="?attr/textColor"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
         </LinearLayout>
 
 

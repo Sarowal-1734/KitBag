@@ -9,5 +9,6 @@
         <attr name="dividerColor" format="color" />
         <attr name="appBarColor" format="color" />
         <attr name="navigationHeaderColor" format="color" />
+        <attr name="enableDisableBackground" format="color" />
     </declare-styleable>
 </resources>

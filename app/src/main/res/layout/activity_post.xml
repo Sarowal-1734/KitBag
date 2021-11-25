@@ -51,7 +51,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_gravity="center"
-                        android:background="?attr/layoutBackground"
+                        android:background="?attr/navigationDrawerBackground"
                         app:srcCompat="@drawable/ic_add_photo" />
                 </androidx.cardview.widget.CardView>
 
@@ -230,6 +230,8 @@
                             app:ccp_arrowColor="?attr/textColor"
                             app:ccp_contentColor="?attr/textColor"
                             app:ccp_autoDetectCountry="true"
+                            app:ccpDialog_backgroundColor="?attr/navigationDrawerBackground"
+                            app:ccpDialog_textColor="?attr/textColor"
                             app:ccp_showNameCode="true"
                             app:ccp_textSize="14sp" />
 
@@ -267,6 +269,8 @@
                             android:layout_marginTop="5dp"
                             android:gravity="center"
                             app:ccp_arrowColor="?attr/textColor"
+                            app:ccpDialog_backgroundColor="?attr/navigationDrawerBackground"
+                            app:ccpDialog_textColor="?attr/textColor"
                             app:ccp_contentColor="?attr/textColor"
                             app:ccp_autoDetectCountry="true"
                             app:ccp_showNameCode="true"

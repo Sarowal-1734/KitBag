@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // DarkMode Enable or Disable
-        if (SharedPreference.getDarkModeEnableValue(this) || AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
             setTheme(R.style.Theme_Night);
         } else {
             setTheme(R.style.Theme_Day);
@@ -140,7 +140,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 showProgressDialog();
-                recreate();
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(getIntent());
+                overridePendingTransition(0, 0);
                 progressDialog.dismiss();
             }
         });

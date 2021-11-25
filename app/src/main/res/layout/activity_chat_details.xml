@@ -12,7 +12,7 @@
         android:id="@+id/toolbarChatDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/app_bar"
+        android:background="?attr/appBarColor"
         android:layout_marginBottom="1dp"
         android:padding="8dp">
 
@@ -74,7 +74,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/toolbarChatDetail"
         android:foreground="?selectableItemBackgroundBorderless"
-        app:cardBackgroundColor="#EDF8F8"
+        app:cardBackgroundColor="?attr/cardViewPostBackground"
         app:cardCornerRadius="7dp"
         app:cardElevation="3dp"
         app:cardUseCompatPadding="true">
@@ -107,12 +107,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
+                    android:textColor="?attr/textColor"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/textViewToolbarUsernameChat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="?attr/textColor"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>

@@ -74,7 +74,7 @@
                     app:pinHeight="40dp"
                     app:pinLength="6"
                     app:splitWidth="5dp"
-                    app:pinBackground="@color/transparent_grey"
+                    app:pinBackground="?attr/cardViewPostBackground"
                     app:pinWidth="40dp"
                     android:layout_marginBottom="8dp"/>
 

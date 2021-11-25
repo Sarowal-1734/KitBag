@@ -3,10 +3,8 @@ package com.example.kitbag.ui;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -40,7 +38,6 @@ import androidx.core.view.GravityCompat;
 import com.example.kitbag.R;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.chat.MessageActivity;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityPostBinding;
 import com.example.kitbag.fragment.container.FragmentContainerActivity;
 import com.example.kitbag.model.ModelClassPost;
@@ -70,7 +67,6 @@ import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Date;
-import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -340,11 +336,11 @@ public class PostActivity extends AppCompatActivity {
                             receiverPhoneNumber = binding.cppReceiverPhoneNumber.getFullNumberWithPlus().trim();
                             if (getIntent().getStringExtra("whatToDo").equals("EditPost")) {
                                 // Edit The Post
-                                verifyReceiverPhone();
+                                verifyReceiverPhone(binding.cppReceiverPhoneNumber.getFullNumber().trim());
                             } else {
                                 // Post The Item
                                 if (imageUri != null) {
-                                    verifyRecieverPhoneNumber();
+                                    verifyRecieverPhoneNumber(binding.cppReceiverPhoneNumber.getFullNumber().trim());
                                 } else {
                                     Toast.makeText(PostActivity.this, "Please add a photo", Toast.LENGTH_SHORT).show();
                                 }
@@ -363,9 +359,9 @@ public class PostActivity extends AppCompatActivity {
     } // Ending onCreate
 
     // Verify Receiver Phone Number is a User or Not and Continue to create post
-    private void verifyRecieverPhoneNumber() {
+    private void verifyRecieverPhoneNumber(String phone) {
         showProgressBar();
-        String fakeEmail = "880" + binding.EditTextReceiverPhoneNumber.getText() + "@gmail.com";
+        String fakeEmail = phone + "@gmail.com";
         mAuth.fetchSignInMethodsForEmail(fakeEmail)
                 .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
                     @Override
@@ -617,10 +613,10 @@ public class PostActivity extends AppCompatActivity {
     }
 
     // Here only the ReceiverPhoneNumber will verify and continue to update post
-    private void verifyReceiverPhone() {
+    private void verifyReceiverPhone(String phone) {
         showProgressBar();
         // Verify Receiver Phone Number is a User or Not
-        String fakeEmail = "880" + binding.EditTextReceiverPhoneNumber.getText() + "@gmail.com";
+        String fakeEmail = phone + "@gmail.com";
         mAuth.fetchSignInMethodsForEmail(fakeEmail)
                 .addOnCompleteListener(new OnCompleteListener<SignInMethodQueryResult>() {
                     @Override
@@ -782,6 +778,12 @@ public class PostActivity extends AppCompatActivity {
         }
         if (TextUtils.isEmpty(binding.EditTextReceiverPhoneNumber.getText().toString())) {
             binding.EditTextReceiverPhoneNumber.setError("Required");
+            binding.EditTextReceiverPhoneNumber.requestFocus();
+            return false;
+        }
+        if (binding.cppReceiverPhoneNumber.getFullNumberWithPlus().trim()
+                .equals(modelClassPost.getPhoneNumber())) {
+            binding.EditTextReceiverPhoneNumber.setError("Wrong Number");
             binding.EditTextReceiverPhoneNumber.requestFocus();
             return false;
         }
