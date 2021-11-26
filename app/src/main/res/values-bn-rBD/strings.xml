@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="application_name">কিটব্যাগ</string>
+    <string name="application_name">KitBag</string>
     <string name="forgotten_password">আপনার পাসওয়ার্ড ভুলে গেছেন?</string>
     <string name="don_t_have_an_account">কোন অ্যাকাউন্ট নায়?</string>
     <string name="login">লগ ইন</string>
@@ -17,24 +17,24 @@
     <string name="ButtonPostItem">পোস্ট করুন</string>
     <string name="all_fields_are_required">*সব ফিল্ড পূরন করুন</string>
     <string name="by_posting_this_ad_you_agree_to_our_terms_and_conditions"> <br /> <font color='#FFFF0000'>শর্তাবলী</font></string>
-    <string name="otp">ওটিপি</string>
-    <string name="resend_otp"><u>পূনরায় ওটিপি পাঠান</u></string>
+    <string name="otp">OTP</string>
+    <string name="resend_otp"><u>পূনরায় OTP পাঠান</u></string>
     <string name="nav_chat">আলোচনা করুন</string>
     <string name="nav_my_posts">আমার পোস্ট</string>
     <string name="nav_my_cart">আমার কার্ট</string>
     <string name="nav_change_password">পাসওয়ার্ড পরিবর্তন</string>
     <string name="nav_language">ভাষা</string>
     <string name="nav_dark_mode">ডার্কমুড</string>
-    <string name="nav_discover_kitbag">কিটব্যাগ স্মপর্কে জানুন</string>
-    <string name="nav_terms_conditions"><![CDATA[শর্তাবলী]]></string>
+    <string name="nav_discover_kitbag">KitBag স্মপর্কে জানুন</string>
+    <string name="nav_terms_conditions">শর্তাবলী</string>
     <string name="nav_contact_us">আমাদের সাথে যোগাযোগ</string>
     <string name="nav_about_us">আমাদের তথ্য</string>
     <string name="nav_log_out">লগ আউট</string>
     <string name="nav_login">লগ ইন</string>
-    <string name="app_name">কিটব্যাগ</string>
-    <string name="send_otp_message">ওয়ান টাইম পাসওয়ার্ড (ওটিপি) আপনাকে পাঠানো হয়েছে </string>
+    <string name="app_name">KitBag</string>
+    <string name="send_otp_message">ওয়ান টাইম পাসওয়ার্ড (OTP) আপনাকে পাঠানো হয়েছে </string>
     <string name="number_hint">+৮৮০১XXXXXXXX</string>
-    <string name="didnt_get_otp">ওটিপি পায়নি?</string>
+    <string name="didnt_get_otp">OTP পায়নি?</string>
     <string name="update_password">পাসওয়ার্ড পরিবর্তন</string>
     <string name="old_password">পুরাতন পাসওয়ার্ড প্রবেশ করুন</string>
     <string name="new_password">নতুন পাসওয়ার্ড প্রবেশ করুন</string>
@@ -416,6 +416,7 @@
     </string-array>
 
     <string-array name="Kishoreganj">
+        <item>অষ্টগ্রাম</item>
         <item>বাজিতপুর</item>
         <item>ভৈরব</item>
         <item>হোসেনপুর</item>
@@ -803,8 +804,8 @@
     <string name="user_type">ব্যবহারকারীর ধরন:</string>
     <string name="upazila">উপজেলা</string>
     <string name="update_profile">প্রফাইল আপডেট</string>
-    <string name="please_enter_your_registered_phone_number">আপনার নিবন্ধিত ফোন নম্বর লিখুন.</string>
-    <string name="we_will_send_an_otp_to_your_registered_phone_number">আমরা আপনার নিবন্ধিত ফোন নম্বরে একটি ওটিপি পাঠাব।</string>
+    <string name="please_enter_your_registered_phone_number">আপনার নিবন্ধিত ফোন নম্বর দিন.</string>
+    <string name="we_will_send_an_otp_to_your_registered_phone_number">আমরা আপনার নিবন্ধিত ফোন নম্বরে একটি OTP পাঠাব।</string>
     <string name="next">পরবর্তী</string>
     <string name="sign_up">সাইন আপ</string>
     <string name="review_your_nid_information">আপনার এনআইডি তথ্য পর্যালোচনা করুন</string>
@@ -822,13 +823,13 @@
     <string name="post_office">পোস্ট অফিস</string>
     <string name="division">বিভাগ</string>
     <string name="other_information">অন্যান্য তথ্য</string>
-    <string name="gender">জেনডার</string>
+    <string name="gender">লিঙ্গ</string>
     <string name="occupation">পেশা</string>
-    <string name="weight_e_g_2_kg_250_gram">ভর উদ: ২ কেজি / ২৫০ গ্রাম</string>
+    <string name="weight_e_g_2_kg_250_gram">ওজন উদাঃ ২ কেজি / ২৫০ গ্রাম</string>
     <string name="receiver_contact">গ্রহিতার নাম্বার</string>
-    <string name="deliveryman_optional">ডেলিভারিম্যান (অতিরিক্ত)</string>
-    <string name="by_posting_this_ad_you_agree_to_our">এই পোস্টটি করার মধ্যমে আপনি আমাদের সকল শর্ত মেনে নিবেন</string>
-    <string name="terms_and_conditions"><![CDATA[শর্তাবলী]]></string>
+    <string name="deliveryman_optional">ডেলিভারিম্যান (ঐচ্ছিক)</string>
+    <string name="by_posting_this_ad_you_agree_to_our">এই পোস্টটি করার মাধ্যমে আপনি আমাদের সকল শর্ত মেনে নিবেন</string>
+    <string name="terms_and_conditions">শর্তাবলী</string>
     <string name="title_apple_iphone_xs">টাইটেল: আপনার পোস্টের নাম</string>
     <string name="posted_by_mr_x_on_30_apr_11_25_am">পোস্টদাতা মিস্টার. ক ৩০ তারিখ ২০২১</string>
     <string name="description">বিবরন: </string>
@@ -836,7 +837,7 @@
     <string name="status">স্টাটাস: </string>
     <string name="from">থেকে: </string>
     <string name="to">পর্যন্ত: </string>
-    <string name="chat_mr_x">কথোপকথন (মিস্টার.ক)</string>
+    <string name="chat_mr_x">চ্যাট (মিস্টার.ক)</string>
     <string name="email_hint">aabbcc.cse.2021@gmail.com</string>
     <string name="add_to_cart">কার্টে যুক্ত করুন</string>
     <string name="delete_post">পোস্টটি মুছে ফেলুন</string>
@@ -848,7 +849,7 @@
     <string name="deliveryman_to_final_agent">ডেলিভ্যারীম্যান থেকে চূড়ান্ত এজেন্ট</string>
     <string name="final_agent_to_receiver">চূড়ান্ত এজেন্ট থেকে প্রাপক</string>
     <string name="we_will_send_an_otp_to_the_given_number_so_please_make_sure_that_you_are_staying_any_of_your_nearest_kitbag_agent">আমরা প্রদত্ত নম্বরে একটি ওটিপি পাঠাব। তাই অনুগ্রহ করে নিশ্চিত করুন যে আপনি আপনার নিকটস্থ কিটব্যাগ এজেন্টের কাছে গিয়েছেন.</string>
-    <string name="send_otp">ওটিপি পাঠান</string>
+    <string name="send_otp">OTP পাঠান</string>
     <string name="please_enter_a_new_password">অনুগ্রহ করে নতুন পাসওয়ার্ড দিন</string>
     <string name="reset_password">রিসেট পাসওয়ার্ড</string>
     <string name="now_take_a_photo_of_your_face">এখন আপনার ছবি তুলুন</string>
@@ -857,8 +858,8 @@
     <string name="become_a_deliveryman_nin_three_easy_steps">ডেলিভারিম্যান হোন তিনটি সহজ ধাপে</string>
     <string name="take_photo_of_your_nid">আপনার এনআইডির ছবি তুলুন</string>
     <string name="take_a_photo_of_your_face">আপনার ছবি তুলুন</string>
-    <string name="fill_in_required_information">প্র্যোজনীয় তথ্য দিন</string>
-    <string name="proceed">সামনে</string>
+    <string name="fill_in_required_information">প্রয়োজনীয় তথ্য দিন</string>
+    <string name="proceed">পরবর্তী</string>
     <string name="cancel">বাতিল করুন</string>
     <string name="please_confirm">অনুগ্রহ করে নিশ্চিত করুন!</string>
     <string name="information_provided_for_nkitbag_deliveryman_account_nregistration_is_correct_ndeliberate_and_authentic">Information provided for\nKitBag Deliveryman Account\nRegistration is correct,\ndeliberate and authentic.</string>
@@ -878,11 +879,16 @@
     <string name="_1">১</string>
     <string name="dhaka_sylhet">ঢাকা - সিলেট</string>
     <string name="status_n_a">স্টাটাস: N/A</string>
-    <string name="_2_weeks_ago">২ সপ্তাহ আগে...</string>
+    <string name="_2_weeks_ago">২ সপ্তাহ আগে</string>
     <string name="send_text">তথ্য পাঠান</string>
     <string name="connected">ইন্টারনেটের সাথে যুক্ত হয়েছেন</string>
     <string name="no_internet_connection">ইন্টারনেট সংযোগ নায়</string>
     <string name="or">অথবা</string>
-    <string name="aboutKitBag">কিটব্যাগ একটি ডিজিটাল কুরিয়ার সার্ভিস প্ল্যাটফর্ম। আমাদের লক্ষ্য সর্বনিম্ন সময় এবং খরচ সহ সারা দেশে পণ্য সরবরাহ করা। এবং এখানে ডেলিভারিম্যান যেকোন ব্যক্তি হতে পারে যাতে মানুষ ডেলিভারি পণ্যের মাধ্যমে সহজেই অর্থ উপার্জন করতে পারে</string>
+    <string name="aboutKitBag">KitBag একটি ডিজিটাল কুরিয়ার সার্ভিস প্ল্যাটফর্ম। আমাদের লক্ষ্য সর্বনিম্ন সময় এবং খরচ সহ সারা দেশে পণ্য সরবরাহ করা। এবং এখানে ডেলিভারিম্যান যেকোন ব্যক্তি হতে পারে যাতে মানুষ ডেলিভারি পণ্যের মাধ্যমে সহজেই অর্থ উপার্জন করতে পারে</string>
     <string name="AgentContact">এজেন্টের নাম্বার</string>
+    <string name="developed_by">Developed by</string>
+    <string name="kitbag_courier_service">KitBag Courier Service</string>
+    <string name="ok">Ok</string>
+    <string name="agent_s_contact">এজেন্টের নাম্বার</string>
+    <string name="deliveryman_s_contact">ডেলিভারিম্যানের নাম্বার</string>
 </resources>

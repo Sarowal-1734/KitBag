@@ -4,8 +4,11 @@ import static com.example.kitbag.ui.MainActivity.fromMyCartActivity;
 import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -40,6 +43,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -96,6 +100,11 @@ public class MyCartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMyCartBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Initially Check Internet Connection
+        if (!isConnected()) {
+            displayNoConnection();
+        }
 
         // For Authentication
         mAuth = FirebaseAuth.getInstance();
@@ -197,7 +206,7 @@ public class MyCartActivity extends AppCompatActivity {
         });
 
         // Open notifications Activity
-        findViewById(R.id.appbar_notification_icon).setOnClickListener(new View.OnClickListener() {
+        binding.customAppBar.appbarNotificationIcon.notificationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MyCartActivity.this, NotificationsActivity.class));
@@ -496,5 +505,28 @@ public class MyCartActivity extends AppCompatActivity {
             return;
         }
         super.onBackPressed();
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void displayNoConnection() {
+        View parentLayout = findViewById(R.id.snackBarContainer);
+        // create an instance of the snackBar
+        final Snackbar snackbar = Snackbar.make(parentLayout, "", Snackbar.LENGTH_LONG);
+        // inflate the custom_snackBar_view created previously
+        View customSnackView = getLayoutInflater().inflate(R.layout.snackbar_disconnected, null);
+        // set the background of the default snackBar as transparent
+        snackbar.getView().setBackgroundColor(Color.TRANSPARENT);
+        // now change the layout of the snackBar
+        Snackbar.SnackbarLayout snackbarLayout = (Snackbar.SnackbarLayout) snackbar.getView();
+        // set padding of the all corners as 0
+        snackbarLayout.setPadding(0, 0, 0, 0);
+        // add the custom snack bar layout to snackbar layout
+        snackbarLayout.addView(customSnackView, 0);
+        snackbar.show();
     }
 }
