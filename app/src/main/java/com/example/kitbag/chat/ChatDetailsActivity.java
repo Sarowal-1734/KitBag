@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.kitbag.R;
 import com.example.kitbag.adapter.ChatAdapter;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityChatDetailsBinding;
 import com.example.kitbag.model.ChatModel;
 import com.example.kitbag.model.ModelClassPost;
@@ -109,6 +108,7 @@ public class ChatDetailsActivity extends AppCompatActivity {
 
         // Initially disable the send button
         binding.buttonSendMessage.setEnabled(false);
+        binding.buttonSendMessage.setColorFilter(R.color.gray);
 
         // Display username, postType and user image in toolbar
         displayUserInfo();
@@ -150,8 +150,10 @@ public class ChatDetailsActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.toString().length() > 0) {
                     binding.buttonSendMessage.setEnabled(true);
+                    binding.buttonSendMessage.clearColorFilter();
                 } else {
                     binding.buttonSendMessage.setEnabled(false);
+                    binding.buttonSendMessage.setColorFilter(R.color.gray);
                 }
             }
 
@@ -266,7 +268,7 @@ public class ChatDetailsActivity extends AppCompatActivity {
         chatModel.setSender(userId);
         chatModel.setReceiver(receiverId);
         chatModel.setMessage(message);
-        //Toast.makeText(ChatDetailsActivity.this, postReference+"\n" +receiverId, Toast.LENGTH_LONG).show();
+        chatModel.setStatus("Sent");
         if (userId.equals(postedBy)) {
             databaseReference.child("Chats").child(postReference).child(receiverId).push().setValue(chatModel);
         } else {

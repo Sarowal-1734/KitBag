@@ -881,8 +881,8 @@
     <string name="status_n_a">স্টাটাস: N/A</string>
     <string name="_2_weeks_ago">২ সপ্তাহ আগে</string>
     <string name="send_text">তথ্য পাঠান</string>
-    <string name="connected">ইন্টারনেটের সাথে যুক্ত হয়েছেন</string>
-    <string name="no_internet_connection">ইন্টারনেট সংযোগ নায়</string>
+    <string name="connected">Connected</string>
+    <string name="no_internet_connection">No Internet Connection</string>
     <string name="or">অথবা</string>
     <string name="aboutKitBag">KitBag একটি ডিজিটাল কুরিয়ার সার্ভিস প্ল্যাটফর্ম। আমাদের লক্ষ্য সর্বনিম্ন সময় এবং খরচ সহ সারা দেশে পণ্য সরবরাহ করা। এবং এখানে ডেলিভারিম্যান যেকোন ব্যক্তি হতে পারে যাতে মানুষ ডেলিভারি পণ্যের মাধ্যমে সহজেই অর্থ উপার্জন করতে পারে</string>
     <string name="AgentContact">এজেন্টের নাম্বার</string>
@@ -891,4 +891,5 @@
     <string name="ok">Ok</string>
     <string name="agent_s_contact">এজেন্টের নাম্বার</string>
     <string name="deliveryman_s_contact">ডেলিভারিম্যানের নাম্বার</string>
+    <string name="cancel_delivery">ডেলিভারি বাতিল করুন</string>
 </resources>

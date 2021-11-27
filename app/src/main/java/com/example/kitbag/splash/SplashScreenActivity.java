@@ -29,7 +29,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         SharedPreference.setConnectionCheckupValue(this, true);
 
-        // Close this Splash-Screen after 0.2 seconds.
+        // Close this Splash-Screen after 0.4 seconds.
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

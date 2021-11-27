@@ -21,9 +21,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.kitbag.R;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityNidInformationBinding;
 import com.example.kitbag.model.ModelClassDeliveryman;
+import com.example.kitbag.model.UserModel;
 import com.example.kitbag.ui.MainActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -64,10 +64,10 @@ public class NidInformationActivity extends AppCompatActivity {
     private final CollectionReference collectionReference = db.collection("Users");
     private final StorageReference storageReference = FirebaseStorage.getInstance().getReference();
 
+    private UserModel userModel;
+
     private ArrayList<Uri> imageUriLists = new ArrayList<>();
     private int i = -1;
-
-    private String phoneNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +109,7 @@ public class NidInformationActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            phoneNumber = documentSnapshot.getString("phoneNumber");
+                            userModel = documentSnapshot.toObject(UserModel.class);
                             if (documentSnapshot.getString("imageUrl") != null) {
                                 // Picasso library for download & show image
                                 Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile).fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
@@ -175,6 +175,8 @@ public class NidInformationActivity extends AppCompatActivity {
     private void storeDeliverymanInfo() {
         ModelClassDeliveryman modelClassDeliveryman = new ModelClassDeliveryman();
         modelClassDeliveryman.setUserId(currentUser.getUid());
+        modelClassDeliveryman.setUserType(userModel.getUserType());
+        modelClassDeliveryman.setPhoneNumber(userModel.getPhoneNumber());
         modelClassDeliveryman.setNameBangla(binding.editTextNameBangla.getText().toString());
         modelClassDeliveryman.setNameEnglish(binding.editTextNameEnglish.getText().toString());
         modelClassDeliveryman.setFatherHusbandName(binding.editTextFatherHusbandName.getText().toString());
@@ -190,6 +192,7 @@ public class NidInformationActivity extends AppCompatActivity {
         modelClassDeliveryman.setGender(binding.editTextGender.getText().toString());
         modelClassDeliveryman.setOccupation(binding.editTextOccupation.getText().toString());
         modelClassDeliveryman.setApplicationStatus("Pending");
+        modelClassDeliveryman.setTimeApplied(new Timestamp(new Date()));
         modelClassDeliveryman.setApprovedByAgent(null);
         modelClassDeliveryman.setApprovedByAdmin(null);
         modelClassDeliveryman.setImageUrlUserFace(null);
@@ -268,7 +271,7 @@ public class NidInformationActivity extends AppCompatActivity {
     }
 
     private void sendMessage() {
-        String number = phoneNumber.substring(3, 14);
+        String number = userModel.getPhoneNumber().substring(3, 14);
         // Create a background thread to send OTP
         new Thread(new Runnable() {
             @Override

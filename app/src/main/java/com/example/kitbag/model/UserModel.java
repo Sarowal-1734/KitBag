@@ -1,5 +1,7 @@
 package com.example.kitbag.model;
 
+import com.google.firebase.Timestamp;
+
 public class UserModel {
     private String userId;
     private String userName;
@@ -9,6 +11,7 @@ public class UserModel {
     private String imageUrl;
     private String district;
     private String userType;
+    private Timestamp joiningDate;
 
     public UserModel() {
         // Must Needed empty constructor
@@ -76,5 +79,13 @@ public class UserModel {
 
     public void setDistrict(String district) {
         this.district = district;
+    }
+
+    public Timestamp getJoiningDate() {
+        return joiningDate;
+    }
+
+    public void setJoiningDate(Timestamp joiningDate) {
+        this.joiningDate = joiningDate;
     }
 }
