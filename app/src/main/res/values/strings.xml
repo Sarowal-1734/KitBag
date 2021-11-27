@@ -890,4 +890,5 @@
     <string name="ok">Ok</string>
     <string name="agent_s_contact">Agent\'s Contact</string>
     <string name="deliveryman_s_contact">Deliveryman\'s Contact</string>
+    <string name="cancel_delivery">Cancel Delivery</string>
 </resources>

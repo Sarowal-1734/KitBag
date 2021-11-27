@@ -21,13 +21,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        app:cardBackgroundColor="?attr/cardViewPostBackground"
         app:cardCornerRadius="7dp"
         app:cardElevation="7dp">
 
         <ImageView
             android:id="@+id/imageViewPerson"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
             android:scaleType="centerCrop" />
     </androidx.cardview.widget.CardView>
 
@@ -48,6 +49,16 @@
         android:layout_marginBottom="8dp"
         android:text="User_Type"
         android:textColor="?attr/textColor" />
+
+    <TextView
+        android:id="@+id/textViewPhotoUploadedOrNot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp"
+        android:text="The user doesn't uploaded his/her photo yet"
+        android:textColor="@color/red"
+        android:visibility="gone" />
 
     <RelativeLayout
         android:layout_width="match_parent"

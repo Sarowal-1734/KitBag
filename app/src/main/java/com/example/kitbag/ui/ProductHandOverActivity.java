@@ -462,10 +462,17 @@ public class ProductHandOverActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         name.setText(documentSnapshot.getString("nameEnglish"));
-                        userType.setText(documentSnapshot.getString("thana"));
-                        Glide.with(ProductHandOverActivity.this).load(documentSnapshot.getString("imageUrlUserFace"))
-                                .placeholder(ShimmerEffect.get())
-                                .into(imageViewPerson);
+                        userType.setText(documentSnapshot.getString("userType"));
+                        if (documentSnapshot.getString("imageUrlUserFace") != null) {
+                            Glide.with(ProductHandOverActivity.this).load(documentSnapshot.getString("imageUrlUserFace"))
+                                    .placeholder(ShimmerEffect.get())
+                                    .into(imageViewPerson);
+                        } else {
+                            Glide.with(ProductHandOverActivity.this).load(documentSnapshot.getString("imageUrlUserFace"))
+                                    .placeholder(R.drawable.ic_profile)
+                                    .into(imageViewPerson);
+                            view.findViewById(R.id.textViewPhotoUploadedOrNot).setVisibility(View.VISIBLE);
+                        }
                     }
                 });
         builder = new AlertDialog.Builder(this);
