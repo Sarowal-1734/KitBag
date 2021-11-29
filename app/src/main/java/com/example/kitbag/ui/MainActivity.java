@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Binding our activity
     private ActivityMainBinding binding;
+    private TextView textViewDismissCustomSearch;
     private AutoCompleteTextView editTextFromDistrict, editTextFromUpazila, editTextToDistrict, editTextToUpazila;
 
     // Exit app on back pressed again
@@ -347,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // On search button click
+        // On search Icon click from app bar
         binding.customAppBar.appbarImageviewSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -358,6 +359,7 @@ public class MainActivity extends AppCompatActivity {
                 editTextFromUpazila = view.findViewById(R.id.EditTextFromUpazila);
                 editTextToDistrict = view.findViewById(R.id.EditTextToDistrict);
                 editTextToUpazila = view.findViewById(R.id.EditTextToUpazila);
+                textViewDismissCustomSearch = view.findViewById(R.id.textViewDismissCustomSearch);
                 Button buttonSearch = view.findViewById(R.id.buttonSearch);
                 //setAdapter on District and Upazila
                 setDistrictUpazilaOnEditText();
@@ -366,6 +368,15 @@ public class MainActivity extends AppCompatActivity {
                 builder.setView(view);
                 dialog = builder.create();
                 dialog.show();
+
+                //textView dismissCustomSearch dialog
+                textViewDismissCustomSearch.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
                 // On click the search button
                 buttonSearch.setOnClickListener(new View.OnClickListener() {
                     @Override

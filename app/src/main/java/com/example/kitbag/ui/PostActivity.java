@@ -308,7 +308,6 @@ public class PostActivity extends AppCompatActivity {
                 return false;
             }
         });
-
         // Get image from camera and set to the imageView
         activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -369,6 +368,8 @@ public class PostActivity extends AppCompatActivity {
         });
 
     } // Ending onCreate
+
+
 
     private void disableViewsBasedOnStatusCurrent(String statusCurrent) {
         if (statusCurrent.equals("Primary_Agent")) {
@@ -879,5 +880,12 @@ public class PostActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    // Clicking Event on termsAndCondition textView
+    public void termsAndCondition(View view) {
+        Intent intent = new Intent(PostActivity.this,FragmentContainerActivity.class);
+        intent.putExtra("whatToDo","termsAndCondition");
+        startActivity(intent);
     }
 }

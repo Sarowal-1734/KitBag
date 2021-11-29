@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="How do I delete my post?"
+        android:text="@string/how_do_i_delete_my_post"
         android:textColor="?attr/textColor"
         android:textStyle="bold" />
 
@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="To delete a post:"
+        android:text="@string/to_delete_a_post"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="1. Tap the profile icon (on the top right)"
+        android:text="@string/_1_tap_the_profile_icon_on_the_top_right"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="2. Tap my post"
+        android:text="@string/_2_tap_my_post"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="3. Tap the post from the list of your published post"
+        android:text="@string/_3_tap_the_post_from_the_list_of_your_published_post"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="4. Tap delete post and tap yes"
+        android:text="@string/_4_tap_delete_post_and_tap_yes"
         android:textColor="?attr/textColor" />
 
     <RelativeLayout

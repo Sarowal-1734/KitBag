@@ -17,7 +17,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:gravity="center"
-            android:text="How do I (Agent) handover product to a deliveryman?"
+            android:text="@string/how_do_i_agent_handover_product_to_a_deliveryman"
             android:textColor="?attr/textColor"
             android:textStyle="bold" />
 
@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="To handover product:"
+            android:text="@string/to_handover_product"
             android:textColor="?attr/textColor" />
 
         <TextView
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="1. Login to your account"
+            android:text="@string/_1_login_to_your_account"
             android:textColor="?attr/textColor" />
 
         <TextView
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="2. Tap the profile icon (on the top right)"
+            android:text="@string/_2_tap_the_profile_icon_on_the_top_right"
             android:textColor="?attr/textColor" />
 
         <TextView
@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="3. Tap product inprogress"
+            android:text="@string/_3_tap_product_inprogress"
             android:textColor="?attr/textColor" />
 
         <TextView
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="4. Tap the post from your list (Can search by post owner's phone number)"
+            android:text="@string/_4_tap_the_post_from_your_list_can_search_by_post_owner_s_phone_number"
             android:textColor="?attr/textColor" />
 
         <TextView
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="5. Tap product handover process"
+            android:text="@string/_5_tap_product_handover_process"
             android:textColor="?attr/textColor" />
 
         <TextView
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="6. Provide the deliveryman contact number and Tap send OTP"
+            android:text="@string/_6_provide_the_deliveryman_contact_number_and_tap_send_otp"
             android:textColor="?attr/textColor" />
 
         <TextView
@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="7. An OTP will be send to the given deliveryman number"
+            android:text="@string/_7_an_otp_will_be_send_to_the_given_deliveryman_number"
             android:textColor="?attr/textColor" />
 
         <TextView
@@ -89,7 +89,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="8. Take the OTP from deliveryman and verify"
+            android:text="@string/_8_take_the_otp_from_deliveryman_and_verify"
             android:textColor="?attr/textColor" />
 
         <TextView
@@ -97,14 +97,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="9. If verify success, the post status will be updated to Deliveryman. And then you have to handover the product to deliveryman"
+            android:text="@string/product_handover_to_deliveryman"
             android:textColor="?attr/textColor" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="If the post has preferred deliveryman then this post can only be delivered by the preferred deliveryman. If another deliveryman want to deliver the product then he has to send delivery request to the post owner to remove preferred deliveryman from his post.\nIf no preferred deliveryman selected then the post can be delivered by any deliveryman."
+            android:text="@string/preferred_deliveryman"
             android:textColor="?attr/textColor" />
     </LinearLayout>
 
