@@ -2,9 +2,7 @@ package com.example.kitbag.authentication;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -21,7 +19,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.GravityCompat;
 
 import com.example.kitbag.R;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityResetPasswordBinding;
 import com.example.kitbag.fragment.container.FragmentContainerActivity;
 import com.example.kitbag.ui.MainActivity;
@@ -36,8 +33,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.Locale;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class ResetPasswordActivity extends AppCompatActivity {
 
@@ -53,6 +50,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
     // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +173,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                                                         FirebaseDatabase.getInstance().getReference().child("Passwords")
                                                                 .child(getIntent().getStringExtra("phoneNumber"))
                                                                 .setValue(binding.editTextPassword.getText().toString());
+                                                        updateNewUserToken();
                                                         progressDialog.dismiss();
                                                         Toast.makeText(ResetPasswordActivity.this, "Password Reset Successfully.", Toast.LENGTH_SHORT).show();
                                                         startActivity(new Intent(ResetPasswordActivity.this, MainActivity.class));
@@ -198,6 +197,19 @@ public class ResetPasswordActivity extends AppCompatActivity {
             progressDialog.dismiss();
             showMessageNoConnection();
         }
+    }
+
+    private void updateNewUserToken() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (task.isSuccessful()) {
+                            db.collection("Users").document(mAuth.getCurrentUser().getUid())
+                                    .update("userToken", task.getResult());
+                        }
+                    }
+                });
     }
 
     private void showProgressBar() {

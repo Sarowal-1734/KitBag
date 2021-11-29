@@ -29,6 +29,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.SignInMethodQueryResult;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -40,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -236,6 +239,16 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            FirebaseMessaging.getInstance().getToken()
+                                    .addOnCompleteListener(new OnCompleteListener<String>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<String> task) {
+                                            if (task.isSuccessful()) {
+                                                db.collection("Users").document(mAuth.getCurrentUser().getUid())
+                                                        .update("userToken", task.getResult());
+                                            }
+                                        }
+                                    });
                             // Hide progressBar
                             progressDialog.dismiss();
                             Toast.makeText(LoginActivity.this, "Login Success!", Toast.LENGTH_SHORT).show();

@@ -1,10 +1,11 @@
 package com.example.kitbag.ui;
 
+import static com.example.kitbag.ui.MainActivity.fromMainActivity;
+import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
+
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -13,6 +14,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -24,16 +26,23 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.GravityCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.kitbag.R;
+import com.example.kitbag.adapter.NotificationAdapter;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.chat.MessageActivity;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityNotificationsBinding;
 import com.example.kitbag.fragment.container.FragmentContainerActivity;
+import com.example.kitbag.model.ModelClassNotification;
 import com.example.kitbag.model.UserModel;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
@@ -44,9 +53,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
-import java.util.Locale;
+import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -72,6 +83,16 @@ public class NotificationsActivity extends AppCompatActivity {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("Users");
     private UserModel userModel;
+
+    // For Pagination
+    private boolean isScrolling = false;
+    private boolean isLastItemReached = false;
+    private int limit = 8;
+    private DocumentSnapshot lastVisible;
+
+    // Get data from fireStore and set to the recyclerView
+    private NotificationAdapter notificationAdapter;
+    private ArrayList<ModelClassNotification> notificationList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +159,9 @@ public class NotificationsActivity extends AppCompatActivity {
             binding.navigationView.getMenu().findItem(R.id.nav_language).setVisible(false);
         }
 
+        // Get notifications from fireStore and set to the recyclerView
+        displayNotifications();
+
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
@@ -153,6 +177,20 @@ public class NotificationsActivity extends AppCompatActivity {
 
         // Change the title of the appBar
         binding.customAppBar.appbarTitle.setText("Notifications");
+
+        // Swipe from up to bottom to refresh the recyclerView
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                binding.swipeRefreshLayout.setRefreshing(true);
+                if (isConnected()) {
+                    restartApp();
+                } else {
+                    displayNoConnection();
+                }
+                binding.swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         // Open Drawer Layout
         binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
@@ -227,6 +265,108 @@ public class NotificationsActivity extends AppCompatActivity {
         });
 
     }// ending onCrate
+
+    private void restartApp() {
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(getIntent());
+        overridePendingTransition(0, 0);
+    }
+
+    private void displayNotifications() {
+        notificationAdapter = new NotificationAdapter(NotificationsActivity.this, notificationList);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(NotificationsActivity.this, LinearLayoutManager.VERTICAL, false);
+        binding.recyclerViewNotificationList.setLayoutManager(linearLayoutManager);
+        binding.recyclerViewNotificationList.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        binding.recyclerViewNotificationList.setAdapter(notificationAdapter);
+        // Show progressBar
+        showProgressDialog();
+        // get data from fireStore and set to the recyclerView
+        db.collection("Notification").document(currentUser.getUid())
+                .collection("notifications")
+                //.orderBy("timeAdded", Query.Direction.DESCENDING)
+                .limit(limit)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot document : task.getResult()) {
+                                ModelClassNotification notification = document.toObject(ModelClassNotification.class);
+                                notificationList.add(notification);
+                            }
+                            progressDialog.dismiss();
+                            notificationAdapter.notifyDataSetChanged();
+                            if (task.getResult().size() > 0) {
+                                lastVisible = task.getResult().getDocuments().get(task.getResult().size() - 1);
+                            }
+                            // On recycler item click listener
+                            notificationAdapter.setOnItemClickListener(new NotificationAdapter.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(ModelClassNotification notification) {
+                                    Intent intent = new Intent(NotificationsActivity.this, PostInfoActivity.class);
+                                    intent.putExtra("userId", notification.getUserId());
+                                    intent.putExtra("postReference", notification.getPostReference());
+                                    intent.putExtra("statusCurrent", notification.getStatusCurrent());
+                                    intent.putExtra(getOpenFromActivity, fromMainActivity);
+                                    startActivity(intent);
+                                }
+                            });
+
+                            RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+                                @Override
+                                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                                    super.onScrollStateChanged(recyclerView, newState);
+                                    if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
+                                        isScrolling = true;
+                                    }
+                                }
+
+                                @Override
+                                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                                    super.onScrolled(recyclerView, dx, dy);
+
+                                    LinearLayoutManager layoutManager = ((LinearLayoutManager) recyclerView.getLayoutManager());
+                                    int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+                                    int visibleItemCount = layoutManager.getChildCount();
+                                    int totalItemCount = layoutManager.getItemCount();
+
+                                    if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
+                                        isScrolling = false;
+                                        binding.progressBar.setVisibility(View.VISIBLE);
+                                        Query nextQuery = db.collection("Notification").document(currentUser.getUid())
+                                                .collection("notifications")
+                                                .orderBy("timeAdded", Query.Direction.DESCENDING)
+                                                .startAfter(lastVisible).limit(limit);
+                                        nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> t) {
+                                                if (t.isSuccessful()) {
+                                                    for (DocumentSnapshot d : t.getResult()) {
+                                                        ModelClassNotification notification = d.toObject(ModelClassNotification.class);
+                                                        notificationList.add(notification);
+                                                    }
+                                                    binding.progressBar.setVisibility(View.GONE);
+                                                    notificationAdapter.notifyDataSetChanged();
+                                                    if (t.getResult().size() > 0) {
+                                                        lastVisible = t.getResult().getDocuments().get(t.getResult().size() - 1);
+                                                    }
+
+                                                    if (t.getResult().size() < limit) {
+                                                        isLastItemReached = true;
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            };
+                            binding.recyclerViewNotificationList.addOnScrollListener(onScrollListener);
+                        }
+                    }
+                });
+    }
+
     private void registerAsDeliveryman() {
         // inflate custom layout
         View view = LayoutInflater.from(NotificationsActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
@@ -368,6 +508,15 @@ public class NotificationsActivity extends AppCompatActivity {
             return;
         }
         super.onBackPressed();
+    }
+
+    // Show progress Dialog
+    private void showProgressDialog() {
+        progressDialog = new ProgressDialog(NotificationsActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
     }
 
     private boolean isConnected() {

@@ -191,7 +191,7 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
-        // setting up adapter
+        // Setting up adapter
         binding.recyclerViewUser.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerViewUser.setHasFixedSize(true);
         binding.recyclerViewUser.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));

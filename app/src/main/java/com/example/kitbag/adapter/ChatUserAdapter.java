@@ -85,7 +85,7 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
             textViewChatWith = itemView.findViewById(R.id.textViewChatWith);
             textViewSampleProductTitle = itemView.findViewById(R.id.textViewUserTitle);
 
-            //for use onItemClickListener from MainActivity
+            // For use onItemClickListener from MainActivity
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -97,7 +97,7 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
             });
         }
     }
-    //for use onItemClickListener from MainActivity
+    // For use onItemClickListener from MainActivity
     public interface OnItemClickListener {
         void onItemClick(ModelClassMessageUser list);
     }

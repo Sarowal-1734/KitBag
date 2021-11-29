@@ -49,8 +49,10 @@ import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
 import com.example.kitbag.effect.ShimmerEffect;
 import com.example.kitbag.fragment.container.FragmentContainerActivity;
+import com.example.kitbag.model.ChatModel;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
+import com.example.kitbag.notification.FcmNotificationsSender;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -60,6 +62,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -99,6 +102,9 @@ public class PostInfoActivity extends AppCompatActivity {
     // FireStore Connection
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("Users");
+
+    // Firebase database For storing message
+    private DatabaseReference databaseReference;
 
     private boolean removeFromCart = false;
 
@@ -1026,8 +1032,8 @@ public class PostInfoActivity extends AppCompatActivity {
                                 //model = documentSnapshot.toObject(UserModel.class);
                                 String userType = documentSnapshot.getString("userType");
                                 if (userType.equals("Deliveryman") || userType.equals("Agent")) {
-                                    //todo send a notification to the post owner
-                                    Toast.makeText(PostInfoActivity.this, "Delivery request sent to post owner", Toast.LENGTH_SHORT).show();
+                                    sendTextMessageWithNotification();
+                                    binding.buttonRequestDelivery.setEnabled(false);
                                 } else {
                                     becomeDeliveryMan();
                                 }
@@ -1037,6 +1043,24 @@ public class PostInfoActivity extends AppCompatActivity {
         } else {
             displayNoConnection();
         }
+    }
+
+    // On Request Delivery Button Clicked
+    private void sendTextMessageWithNotification() {
+        databaseReference = FirebaseDatabase.getInstance().getReference();
+        String title = "You have a new text message";
+        String message = "Hi! I want to deliver your product";
+        // Store message in Database
+        ChatModel chatModel = new ChatModel();
+        chatModel.setSender(currentUser.getUid());
+        chatModel.setReceiver(modelClassPost.getUserId());
+        chatModel.setMessage(message);
+        chatModel.setStatus("Sent");
+        databaseReference.child("Chats").child(modelClassPost.getPostReference()).child(currentUser.getUid()).push().setValue(chatModel);
+        // Sent Notification
+        FcmNotificationsSender notificationsSender = new FcmNotificationsSender(userModel.getUserToken(),
+                modelClassPost.getUserId(), title, message, getApplicationContext(), PostInfoActivity.this);
+        notificationsSender.SendNotifications();
     }
 
     public void onProductHandoverButtonClick(View view) {

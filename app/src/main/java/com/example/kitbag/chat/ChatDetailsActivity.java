@@ -25,6 +25,7 @@ import com.example.kitbag.databinding.ActivityChatDetailsBinding;
 import com.example.kitbag.model.ChatModel;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
+import com.example.kitbag.notification.FcmNotificationsSender;
 import com.example.kitbag.ui.EditProfileActivity;
 import com.example.kitbag.ui.PostInfoActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,13 +49,14 @@ public class ChatDetailsActivity extends AppCompatActivity {
     private ActivityChatDetailsBinding binding;
     private ChatAdapter chatAdapter;
     private ArrayList<ChatModel> chatModelList = new ArrayList<>();
+    private UserModel receiverUserModel;
 
     // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
 
-    //firebase database For storing message
-    DatabaseReference databaseReference;
+    // Firebase database For storing message
+    private DatabaseReference databaseReference;
 
     // For message
     private String message;
@@ -178,6 +180,7 @@ public class ChatDetailsActivity extends AppCompatActivity {
                         }
                         sendMessage(currentUser.getUid(), receiverId, message);
                         binding.editTextSendText.setText("");
+                        sendNotification(receiverId, message);
                     } else {
                         displayNoConnection();
                     }
@@ -189,6 +192,14 @@ public class ChatDetailsActivity extends AppCompatActivity {
 
         // Read Message and show into recyclerview
         showMessage();
+    }
+
+    // Send Notification
+    private void sendNotification(String receiverUserId, String message) {
+        String title = "You have a new text message";
+        FcmNotificationsSender notificationsSender = new FcmNotificationsSender(receiverUserModel.getUserToken(),
+                receiverUserId, title, message, getApplicationContext(), ChatDetailsActivity.this);
+        notificationsSender.SendNotifications();
     }
 
     private boolean isConnected() {
@@ -225,10 +236,10 @@ public class ChatDetailsActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        UserModel model = documentSnapshot.toObject(UserModel.class);
-                        binding.textViewChatWithUserName.setText(model.getUserName());
-                        binding.textViewChatWithUserType.setText(model.getUserType());
-                        Picasso.get().load(model.getImageUrl()).fit().placeholder(R.drawable.logo)
+                        receiverUserModel = documentSnapshot.toObject(UserModel.class);
+                        binding.textViewChatWithUserName.setText(receiverUserModel.getUserName());
+                        binding.textViewChatWithUserType.setText(receiverUserModel.getUserType());
+                        Picasso.get().load(receiverUserModel.getImageUrl()).fit().placeholder(R.drawable.logo)
                                 .into(binding.circularImageViewChatWithUser);
                     }
                 });

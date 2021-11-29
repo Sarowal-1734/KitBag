@@ -24,6 +24,7 @@ import com.example.kitbag.R;
 import com.example.kitbag.databinding.ActivityNidInformationBinding;
 import com.example.kitbag.model.ModelClassDeliveryman;
 import com.example.kitbag.model.UserModel;
+import com.example.kitbag.notification.FcmNotificationsSender;
 import com.example.kitbag.ui.MainActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -252,6 +253,9 @@ public class NidInformationActivity extends AppCompatActivity {
     private void showDialog() {
         // Send a message to the user phone number
         sendMessage();
+        String title = "Deliveryman Application";
+        String message = "Your application has been successfully submitted.";
+        sendNotification(title, message);
         // Show dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(NidInformationActivity.this);
         builder.setTitle("Submitted");
@@ -268,6 +272,13 @@ public class NidInformationActivity extends AppCompatActivity {
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    // Send Notification
+    private void sendNotification(String title, String message) {
+        FcmNotificationsSender notificationsSender = new FcmNotificationsSender(userModel.getUserToken(),
+                currentUser.getUid(), title, message, getApplicationContext(), NidInformationActivity.this);
+        notificationsSender.SendNotifications();
     }
 
     private void sendMessage() {

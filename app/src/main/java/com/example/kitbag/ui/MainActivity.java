@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
     // Check is searching or not
     private boolean searching = false;
 
-    // get data from fireStore and set to the recyclerView
+    // Get data from fireStore and set to the recyclerView
     private PostAdapter postAdapter;
 
     private ArrayList<ModelClassPost> postList = new ArrayList<>();

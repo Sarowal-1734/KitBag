@@ -141,6 +141,7 @@
         <entry key="app/src/main/res/layout/progress_dialog.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/row_discover_kitbag_recycler_view_item.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/row_item_discover_kitbag.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/row_notification_item.xml" value="0.1" />
         <entry key="app/src/main/res/layout/row_post_items_recycler_view.xml" value="0.33" />
         <entry key="app/src/main/res/layout/sample_receiver_chat.xml" value="0.4036458333333333" />
         <entry key="app/src/main/res/layout/sample_sender_chat.xml" value="0.4036458333333333" />

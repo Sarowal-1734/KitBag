@@ -22,8 +22,10 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.kitbag.R;
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
+import com.example.kitbag.model.ModelClassNotification;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
+import com.example.kitbag.notification.FcmNotificationsSender;
 import com.example.kitbag.ui.MainActivity;
 import com.example.kitbag.ui.PostInfoActivity;
 import com.goodiebag.pinview.Pinview;
@@ -39,6 +41,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.squareup.picasso.Picasso;
 
 import java.io.BufferedReader;
@@ -125,8 +128,9 @@ public class OtpVerificationActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            if (documentSnapshot.getString("imageUrl") != null) {
-                                Picasso.get().load(documentSnapshot.getString("imageUrl")).placeholder(R.drawable.ic_profile)
+                            UserModel userModel = documentSnapshot.toObject(UserModel.class);
+                            if (userModel.getImageUrl() != null) {
+                                Picasso.get().load(userModel.getImageUrl()).placeholder(R.drawable.ic_profile)
                                         .fit().centerCrop().into(binding.customAppBar.appbarImageviewProfile);
                             }
                         }
@@ -222,28 +226,33 @@ public class OtpVerificationActivity extends AppCompatActivity {
                                     "statusPrimaryAgent", null,
                                     "statusPrimaryAgentTime", null
                             );
-                    String message = "Agent successfully verified. Now you can take your product back from the Agent.";
-                    showDialog(message);
+                    String messageDialog = "Agent successfully verified. Now you can take your product back from the Agent.";
+                    String messageNotification = "Your product status changed from Primary_Agent to N/A";
+                    showDialog(messageDialog, messageNotification);
                 } else if (whatToDo.equals("verifyPrimaryAgent")) {
                     // Update status
                     updatePostStatus("Primary_Agent", "statusPrimaryAgent", "statusPrimaryAgentTime");
-                    String message = "Agent successfully verified. Now please handover your item to the Agent.";
-                    showDialog(message);
+                    String messageDialog = "Agent successfully verified. Now please handover your item to the Agent.";
+                    String messageNotification = "Your product status updated from Sender to Primary_Agent";
+                    showDialog(messageDialog, messageNotification);
                 } else if (whatToDo.equals("verifyDeliveryman")) {
                     // Update status
                     updatePostStatus("Deliveryman", "statusDeliveryman", "statusDeliverymanTime");
-                    String message = "Deliveryman successfully verified. Now please handover your item to the Deliveryman.";
-                    showDialog(message);
+                    String messageDialog = "Deliveryman successfully verified. Now please handover your item to the Deliveryman.";
+                    String messageNotification = "Your product status updated from Primary_Agent to Deliveryman";
+                    showDialog(messageDialog, messageNotification);
                 } else if (whatToDo.equals("verifyFinalAgent")) {
                     // Update status
                     updatePostStatus("Final_Agent", "statusFinalAgent", "statusFinalAgentTime");
-                    String message = "Agent successfully verified. Now please handover your item to the Agent.";
-                    showDialog(message);
+                    String messageDialog = "Agent successfully verified. Now please handover your item to the Agent.";
+                    String messageNotification = "Your product status updated from Deliveryman to Final_Agent";
+                    showDialog(messageDialog, messageNotification);
                 } else if (whatToDo.equals("verifyReceiver")) {
                     // Update status
                     updatePostStatus("Delivered", "receiverPhoneNumber", "statusReceiverPhoneNumberTime");
-                    String message = "Receiver successfully verified. Now please deliver item to the receiver.";
-                    showDialog(message);
+                    String messageDialog = "Receiver successfully verified. Now please deliver item to the receiver.";
+                    String messageNotification = "Your product has been succefully delivered";
+                    showDialog(messageDialog, messageNotification);
                 }
             } else {
                 progressDialog.dismiss();
@@ -256,6 +265,33 @@ public class OtpVerificationActivity extends AppCompatActivity {
         }
     }
 
+    // Send Notification
+    private void sendNotification(String receiverUserId, String title, String message, String statusCurrent) {
+        db.collection("Users").document(receiverUserId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                storeNotification(receiverUserId, title, message, statusCurrent);
+                UserModel model = documentSnapshot.toObject(UserModel.class);
+                FcmNotificationsSender notificationsSender = new FcmNotificationsSender(model.getUserToken(),
+                        receiverUserId, title, message, getApplicationContext(), OtpVerificationActivity.this);
+                notificationsSender.SendNotifications();
+            }
+        });
+    }
+
+    private void storeNotification(String receiverUserId, String title, String message, String statusCurrent) {
+        ModelClassNotification notification = new ModelClassNotification();
+        notification.setUserId(receiverUserId);
+        notification.setTitle(title);
+        notification.setMessage(message);
+        notification.setStatusCurrent(statusCurrent);
+        notification.setPostReference(getIntent().getStringExtra("postReference"));
+        notification.setTime(new Timestamp(new Date()));
+        // Store User Data
+        db.collection("Notification").document(receiverUserId)
+                .collection("notifications").add(notification);
+    }
+
     private void updatePostStatus(String currentStatus, String statusDeliverymanOrAgentOrReceiver, String statusDeliverymanOrAgentOrReceiverTime) {
         db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
                 .update(
@@ -265,17 +301,21 @@ public class OtpVerificationActivity extends AppCompatActivity {
                 );
     }
 
-    private void showDialog(String message) {
+    private void showDialog(String messageDialog, String messageNotification) {
         db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        progressDialog.dismiss();
                         ModelClassPost post = documentSnapshot.toObject(ModelClassPost.class);
+                        // Send Notification
+                        String title = "Product Status Updated!";
+                        sendNotification(post.getUserId(), title, messageNotification, post.getStatusCurrent());
+                        // Show dialog
+                        progressDialog.dismiss();
                         AlertDialog.Builder builder = new AlertDialog.Builder(OtpVerificationActivity.this);
                         builder.setTitle("Verified!");
-                        builder.setMessage(message);
+                        builder.setMessage(messageDialog);
                         builder.setCancelable(false);
                         builder.setPositiveButton(
                                 "Got it",
@@ -349,18 +389,30 @@ public class OtpVerificationActivity extends AppCompatActivity {
                             userModel.setDistrict(null);
                             userModel.setUpazilla(null);
                             userModel.setImageUrl(null);
-                            collectionReference.document(currentUser.getUid()).set(userModel)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            // Store FCM userToken for sending notification
+                            FirebaseMessaging.getInstance().getToken()
+                                    .addOnCompleteListener(new OnCompleteListener<String>() {
                                         @Override
-                                        public void onSuccess(Void unused) {
-                                            // Store the password in RealTime Database for ForgotPassword
-                                            FirebaseDatabase.getInstance().getReference().child("Passwords")
-                                                    .child(phoneNumber.substring(1, 14)).setValue(getIntent().getStringExtra("password"));
-                                            // Hide progressBar
-                                            progressDialog.dismiss();
-                                            Toast.makeText(OtpVerificationActivity.this, "Registration Success!", Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
-                                            finish();
+                                        public void onComplete(@NonNull Task<String> task) {
+                                            if (task.isSuccessful()) {
+                                                // Store new FCM registration token
+                                                userModel.setUserToken(task.getResult());
+                                                // Store User Data
+                                                collectionReference.document(currentUser.getUid()).set(userModel)
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void unused) {
+                                                                // Store the password in RealTime Database for ForgotPassword
+                                                                FirebaseDatabase.getInstance().getReference().child("Passwords")
+                                                                        .child(phoneNumber.substring(1, 14)).setValue(getIntent().getStringExtra("password"));
+                                                                // Hide progressBar
+                                                                progressDialog.dismiss();
+                                                                Toast.makeText(OtpVerificationActivity.this, "Registration Success!", Toast.LENGTH_SHORT).show();
+                                                                startActivity(new Intent(OtpVerificationActivity.this, MainActivity.class));
+                                                                finish();
+                                                            }
+                                                        });
+                                            }
                                         }
                                     });
                         } else {
