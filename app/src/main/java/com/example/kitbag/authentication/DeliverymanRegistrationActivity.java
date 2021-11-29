@@ -28,6 +28,7 @@ import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.example.kitbag.R;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityDeliverymanRegistrationBinding;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
@@ -118,10 +119,10 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
             public void onClick(View v) {
                 submitClicked++;
                 if (submitClicked == 1) {
-                    binding.textViewNID.setText("Back of NID");
+                    binding.textViewNID.setText(R.string.back_of_nid);
                     imageUriFrontNID = imageUri;
                     AlertDialog.Builder builder1 = new AlertDialog.Builder(DeliverymanRegistrationActivity.this);
-                    builder1.setTitle("Great! Now please capture the back of your NID.");
+                    builder1.setTitle(R.string.now_capture_the_back_of_your_NID);
                     builder1.setCancelable(false);
                     builder1.setPositiveButton(
                             "Ok",

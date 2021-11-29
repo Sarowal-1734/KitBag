@@ -252,10 +252,10 @@ public class NidInformationActivity extends AppCompatActivity {
         // Show dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(NidInformationActivity.this);
         builder.setTitle("Submitted");
-        builder.setMessage("Your application has been successfully submitted. \nNow please go to any of your nearest KitBag Agent to get approval of your application.");
+        builder.setMessage(R.string.confirmation_of_deliveryman_registration);
         builder.setCancelable(false);
         builder.setPositiveButton(
-                "Got it",
+                R.string.got_it,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();

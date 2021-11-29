@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.kitbag.R;
 import com.example.kitbag.adapter.DiscoverKitBagAdapter;
+import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.FragmentDiscoverKitBagBinding;
 
 import java.util.ArrayList;
@@ -36,15 +37,29 @@ public class DiscoverKitBagFragment extends Fragment {
 
         // Setup Adapter
         ArrayList<String> discoverItems = new ArrayList<>();
-        discoverItems.add("1. How to create an account?");
-        discoverItems.add("2. How do I edit my profile?");
-        discoverItems.add("3. How to recover password?");
-        discoverItems.add("4. How to change your password?");
-        discoverItems.add("5. How to post an item?");
-        discoverItems.add("6. How to edit my post?");
-        discoverItems.add("7. How to delete my post?");
-        discoverItems.add("8. How to become a deliveryman?");
-        discoverItems.add("9. How to handover product?");
+        // getting the system language
+        String lang = SharedPreference.getLanguageValue(getActivity());
+        if(lang.equals("en")) {
+            discoverItems.add("1. How to create an account?");
+            discoverItems.add("2. How do I edit my profile?");
+            discoverItems.add("3. How to recover password?");
+            discoverItems.add("4. How to change your password?");
+            discoverItems.add("5. How to post an item?");
+            discoverItems.add("6. How to edit my post?");
+            discoverItems.add("7. How to delete my post?");
+            discoverItems.add("8. How to become a deliveryman?");
+            discoverItems.add("9. How to handover product?");
+        }else {
+            discoverItems.add("১. কিভাবে অ্যাকউন্ট তৈরী করবেন?");
+            discoverItems.add("২. কিভাবে আপনার প্রফাইল এডিট করবেন?");
+            discoverItems.add("৩. কিভাবে আপনার পাসওয়ার্ড রিকভার করবেন?");
+            discoverItems.add("৪. কিভাবে আপনার পাসওয়ার্ড পরিবর্তন করবেন?");
+            discoverItems.add("৫. কিভাবে একটি প্রডাক্ট পোস্ট করবেন?");
+            discoverItems.add("৬. কিভাবে আপনার পোস্ট এডিট করবেন?");
+            discoverItems.add("৭. কিভাবে আপনার পোস্ট ডিলিট করবেন?");
+            discoverItems.add("৮. কিভাবে আপনি ডেলিভারিম্যান হতে পারেন?");
+            discoverItems.add("৯. একটি প্রডাক্ট পাঠানোর সম্পূর্ন প্রক্রিয়া?");
+        }
         binding.recyclerViewDiscoverKitBag.setLayoutManager(new LinearLayoutManager(getActivity()));
         binding.recyclerViewDiscoverKitBag.setHasFixedSize(true);
         DiscoverKitBagAdapter adapter = new DiscoverKitBagAdapter(getActivity(), discoverItems);

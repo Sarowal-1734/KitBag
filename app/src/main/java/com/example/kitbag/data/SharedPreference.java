@@ -29,7 +29,7 @@ public class SharedPreference {
 
     public static String getLanguageValue(Context context) {
         SharedPreferences pref = context.getSharedPreferences(PREFERENCE_LANGUAGE, Context.MODE_PRIVATE);
-        return pref.getString(PREFERENCE_LANGUAGE, "en");
+        return pref.getString(PREFERENCE_LANGUAGE, "bn");
     }
 
     public static void setConnectionCheckupValue(Context context, Boolean check) {

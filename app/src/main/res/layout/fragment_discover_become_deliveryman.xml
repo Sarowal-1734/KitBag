@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="How do I become a deliveryman?"
+        android:text="@string/how_do_i_become_a_deliveryman"
         android:textColor="?attr/textColor"
         android:textStyle="bold" />
 
@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="To become a deliveryman:"
+        android:text="@string/to_become_a_deliveryman"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="1. Tap the profile icon (on the top right)"
+        android:text="@string/_1_tap_the_profile_icon_on_the_top_right"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="2. Tap become a deliveryman"
+        android:text="@string/_2_tap_become_a_deliveryman"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="3. Tap proceed"
+        android:text="@string/_3_tap_proceed"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="4. Capture front of your NID and submit"
+        android:text="@string/_4_capture_front_of_your_nid_and_submit"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -60,7 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="5. Capture back of your NID and submit"
+        android:text="@string/_5_capture_back_of_your_nid_and_submit"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="5. Take a photo of your face and submit"
+        android:text="@string/_5_take_a_photo_of_your_face_and_submit"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -76,7 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="6. Fill in all information and submit"
+        android:text="@string/_6_fill_in_all_information_and_submit"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -84,7 +84,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="7. Tap confirm"
+        android:text="@string/_7_tap_confirm"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -92,14 +92,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="7. Tap got it"
+        android:text="@string/_7_tap_got_it"
         android:textColor="?attr/textColor" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="You just submitted your deliveryman application.\nThen you have to go to any of your nearest KitBag agent to get approval of your application.\nAfter getting the approval you will be a deliveryman."
+        android:text="@string/fragment_confirm_deliveryman_registration"
         android:textColor="?attr/textColor" />
 
     <RelativeLayout

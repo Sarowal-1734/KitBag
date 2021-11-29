@@ -13,7 +13,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:gravity="center"
-        android:text="How do I handover my product to a Primary Agent?"
+        android:text="@string/how_do_i_handover_my_product_to_a_primary_agent"
         android:textColor="?attr/textColor"
         android:textStyle="bold" />
 
@@ -21,7 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="To handover your product:"
+        android:text="@string/to_handover_your_product"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="1. Tap the profile icon (on the top right)"
+        android:text="@string/_1_tap_the_profile_icon_on_the_top_right"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="2. Tap my post"
+        android:text="@string/_2_tap_my_post"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="3. Tap the post from the list of your published post"
+        android:text="@string/_3_tap_the_post_from_the_list_of_your_published_post"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="4. Tap product handover process"
+        android:text="@string/_4_tap_product_handover_process"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -61,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="4. Provide the agent's contact number and Tap send OTP"
+        android:text="@string/_4_provide_the_agent_s_contact_number_and_tap_send_otp"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -69,7 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="5. An OTP will be send to the given agent contact number"
+        android:text="@string/_5_an_otp_will_be_send_to_the_given_agent_contact_number"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -77,7 +77,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="6. Take the OTP from agent and verify"
+        android:text="@string/_6_take_the_otp_from_agent_and_verify"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -85,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="7. If verify success, your post status will be updated to Primary_Agent. And then you have to handover your product"
+        android:text="@string/_7_if_verify_success_your_post_status_will_be_updated_to_primary_agent_and_then_you_have_to_handover_your_product"
         android:textColor="?attr/textColor" />
 
 </LinearLayout>

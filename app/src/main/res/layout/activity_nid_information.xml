@@ -18,24 +18,24 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="8dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/review_your_nid_information"
-                android:textSize="14sp"
                 android:textColor="?attr/textColor"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:textColor="?attr/textColor"
-                android:text="@string/please_ensure_your_information_is_same_as_nid" />
+                android:text="@string/please_ensure_your_information_is_same_as_nid"
+                android:textColor="?attr/textColor" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -68,7 +68,6 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="মিঃ কিটব্যাগ"
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -101,7 +100,6 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="Mr. KitBag"
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -134,7 +132,6 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="KitBag Courier Service"
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -167,7 +164,6 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="KitBag Courier Service"
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -200,7 +196,6 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="08-11-2021"
                     android:inputType="date"
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
@@ -234,7 +229,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="1234567889"
+
                     android:inputType="numberDecimal"
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
@@ -276,7 +271,6 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="ঠিকানা বাসা/হোল্ডিং, গ্রাম/রাস্তা হাটুভাঙ্গা, ডাকঘর সমশিরা ৫৯০০, জয়পুরহাট"
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -309,7 +303,6 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="5900"
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -342,7 +335,6 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="Joypurhat Sadar"
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -375,7 +367,6 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="Joypurhat"
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -408,7 +399,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="Joypurhat"
+
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -441,7 +432,6 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="Rajshahi"
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -515,7 +505,6 @@
                     android:layout_marginTop="16dp"
                     android:layout_weight="3"
                     android:background="@android:color/transparent"
-                    android:text="Student"
                     android:textColor="?attr/textColor"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -530,7 +519,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
-                android:text="Make sure all the information is correct"
+                android:text="@string/make_sure_all_the_information_is_correct"
                 android:textColor="@color/app_bar"
                 android:textStyle="bold" />
 
@@ -539,7 +528,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Submit"
+                android:text="@string/submit"
                 android:textAllCaps="false" />
         </LinearLayout>
     </ScrollView>

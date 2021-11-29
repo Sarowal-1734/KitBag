@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="How do I edit my profile?"
+        android:text="@string/how_do_i_edit_my_profile"
         android:textColor="?attr/textColor"
         android:textStyle="bold" />
 
@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="To edit profile:"
+        android:text="@string/to_edit_profile"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="1. Tap the profile icon (on the top right)"
+        android:text="@string/_1_tap_the_profile_icon_on_the_top_right"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="2. Tap edit icon (bottom right corner of your photo)"
+        android:text="@string/_2_tap_edit_icon_bottom_right_corner_of_your_photo"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="3. Tap update profile after changing your info"
+        android:text="@string/_3_tap_update_profile_after_changing_your_info"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:text="If you are not already logged in, you will need to log in to edit your profile."
+        android:text="@string/if_you_are_not_already_logged_in_you_will_need_to_log_in_to_edit_your_profile"
         android:textColor="?attr/textColor" />
 
     <RelativeLayout

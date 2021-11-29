@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="How do I sign up for a user account on KitBag?"
+        android:text="@string/how_do_i_sign_up_for_a_user_account_on_kitbag"
         android:textColor="?attr/textColor"
         android:textStyle="bold" />
 
@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Signing up for an account on KitBag is quick, easy and completely free!"
+        android:text="@string/signing_up_for_an_account_on_kitbag_is_quick_easy_and_completely_free"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="1. Tap the profile icon (on the top right)"
+        android:text="@string/_1_tap_the_profile_icon_on_the_top_right"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="2. Tap login"
+        android:text="@string/_2_tap_login"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="3. Tap Sign up"
+        android:text="@string/_3_tap_sign_up"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="4. Provide your phone number and a new password"
+        android:text="@string/_4_provide_your_phone_number_and_a_new_password"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -60,7 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="5. Tap send OTP button"
+        android:text="@string/_5_tap_send_otp_button"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="6. Provide the OTP which has been sent to your given phone number"
+        android:text="@string/_6_provide_the_otp_which_has_been_sent_to_your_given_phone_number"
         android:textColor="?attr/textColor" />
 
     <TextView
@@ -76,7 +76,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="7. And finally tap verify button"
+        android:text="@string/_7_and_finally_tap_verify_button"
         android:textColor="?attr/textColor" />
 
     <RelativeLayout
