@@ -154,7 +154,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1.5"
-                android:background="?attr/selectableItemBackground"
+                android:background="@drawable/ripple_effect"
                 android:paddingTop="6dp"
                 android:paddingBottom="6dp"
                 app:srcCompat="@drawable/ic_send" />

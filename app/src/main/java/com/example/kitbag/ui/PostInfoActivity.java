@@ -43,6 +43,7 @@ import com.bumptech.glide.Glide;
 import com.example.kitbag.R;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
 import com.example.kitbag.authentication.LoginActivity;
+import com.example.kitbag.authentication.OtpVerificationActivity;
 import com.example.kitbag.chat.ChatDetailsActivity;
 import com.example.kitbag.chat.MessageActivity;
 import com.example.kitbag.databinding.ActivityPostInfoBinding;
@@ -199,7 +200,6 @@ public class PostInfoActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                             UserModel user = documentSnapshot.toObject(UserModel.class);
-                            //binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setText
                             // Inactive the delivery button if the user is not an Agent or Deliveryman
                             if (user.getUserType().equals("GENERAL_USER")) {
                                 binding.buttonRequestDelivery.setEnabled(false);
@@ -303,7 +303,7 @@ public class PostInfoActivity extends AppCompatActivity {
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_contact:
-                        intentFragment.putExtra("whatToDo","contactUs");
+                        intentFragment.putExtra("whatToDo", "contactUs");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_about:
@@ -338,10 +338,9 @@ public class PostInfoActivity extends AppCompatActivity {
             if (getIntent().getStringExtra(getOpenFromActivity).equals(fromMainActivity)
                     || getIntent().getStringExtra(getOpenFromActivity).equals(fromChatDetailsActivity)
                     || getIntent().getStringExtra(getOpenFromActivity).equals(fromOtpVerificationActivity)) {
-                // Opened from mainActivity
                 // Checking this is my post or not
                 if (getIntent().getStringExtra("userId").equals(currentUser.getUid())) {
-                    // This is my post so disable addToCart and remove delete button
+                    // This is my post so disable addToCart button
                     binding.buttonAddToCart.setEnabled(false);
                 } else {
                     // Checking already has this post in my cart or not
@@ -371,12 +370,15 @@ public class PostInfoActivity extends AppCompatActivity {
                 if (getIntent().getStringExtra("statusCurrent").equals("Deliveryman")
                         || getIntent().getStringExtra("statusCurrent").equals("Final_Agent")
                         || getIntent().getStringExtra("statusCurrent").equals("Delivered")) {
+                    // If status changed to deliveryman or later you can't edit or delete post
                     binding.buttonAddToCart.setEnabled(false);
-                    binding.buttonDeleteItem.setEnabled(false);
-                } else if (getIntent().getStringExtra("statusCurrent").equals("Primary_Agent")) {
                     binding.buttonDeleteItem.setEnabled(false);
                 } else {
                     binding.buttonDeleteItem.setBackgroundColor(getResources().getColor(R.color.red));
+                }
+                if (getIntent().getStringExtra("statusCurrent").equals("Primary_Agent")) {
+                    // If status 'Primary_Agent' you can cancel the delivery
+                    binding.buttonDeleteItem.setText("Cancel Delivery");
                 }
             }
             // Here came from my_cart. Now remove the item from my cart
@@ -944,41 +946,72 @@ public class PostInfoActivity extends AppCompatActivity {
     // On delete button clicked
     public void onDeletePostButtonClick(View view) {
         if (isConnected()) {
-            AlertDialog.Builder ab = new AlertDialog.Builder(PostInfoActivity.this);
-            ab.setTitle("Are you sure you want to delete this post?");
-            ab.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    showProgressBar();
-                    db.collection("All_Post").document(modelClassPost.getPostReference()).delete()
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unused) {
-                                    StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(modelClassPost.getImageUrl());
-                                    storageReference.delete();
-                                    progressDialog.dismiss();
-                                    Toast.makeText(PostInfoActivity.this, "Successfully deleted", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(PostInfoActivity.this, MainActivity.class));
-                                    finish();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    progressDialog.dismiss();
-                                    Toast.makeText(PostInfoActivity.this, "Some error occurred!", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                }
-            });
-            ab.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-            ab.show();
+            if (getIntent().getStringExtra("statusCurrent").equals("Primary_Agent")) {
+                // If status 'Primary_Agent' you can cancel the delivery
+                cancelDelivery();
+            } else {
+                deletePost();
+            }
         } else {
             displayNoConnection();
         }
+    }
+
+    private void cancelDelivery() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(PostInfoActivity.this);
+        builder.setTitle("Attention!");
+        builder.setMessage("An OTP will be sent to the Agent and after successful verification you can take back your product from the Agent.");
+        builder.setPositiveButton(
+                "Got it",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        // Cancel the delivery (Status: Primary_Agent to N/A)
+                        Intent intent = new Intent(PostInfoActivity.this, OtpVerificationActivity.class);
+                        intent.putExtra("whatToDo", "cancelDelivery");
+                        intent.putExtra("phoneNumber", modelClassPost.getStatusPrimaryAgent());
+                        intent.putExtra("postReference", modelClassPost.getPostReference());
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void deletePost() {
+        AlertDialog.Builder ab = new AlertDialog.Builder(PostInfoActivity.this);
+        ab.setTitle("Are you sure you want to delete this post?");
+        ab.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                showProgressBar();
+                db.collection("All_Post").document(modelClassPost.getPostReference()).delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(modelClassPost.getImageUrl());
+                                storageReference.delete();
+                                progressDialog.dismiss();
+                                Toast.makeText(PostInfoActivity.this, "Successfully deleted", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(PostInfoActivity.this, MainActivity.class));
+                                finish();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                progressDialog.dismiss();
+                                Toast.makeText(PostInfoActivity.this, "Some error occurred!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+        });
+        ab.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        ab.show();
     }
 
     // On Request To delivery button clicked

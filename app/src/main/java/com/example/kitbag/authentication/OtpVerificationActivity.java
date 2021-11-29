@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.kitbag.R;
-import com.example.kitbag.data.SharedPreference;
 import com.example.kitbag.databinding.ActivityOtpVerificationBinding;
 import com.example.kitbag.model.ModelClassPost;
 import com.example.kitbag.model.UserModel;
@@ -203,11 +202,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
     public void onSignInButtonClicked(View view) {
         if (isConnected()) {
             // Show progressBar
-            progressDialog = new ProgressDialog(OtpVerificationActivity.this);
-            progressDialog.show();
-            progressDialog.setContentView(R.layout.progress_dialog);
-            progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-            progressDialog.setCancelable(false);
+            showProgressBar();
             String OTPID = String.valueOf(OtpID);
             if (OTPID.equals(pinViewOTP)) {
                 if (whatToDo.equals("registration")) {
@@ -219,6 +214,16 @@ public class OtpVerificationActivity extends AppCompatActivity {
                     intent.putExtra("phoneNumber", subPhone);
                     startActivity(intent);
                     finish();
+                }else if (whatToDo.equals("cancelDelivery")) {
+                    // Update status from Primary_Agent to N/A
+                    db.collection("All_Post").document(getIntent().getStringExtra("postReference"))
+                            .update(
+                                    "statusCurrent", "N/A",
+                                    "statusPrimaryAgent", null,
+                                    "statusPrimaryAgentTime", null
+                            );
+                    String message = "Agent successfully verified. Now you can take your product back from the Agent.";
+                    showDialog(message);
                 } else if (whatToDo.equals("verifyPrimaryAgent")) {
                     // Update status
                     updatePostStatus("Primary_Agent", "statusPrimaryAgent", "statusPrimaryAgentTime");
@@ -339,6 +344,7 @@ public class OtpVerificationActivity extends AppCompatActivity {
                             userModel.setUserName(getIntent().getStringExtra("userName"));
                             userModel.setPhoneNumber(phoneNumber);
                             userModel.setUserType("GENERAL_USER");
+                            userModel.setJoiningDate(new Timestamp(new Date()));
                             userModel.setEmail(null);
                             userModel.setDistrict(null);
                             userModel.setUpazilla(null);
@@ -387,6 +393,14 @@ public class OtpVerificationActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void showProgressBar() {
+        progressDialog = new ProgressDialog(OtpVerificationActivity.this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
     }
 
 }

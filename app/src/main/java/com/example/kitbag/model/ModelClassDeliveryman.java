@@ -1,7 +1,11 @@
 package com.example.kitbag.model;
 
+import com.google.firebase.Timestamp;
+
 public class ModelClassDeliveryman {
     private String userId;
+    private String userType;
+    private String phoneNumber;
     private String nameBangla;
     private String nameEnglish;
     private String fatherHusbandName;
@@ -22,6 +26,7 @@ public class ModelClassDeliveryman {
     private String applicationStatus;
     private String approvedByAgent;
     private String approvedByAdmin;
+    private Timestamp timeApplied;
 
     public ModelClassDeliveryman() {
         // Must Needed empty constructor
@@ -33,6 +38,22 @@ public class ModelClassDeliveryman {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getUserType() {
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getNameBangla() {
@@ -193,5 +214,13 @@ public class ModelClassDeliveryman {
 
     public void setApprovedByAdmin(String approvedByAdmin) {
         this.approvedByAdmin = approvedByAdmin;
+    }
+
+    public Timestamp getTimeApplied() {
+        return timeApplied;
+    }
+
+    public void setTimeApplied(Timestamp timeApplied) {
+        this.timeApplied = timeApplied;
     }
 }
