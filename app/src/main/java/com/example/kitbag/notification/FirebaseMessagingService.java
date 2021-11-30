@@ -10,7 +10,6 @@ import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Vibrator;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -45,9 +44,9 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 r.setLooping(false);
             }
             // Vibration
-            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+            /*Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             long[] pattern = {100, 300, 300, 300};
-            v.vibrate(pattern, -1);
+            v.vibrate(pattern, -1);*/
 
             // Build Notification and Send
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "CHANNEL_ID");
