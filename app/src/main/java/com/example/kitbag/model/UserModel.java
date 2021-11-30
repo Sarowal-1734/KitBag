@@ -11,6 +11,7 @@ public class UserModel {
     private String imageUrl;
     private String district;
     private String userType;
+    private String userToken;
     private Timestamp joiningDate;
 
     public UserModel() {
@@ -79,6 +80,14 @@ public class UserModel {
 
     public void setDistrict(String district) {
         this.district = district;
+    }
+
+    public String getUserToken() {
+        return userToken;
+    }
+
+    public void setUserToken(String userToken) {
+        this.userToken = userToken;
     }
 
     public Timestamp getJoiningDate() {

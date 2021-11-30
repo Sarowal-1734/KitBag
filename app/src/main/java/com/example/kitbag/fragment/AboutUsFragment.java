@@ -31,8 +31,8 @@ public class AboutUsFragment extends Fragment {
         TextView t = getActivity().findViewById(R.id.custom_app_bar).findViewById(R.id.appbar_title);
         t.setText(R.string.nav_about_us);
 
-        String imageUrlDeveloperSarowal = "https://firebasestorage.googleapis.com/v0/b/kitbag-ca2b0.appspot.com/o/admin_photos%2Fdeveloper_sarowal.jpg?alt=media&token=56b217db-8703-4b77-ad15-48612d52e06b";
-        String imageUrlDeveloperMonir = "https://firebasestorage.googleapis.com/v0/b/kitbag-ca2b0.appspot.com/o/admin_photos%2Fdeveloper_monir.jpg?alt=media&token=819c0a97-cdb1-472a-b764-28c8517b14a8";
+        String imageUrlDeveloperSarowal = "https://firebasestorage.googleapis.com/v0/b/kitbag-ca2b0.appspot.com/o/admin_photos%2Fdeveloper_sarowal.jpeg?alt=media&token=aa3d3a28-1a00-425b-8706-5e6cc9de613b";
+        String imageUrlDeveloperMonir = "https://firebasestorage.googleapis.com/v0/b/kitbag-ca2b0.appspot.com/o/admin_photos%2Fdeveloper_monir.jpg?alt=media&token=4a5b9b47-1d3c-45e6-9573-93305463b79f";
 
         Glide.with(this).load(imageUrlDeveloperSarowal)
                 .placeholder(ShimmerEffect.get())

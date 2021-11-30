@@ -10,7 +10,6 @@ public class ChatModel {
     private String status;
 
     public ChatModel() {
-
     }
 
     public String getSender() {
