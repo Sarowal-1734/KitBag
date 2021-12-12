@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -136,6 +137,10 @@ public class NidInformationActivity extends AppCompatActivity {
                     if (isConnected()) {
                         // inflate custom layout
                         View view = LayoutInflater.from(NidInformationActivity.this).inflate(R.layout.dialog_nid_submission, null);
+                        if (getIntent().getStringExtra("whatToDo").equals("AgentRegistration")) {
+                            TextView textView = view.findViewById(R.id.textViewStep1);
+                            textView.setText(R.string.information_provided_for_nkitbag_agent_account_nregistration_is_correct_ndeliberate_and_authentic);
+                        }
                         Button buttonConfirm = view.findViewById(R.id.buttonConfirm);
                         AlertDialog.Builder builder = new AlertDialog.Builder(NidInformationActivity.this);
                         builder.setView(view);
@@ -146,8 +151,13 @@ public class NidInformationActivity extends AppCompatActivity {
                             public void onClick(View v) {
                                 dialog.dismiss();
                                 showProgressBar();
-                                storeDeliverymanInfo();
-                                storeDeliverymanImages(imageUriLists);
+                                if (getIntent().getStringExtra("whatToDo").equals("AgentRegistration")) {
+                                    storeAgentInfo();
+                                    storeAgentImages(imageUriLists);
+                                } else {
+                                    storeDeliverymanInfo();
+                                    storeDeliverymanImages(imageUriLists);
+                                }
                                 progressDialog.dismiss();
                             }
                         });
@@ -173,6 +183,82 @@ public class NidInformationActivity extends AppCompatActivity {
         });
     } // Ending onCreate
 
+    private void storeAgentImages(ArrayList<Uri> imageUriLists) {
+        // Store image to firebase
+        int imageUriCount;
+        for (imageUriCount = 0; imageUriCount < imageUriLists.size(); imageUriCount++) {
+            StorageReference filepath = storageReference.child("agent_images").child(currentUser.getUid() + new Timestamp(new Date()));
+            filepath.putFile(imageUriLists.get(imageUriCount))
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    i++;
+                                    // Update user info in Database
+                                    if (i == 0) {
+                                        db.collection("Agent").document(currentUser.getUid()).update("imageUrlUserFace", uri.toString());
+                                        Toast.makeText(NidInformationActivity.this, "Image: User Face Uploaded", Toast.LENGTH_SHORT).show();
+                                    }
+                                    if (i == 1) {
+                                        db.collection("Agent").document(currentUser.getUid()).update("imageUrlFrontNID", uri.toString());
+                                        Toast.makeText(NidInformationActivity.this, "Image: Front NID Uploaded", Toast.LENGTH_SHORT).show();
+                                    }
+                                    if (i == 2) {
+                                        db.collection("Agent").document(currentUser.getUid()).update("imageUrlBackNID", uri.toString());
+                                        progressDialog.dismiss();
+                                        Toast.makeText(NidInformationActivity.this, "Image: Back NID Uploaded", Toast.LENGTH_SHORT).show();
+                                        showDialog();
+                                    }
+                                }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(NidInformationActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
+    }
+
+    private void storeAgentInfo() {
+        ModelClassDeliveryman modelClassDeliveryman = new ModelClassDeliveryman();
+        modelClassDeliveryman.setUserId(currentUser.getUid());
+        modelClassDeliveryman.setUserType(userModel.getUserType());
+        modelClassDeliveryman.setPhoneNumber(userModel.getPhoneNumber());
+        modelClassDeliveryman.setNameBangla(binding.editTextNameBangla.getText().toString());
+        modelClassDeliveryman.setNameEnglish(binding.editTextNameEnglish.getText().toString());
+        modelClassDeliveryman.setFatherHusbandName(binding.editTextFatherHusbandName.getText().toString());
+        modelClassDeliveryman.setMotherName(binding.editTextMotherName.getText().toString());
+        modelClassDeliveryman.setDateOfBirth(binding.editTextDateOfBirth.getText().toString());
+        modelClassDeliveryman.setNidNumber(binding.editTextNidNumber.getText().toString());
+        modelClassDeliveryman.setPresentAddress(binding.editTextPresentAddress.getText().toString());
+        modelClassDeliveryman.setPostCode(binding.editTextPostCode.getText().toString());
+        modelClassDeliveryman.setPostOffice(binding.editTextPostOffice.getText().toString());
+        modelClassDeliveryman.setThana(binding.editTextThana.getText().toString());
+        modelClassDeliveryman.setDistrict(binding.editTextDistrict.getText().toString());
+        modelClassDeliveryman.setDivision(binding.editTextDivision.getText().toString());
+        modelClassDeliveryman.setGender(binding.editTextGender.getText().toString());
+        modelClassDeliveryman.setOccupation(binding.editTextOccupation.getText().toString());
+        modelClassDeliveryman.setApplicationStatus("Pending");
+        modelClassDeliveryman.setTimeApplied(new Timestamp(new Date()));
+        modelClassDeliveryman.setApprovedByAgent(null);
+        modelClassDeliveryman.setImageUrlUserFace(null);
+        modelClassDeliveryman.setImageUrlFrontNID(null);
+        modelClassDeliveryman.setImageUrlBackNID(null);
+        db.collection("Agent").document(currentUser.getUid()).set(modelClassDeliveryman)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(NidInformationActivity.this, "Please wait uploading images...", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     private void storeDeliverymanInfo() {
         ModelClassDeliveryman modelClassDeliveryman = new ModelClassDeliveryman();
         modelClassDeliveryman.setUserId(currentUser.getUid());
@@ -195,7 +281,6 @@ public class NidInformationActivity extends AppCompatActivity {
         modelClassDeliveryman.setApplicationStatus("Pending");
         modelClassDeliveryman.setTimeApplied(new Timestamp(new Date()));
         modelClassDeliveryman.setApprovedByAgent(null);
-        modelClassDeliveryman.setApprovedByAdmin(null);
         modelClassDeliveryman.setImageUrlUserFace(null);
         modelClassDeliveryman.setImageUrlFrontNID(null);
         modelClassDeliveryman.setImageUrlBackNID(null);
@@ -251,11 +336,19 @@ public class NidInformationActivity extends AppCompatActivity {
     }
 
     private void showDialog() {
-        // Send a message to the user phone number
-        sendMessage();
         String title = "Deliveryman Application";
         String message = "Your application has been successfully submitted.";
-        sendNotification(title, message);
+        if (getIntent().getStringExtra("whatToDo").equals("AgentRegistration")) {
+            // Send a message to the user phone number
+            String textMessage = getString(R.string.agent_application_successfully_submitted);
+            sendMessage(textMessage);
+            sendNotification("Agent Application", message);
+        } else {
+            // Send a message to the user phone number
+            String textMessage = getString(R.string.deliveryman_application_successfully_submitted);
+            sendMessage(textMessage);
+            sendNotification(title, message);
+        }
         // Show dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(NidInformationActivity.this);
         builder.setTitle("Submitted");
@@ -281,7 +374,7 @@ public class NidInformationActivity extends AppCompatActivity {
         notificationsSender.SendNotifications();
     }
 
-    private void sendMessage() {
+    private void sendMessage(String textMessage) {
         String number = userModel.getPhoneNumber().substring(3, 14);
         // Create a background thread to send OTP
         new Thread(new Runnable() {
@@ -289,7 +382,7 @@ public class NidInformationActivity extends AppCompatActivity {
             public void run() {
                 try {
                     String apiKey = "api_key=" + "jWWu9013if833V1c503DYJs3k61VMDYT3yXy76J9";
-                    String message = "&msg=" + "Greate!\nYour application has been successfully submitted. Now please go to any of your nearest KitBag Agent to get approval of your application.\n";
+                    String message = "&msg=" + textMessage;
                     String numbers = "&to=" + number;
                     String data = apiKey + message + numbers;
                     HttpURLConnection conn = (HttpURLConnection) new URL("https://api.sms.net.bd/sendsms?").openConnection();

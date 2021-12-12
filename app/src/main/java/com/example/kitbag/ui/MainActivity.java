@@ -172,6 +172,9 @@ public class MainActivity extends AppCompatActivity {
                             if (userModel.getUserType().equals("Deliveryman") || userModel.getUserType().equals("Agent")) {
                                 binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
                             }
+                            if (userModel.getUserType().equals("Agent")) {
+                                binding.navigationView.getMenu().findItem(R.id.nav_agent).setVisible(false);
+                            }
                             View view = binding.navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
@@ -210,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     binding.swipeRefreshLayout.setRefreshing(true);
                     if (isConnected()) {
-                        restartApp();
+                        displayAllPost();
                     } else {
                         displayNoConnection();
                     }
@@ -302,6 +305,9 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.nav_deliveryman:
                         registerAsDeliveryman();
+                        break;
+                    case R.id.nav_agent:
+                        registerAsAgent();
                         break;
                     case R.id.nav_language:
                         showChangeLanguageDialog();
@@ -439,6 +445,45 @@ public class MainActivity extends AppCompatActivity {
 
     } // Ending onCreate
 
+    private void registerAsAgent() {
+        // inflate custom layout
+        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
+        // Getting view form custom dialog layout
+        TextView textView = view.findViewById(R.id.textView);
+        textView.setText(R.string.become_an_agent_in_easy_three_steps);
+        ImageView imageViewNode1 = view.findViewById(R.id.imageViewNode1);
+        ImageView imageViewNode2 = view.findViewById(R.id.imageViewNode2);
+        ImageView imageViewNode3 = view.findViewById(R.id.imageViewNode3);
+        Button buttonCancel = view.findViewById(R.id.buttonCancel);
+        Button buttonProceed = view.findViewById(R.id.buttonProceed);
+        imageViewNode1.setColorFilter(Color.parseColor("#1754B6")); // app_bar color
+        imageViewNode2.setColorFilter(Color.parseColor("#1754B6"));
+        imageViewNode3.setColorFilter(Color.parseColor("#1754B6"));
+        builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.setCancelable(false);
+        dialog.show();
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+        buttonProceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isConnected()) {
+                    Intent intent = new Intent(MainActivity.this, DeliverymanRegistrationActivity.class);
+                    intent.putExtra("whatToDo", "AgentRegistration");
+                    startActivity(intent);
+                } else {
+                    displayNoConnection();
+                }
+            }
+        });
+    }
+
     // Init Check Internet Connection
     private void checkInternetConnection() {
         if (isConnected()) {
@@ -498,6 +543,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Get data from fireStore and set to the recyclerView
     private void displayAllPost() {
+        postList.clear();
         postAdapter = new PostAdapter(MainActivity.this, postList);
         //LinearLayoutManager linearLayoutManager = new LinearLayoutManager(MainActivity.this, LinearLayoutManager.VERTICAL, false);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, 2, GridLayoutManager.VERTICAL, false);
@@ -669,7 +715,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (isConnected()) {
-                    startActivity(new Intent(MainActivity.this, DeliverymanRegistrationActivity.class));
+                    Intent intent = new Intent(MainActivity.this, DeliverymanRegistrationActivity.class);
+                    intent.putExtra("whatToDo", "DeliverymanRegistration");
+                    startActivity(intent);
                 } else {
                     displayNoConnection();
                 }

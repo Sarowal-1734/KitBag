@@ -191,6 +191,9 @@ public class EditProfileActivity extends AppCompatActivity {
                             if (currentUserModel.getUserType().equals("Deliveryman") || currentUserModel.getUserType().equals("Agent")) {
                                 binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
                             }
+                            if (currentUserModel.getUserType().equals("Agent")) {
+                                binding.navigationView.getMenu().findItem(R.id.nav_agent).setVisible(false);
+                            }
                             View view = binding.navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);

@@ -165,6 +165,9 @@ public class MessageActivity extends AppCompatActivity {
                         if (userModel.getUserType().equals("Deliveryman") || userModel.getUserType().equals("Agent")) {
                             binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
                         }
+                        if (userModel.getUserType().equals("Agent")) {
+                            binding.navigationView.getMenu().findItem(R.id.nav_agent).setVisible(false);
+                        }
                         View view = binding.navigationView.getHeaderView(0);
                         TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                         CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);

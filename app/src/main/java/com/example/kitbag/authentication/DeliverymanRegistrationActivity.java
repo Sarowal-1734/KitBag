@@ -139,6 +139,7 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
                     Intent intent = new Intent(DeliverymanRegistrationActivity.this, TakeFacePhotoActivity.class);
                     intent.putExtra("FrontNID", imageUriFrontNID.toString());
                     intent.putExtra("BackNID", imageUriBackNID.toString());
+                    intent.putExtra("whatToDo", getIntent().getStringExtra("whatToDo"));
                     startActivity(intent);
                 }
             }
