@@ -862,7 +862,8 @@
     <string name="proceed">পরবর্তী</string>
     <string name="cancel">বাতিল করুন</string>
     <string name="please_confirm">অনুগ্রহ করে নিশ্চিত করুন!</string>
-    <string name="information_provided_for_nkitbag_deliveryman_account_nregistration_is_correct_ndeliberate_and_authentic">কিটব্যাগ ডেলিভারিম্যান অ্যাকাউন্ট নিবন্ধনের জন্য প্রদত্ত সকল তথ্য সঠিক</string>
+    <string name="information_provided_for_nkitbag_deliveryman_account_nregistration_is_correct_ndeliberate_and_authentic">KitBag ডেলিভারিম্যান অ্যাকাউন্ট নিবন্ধনের জন্য প্রদত্ত সকল তথ্য সঠিক</string>
+    <string name="information_provided_for_nkitbag_agent_account_nregistration_is_correct_ndeliberate_and_authentic">KitBag এজেন্ট অ্যাকাউন্ট নিবন্ধনের জন্য প্রদত্ত সকল তথ্য সঠিক</string>
     <string name="confirm">নিশ্চিত করুন</string>
     <string name="product_delivery_status">প্রডাক্ট ডেলিভ্যারী স্টাটাস</string>
     <string name="sender">প্রেরক</string>
@@ -985,4 +986,8 @@
     <string name="_5_an_otp_will_be_send_to_the_given_agent_contact_number">৬. আপনার দেওয়া এজেন্ট নাম্বারে ওটিপি পাঠানো হবে</string>
     <string name="_6_take_the_otp_from_agent_and_verify">৭. এজেন্টের কাছ থেকে ওটিপি নিয়ে প্রবেশ করুন</string>
     <string name="_7_if_verify_success_your_post_status_will_be_updated_to_primary_agent_and_then_you_have_to_handover_your_product">৮.ভেইফাই নিশ্চিত হওয়ার পর,প্রডাক্ট স্টাটাস পরিবর্তন করে প্রাইমারি এজেন্ট করে দেওয়া হবে. তার পর আপনি আপনার প্রডাক্টটি এজেন্টের কাছে দিয়ে দিন</string>
+    <string name="become_an_agent">এজেন্ট হওয়ার আবেদন</string>
+    <string name="become_an_agent_in_easy_three_steps">তিনটি সহজ ধাপে এজেন্ট হোন</string>
+    <string name="deliveryman_application_successfully_submitted">আপনার আবেদন সম্পন্ন হয়েছে। এখন আপনার ডেলিভারিম্যান একাউন্ট সচল করতে নিকটস্থ যেকোন KitBag এজেন্ট এর কাছ থেকে ভেরিফাই করে নিতে হবে।\n</string>
+    <string name="agent_application_successfully_submitted">Greate!\nআপনার আবেদন সম্পন্ন হয়েছে। অনুগ্রহ করে আপনার এজেন্ট একাউন্টটি সচল না হওয়া পর্যন্ত অপেক্ষা করুন।\n</string>
 </resources>

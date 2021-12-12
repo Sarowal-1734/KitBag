@@ -106,6 +106,7 @@ public class TakeFacePhotoActivity extends AppCompatActivity {
                 intent.putExtra("UserFace", imageUri.toString());
                 intent.putExtra("FrontNID", getIntent().getStringExtra("FrontNID"));
                 intent.putExtra("BackNID", getIntent().getStringExtra("BackNID"));
+                intent.putExtra("whatToDo", getIntent().getStringExtra("whatToDo"));
                 startActivity(intent);
             }
         });

@@ -25,7 +25,6 @@ public class ModelClassDeliveryman {
     private String imageUrlBackNID;
     private String applicationStatus;
     private String approvedByAgent;
-    private String approvedByAdmin;
     private Timestamp timeApplied;
 
     public ModelClassDeliveryman() {
@@ -206,14 +205,6 @@ public class ModelClassDeliveryman {
 
     public void setApprovedByAgent(String approvedByAgent) {
         this.approvedByAgent = approvedByAgent;
-    }
-
-    public String getApprovedByAdmin() {
-        return approvedByAdmin;
-    }
-
-    public void setApprovedByAdmin(String approvedByAdmin) {
-        this.approvedByAdmin = approvedByAdmin;
     }
 
     public Timestamp getTimeApplied() {
