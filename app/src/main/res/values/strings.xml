@@ -989,4 +989,6 @@
     <string name="become_an_agent_in_easy_three_steps">Become an Agent\nin three easy steps</string>
     <string name="deliveryman_application_successfully_submitted">Greate!\nYour application has been successfully submitted. Now please go to any of your nearest KitBag Agent to get approval of your application.\n</string>
     <string name="agent_application_successfully_submitted">Greate!\nYour application has been successfully submitted. You will notify while your agent account is activate.\n</string>
+    <string name="agent_control">Agent Control</string>
+    <string name="inprogress">Inprogress</string>
 </resources>
