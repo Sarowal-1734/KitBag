@@ -141,7 +141,6 @@ public class ChatDetailsActivity extends AppCompatActivity {
             }
         });
 
-
         // Enable and disable send Button
         binding.editTextSendText.addTextChangedListener(new TextWatcher() {
             @Override

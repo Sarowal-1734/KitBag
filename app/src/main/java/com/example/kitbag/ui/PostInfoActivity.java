@@ -213,9 +213,6 @@ public class PostInfoActivity extends AppCompatActivity {
                             if (user.getUserType().equals("Deliveryman") || user.getUserType().equals("Agent")) {
                                 binding.navigationView.getMenu().findItem(R.id.nav_deliveryman).setVisible(false);
                             }
-                            if (userModel.getUserType().equals("Agent")) {
-                                binding.navigationView.getMenu().findItem(R.id.nav_agent).setVisible(false);
-                            }
                             View view = binding.navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
@@ -519,6 +516,15 @@ public class PostInfoActivity extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(DocumentSnapshot documentSnapshot) {
                                             userModel = documentSnapshot.toObject(UserModel.class);
+                                            if (userModel.getUserType().equals("Agent")) {
+                                                binding.navigationView.getMenu().findItem(R.id.nav_agent).setVisible(false);
+                                            }
+                                            if (!userModel.getUserType().equals("Agent")) {
+                                                binding.navigationView.getMenu().findItem(R.id.nav_agent_control).setVisible(false);
+                                            }
+                                            if (userModel.getUserType().equals("GENERAL_USER")) {
+                                                binding.navigationView.getMenu().findItem(R.id.nav_inprogress).setVisible(false);
+                                            }
                                             Calendar cal = Calendar.getInstance(Locale.ENGLISH);
                                             cal.setTimeInMillis(modelClassPost.getTimeAdded().getSeconds() * 1000);
                                             String postedUserTime;

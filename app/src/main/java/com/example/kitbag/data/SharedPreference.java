@@ -17,7 +17,7 @@ public class SharedPreference {
 
     public static Boolean getDarkModeEnableValue(Context context) {
         SharedPreferences pref = context.getSharedPreferences(PREFERENCE_DARK_MODE_ENABLED, Context.MODE_PRIVATE);
-        return pref.getBoolean(PREFERENCE_DARK_MODE_ENABLED, true);
+        return pref.getBoolean(PREFERENCE_DARK_MODE_ENABLED, false);
     }
 
     public static void setLanguageValue(Context context, String language) {
