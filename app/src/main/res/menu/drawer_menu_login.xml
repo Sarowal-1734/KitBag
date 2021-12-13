@@ -33,6 +33,17 @@
         android:id="@+id/nav_my_cart"
         android:icon="@drawable/ic_cart"
         android:title="@string/nav_my_cart" />
+
+    <item
+        android:id="@+id/nav_inprogress"
+        android:icon="@drawable/ic_cart"
+        android:title="@string/inprogress" />
+
+    <item
+        android:id="@+id/nav_agent_control"
+        android:icon="@drawable/ic_cart"
+        android:title="@string/agent_control" />
+
     <item
         android:id="@+id/nav_change_password"
         android:icon="@drawable/ic_change_password"

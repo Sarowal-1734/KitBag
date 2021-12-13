@@ -990,4 +990,6 @@
     <string name="become_an_agent_in_easy_three_steps">তিনটি সহজ ধাপে এজেন্ট হোন</string>
     <string name="deliveryman_application_successfully_submitted">আপনার আবেদন সম্পন্ন হয়েছে। এখন আপনার ডেলিভারিম্যান একাউন্ট সচল করতে নিকটস্থ যেকোন KitBag এজেন্ট এর কাছ থেকে ভেরিফাই করে নিতে হবে।\n</string>
     <string name="agent_application_successfully_submitted">Greate!\nআপনার আবেদন সম্পন্ন হয়েছে। অনুগ্রহ করে আপনার এজেন্ট একাউন্টটি সচল না হওয়া পর্যন্ত অপেক্ষা করুন।\n</string>
+    <string name="agent_control">এজেন্টের কাজ</string>
+    <string name="inprogress">চলমান পোস্ট</string>
 </resources>
