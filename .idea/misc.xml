@@ -66,6 +66,14 @@
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/layout/switch_menu_dark_mode.xml" value="0.25416666666666665" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/menu/drawer_menu_login.xml" value="0.25025641025641027" />
         <entry key="..\:/Users/Monir/AndroidStudioProjects/KitBag/app/src/main/res/menu/drawer_menu_logout.xml" value="0.25416666666666665" />
+        <entry key="..\:/Users/Monir/StudioProjects/KitBag/app/src/main/res/layout/activity_application_deliveryman.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Monir/StudioProjects/KitBag/app/src/main/res/layout/activity_application_deliveryman_details.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Monir/StudioProjects/KitBag/app/src/main/res/layout/activity_inprogress.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Monir/StudioProjects/KitBag/app/src/main/res/layout/activity_my_cart.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Monir/StudioProjects/KitBag/app/src/main/res/layout/activity_reset_password.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Monir/StudioProjects/KitBag/app/src/main/res/layout/progress_dialog.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Monir/StudioProjects/KitBag/app/src/main/res/layout/row_application_list.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/Monir/StudioProjects/KitBag/app/src/main/res/menu/drawer_menu_login.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/drawable-v21/ripple_effect.xml" value="0.41333333333333333" />
         <entry key="app/src/main/res/drawable-v24/ic_connected.xml" value="0.41333333333333333" />
         <entry key="app/src/main/res/drawable-v24/ic_disconnected.xml" value="0.24635416666666668" />

@@ -40,10 +40,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
     private ActivityResetPasswordBinding binding;
 
-    // for alert dialog
-    private AlertDialog.Builder builder;
-    private AlertDialog dialog;
-
     // Show progressBar
     private ProgressDialog progressDialog;
 
@@ -124,19 +120,19 @@ public class ResetPasswordActivity extends AppCompatActivity {
                         finish();
                         break;
                     case R.id.nav_discover_kitbag:
-                        intentFragment.putExtra("whatToDo","discoverKitBag");
+                        intentFragment.putExtra("whatToDo", "discoverKitBag");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_terms_conditions:
-                        intentFragment.putExtra("whatToDo","termsAndCondition");
+                        intentFragment.putExtra("whatToDo", "termsAndCondition");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_contact:
-                        intentFragment.putExtra("whatToDo","contactUs");
+                        intentFragment.putExtra("whatToDo", "contactUs");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_about:
-                        intentFragment.putExtra("whatToDo","aboutUs");
+                        intentFragment.putExtra("whatToDo", "aboutUs");
                         startActivity(intentFragment);
                         break;
                 }

@@ -175,6 +175,12 @@ public class MainActivity extends AppCompatActivity {
                             if (userModel.getUserType().equals("Agent")) {
                                 binding.navigationView.getMenu().findItem(R.id.nav_agent).setVisible(false);
                             }
+                            if (!userModel.getUserType().equals("Agent")) {
+                                binding.navigationView.getMenu().findItem(R.id.nav_agent_control).setVisible(false);
+                            }
+                            if (userModel.getUserType().equals("GENERAL_USER")) {
+                                binding.navigationView.getMenu().findItem(R.id.nav_inprogress).setVisible(false);
+                            }
                             View view = binding.navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
@@ -295,7 +301,7 @@ public class MainActivity extends AppCompatActivity {
         binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Intent intentFragment = new Intent(MainActivity.this,FragmentContainerActivity.class);
+                Intent intentFragment = new Intent(MainActivity.this, FragmentContainerActivity.class);
                 switch (item.getItemId()) {
                     case R.id.nav_home:
                         binding.drawerLayout.closeDrawer(GravityCompat.END);
@@ -330,6 +336,12 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.nav_chat:
                         startActivity(new Intent(MainActivity.this, MessageActivity.class));
+                        break;
+                    case R.id.nav_inprogress:
+                        startActivity(new Intent(MainActivity.this, InprogressActivity.class));
+                        break;
+                    case R.id.nav_agent_control:
+                        startActivity(new Intent(MainActivity.this, ApplicationDeliverymanActivity.class));
                         break;
                     case R.id.nav_my_post:
                         startActivity(new Intent(MainActivity.this, MyPostActivity.class));
@@ -683,7 +695,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // get save value from sharedPreference and set It to as local language
-    public void loadLocale(){
+    public void loadLocale() {
         setLocale(SharedPreference.getLanguageValue(this));
     }
 
@@ -983,7 +995,7 @@ public class MainActivity extends AppCompatActivity {
     // Update Password
     private void updatePassword(String oldPassword, String newPassword) {
         // before updating password we have to re-authenticate our user
-        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(),oldPassword);
+        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(), oldPassword);
         currentUser.reauthenticate(authCredential).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {

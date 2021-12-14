@@ -1,47 +1,45 @@
 package com.example.kitbag.ui;
 
-import static com.example.kitbag.ui.MainActivity.fromMyCartActivity;
-import static com.example.kitbag.ui.MainActivity.getOpenFromActivity;
-
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AbsListView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+import static android.Manifest.permission.CALL_PHONE;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.view.GravityCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.text.format.DateFormat;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
 import com.example.kitbag.R;
-import com.example.kitbag.adapter.PostAdapter;
 import com.example.kitbag.authentication.DeliverymanRegistrationActivity;
+import com.example.kitbag.chat.ChatDetailsActivity;
 import com.example.kitbag.chat.MessageActivity;
-import com.example.kitbag.databinding.ActivityMyCartBinding;
+import com.example.kitbag.databinding.ActivityApplicationDeliverymanDetailsBinding;
+import com.example.kitbag.effect.ShimmerEffect;
 import com.example.kitbag.fragment.container.FragmentContainerActivity;
-import com.example.kitbag.model.ModelClassPost;
+import com.example.kitbag.model.ModelClassDeliveryman;
 import com.example.kitbag.model.UserModel;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.example.kitbag.notification.FcmNotificationsSender;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
@@ -52,17 +50,24 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MyCartActivity extends AppCompatActivity {
+public class ApplicationDeliverymanDetailsActivity extends AppCompatActivity {
 
-    private ActivityMyCartBinding binding;
+    private ActivityApplicationDeliverymanDetailsBinding binding;
 
     // Dialog Declaration
     private AlertDialog.Builder builder;
@@ -74,12 +79,6 @@ public class MyCartActivity extends AppCompatActivity {
     // For Changing Password
     private EditText editTextOldPassword;
 
-    // For Pagination
-    private boolean isScrolling = false;
-    private boolean isLastItemReached = false;
-    private DocumentSnapshot lastVisible;
-    ArrayList<ModelClassPost> postList = new ArrayList<>();
-
     // For Authentication
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -88,6 +87,9 @@ public class MyCartActivity extends AppCompatActivity {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final CollectionReference collectionReference = db.collection("Users");
     private UserModel userModel;
+
+    private String userId;
+    private ModelClassDeliveryman user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +100,7 @@ public class MyCartActivity extends AppCompatActivity {
             setTheme(R.style.Theme_Day);
         }
         super.onCreate(savedInstanceState);
-        binding = ActivityMyCartBinding.inflate(getLayoutInflater());
+        binding = ActivityApplicationDeliverymanDetailsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Initially Check Internet Connection
@@ -111,7 +113,7 @@ public class MyCartActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
 
         // Change appBar title
-        binding.customAppBar.appbarTitle.setText(R.string.nav_my_cart);
+        binding.customAppBar.appbarTitle.setText("Application List");
 
         // Adding back arrow in the appBar
         binding.customAppBar.appbarLogo.setImageDrawable(getResources().getDrawable(R.drawable.ic_arrow_back));
@@ -184,27 +186,22 @@ public class MyCartActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MyCartActivity.this, EditProfileActivity.class);
+                Intent intent = new Intent(ApplicationDeliverymanDetailsActivity.this, EditProfileActivity.class);
                 intent.putExtra("userId", currentUser.getUid());
                 startActivity(intent);
             }
         });
 
-        // Swipe from up to bottom to refresh the recyclerView
-        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        // Get data from fireStore and set to the recyclerView
+        userId = getIntent().getStringExtra("userId");
+        displayDetailsInfo();
+
+        binding.buttonApprove.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onRefresh() {
-                binding.swipeRefreshLayout.setRefreshing(true);
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(getIntent());
-                overridePendingTransition(0, 0);
-                binding.swipeRefreshLayout.setRefreshing(false);
+            public void onClick(View view) {
+                approveApplication();
             }
         });
-
-        // Get data from fireStore and set to the recyclerView
-        displayInfo();
 
         // Click profile to open drawer
         binding.customAppBar.appbarImageviewProfile.setOnClickListener(new View.OnClickListener() {
@@ -218,7 +215,7 @@ public class MyCartActivity extends AppCompatActivity {
         binding.customAppBar.appbarNotificationIcon.notificationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MyCartActivity.this, NotificationsActivity.class));
+                startActivity(new Intent(ApplicationDeliverymanDetailsActivity.this, NotificationsActivity.class));
             }
         });
 
@@ -226,47 +223,53 @@ public class MyCartActivity extends AppCompatActivity {
         binding.navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Intent intentFragment = new Intent(MyCartActivity.this, FragmentContainerActivity.class);
+                Intent intentFragment = new Intent(ApplicationDeliverymanDetailsActivity.this, FragmentContainerActivity.class);
                 switch (item.getItemId()) {
                     case R.id.nav_home:
-                        startActivity(new Intent(MyCartActivity.this, MainActivity.class));
+                        startActivity(new Intent(ApplicationDeliverymanDetailsActivity.this, MainActivity.class));
                         finish();
                         break;
                     case R.id.nav_deliveryman:
                         registerAsDeliveryman();
                         break;
                     case R.id.nav_discover_kitbag:
-                        intentFragment.putExtra("whatToDo","discoverKitBag");
+                        intentFragment.putExtra("whatToDo", "discoverKitBag");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_terms_conditions:
-                        intentFragment.putExtra("whatToDo","termsAndCondition");
+                        intentFragment.putExtra("whatToDo", "termsAndCondition");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_contact:
-                        intentFragment.putExtra("whatToDo","contactUs");
+                        intentFragment.putExtra("whatToDo", "contactUs");
                         startActivity(intentFragment);
                         break;
+                    case R.id.nav_inprogress:
+                        startActivity(new Intent(ApplicationDeliverymanDetailsActivity.this, InprogressActivity.class));
+                        break;
+                    case R.id.nav_agent_control:
+                        onBackPressed();
+                        break;
                     case R.id.nav_about:
-                        intentFragment.putExtra("whatToDo","aboutUs");
+                        intentFragment.putExtra("whatToDo", "aboutUs");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_chat:
-                        startActivity(new Intent(MyCartActivity.this, MessageActivity.class));
+                        startActivity(new Intent(ApplicationDeliverymanDetailsActivity.this, MessageActivity.class));
                         break;
                     case R.id.nav_my_post:
-                        startActivity(new Intent(MyCartActivity.this, MyPostActivity.class));
+                        startActivity(new Intent(ApplicationDeliverymanDetailsActivity.this, MyPostActivity.class));
                         break;
                     case R.id.nav_my_cart:
-                        binding.drawerLayout.closeDrawer(GravityCompat.END);
+                        startActivity(new Intent(ApplicationDeliverymanDetailsActivity.this, MyCartActivity.class));
                         break;
                     case R.id.nav_change_password:
                         validationUpdatePassword();
                         break;
                     case R.id.nav_logout:
                         mAuth.signOut();
-                        Toast.makeText(MyCartActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(MyCartActivity.this, MainActivity.class));
+                        Toast.makeText(ApplicationDeliverymanDetailsActivity.this, "Logout Success!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(ApplicationDeliverymanDetailsActivity.this, MainActivity.class));
                         finish();
                         break;
                 }
@@ -275,100 +278,137 @@ public class MyCartActivity extends AppCompatActivity {
         });
     } // Ending onCreate
 
-    // Get data from fireStore and set to the recyclerView
-    private void displayInfo() {
-        PostAdapter postAdapter = new PostAdapter(MyCartActivity.this, postList);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(MyCartActivity.this, 2, GridLayoutManager.VERTICAL, false);
-        binding.recyclerViewPostLists.setLayoutManager(gridLayoutManager);
-        binding.recyclerViewPostLists.setAdapter(postAdapter);
-
+    private void approveApplication() {
         // Show progressBar
-        progressDialog = new ProgressDialog(MyCartActivity.this);
+        progressDialog = new ProgressDialog(this);
         progressDialog.show();
         progressDialog.setContentView(R.layout.progress_dialog);
         progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         progressDialog.setCancelable(false);
+        updateStatusInUser();
+        updateStatusInAgentDeliveryman();
+        binding.textViewApplicationStatus.setText("Approved");
+        binding.buttonApprove.setEnabled(false);
+        sendMessage();
+        showConfirmDialog();
+        progressDialog.dismiss();
+    }
 
-        db.collection("My_Cart").document(currentUser.getUid())
-                .collection("Cart_Lists")
-                .orderBy("timeAdded", Query.Direction.DESCENDING)
-                .limit(8)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+    private void sendMessage() {
+        String text = "Congratulations!\n Your account has been successfully updated from General_User to Deliveryman.";
+        // Create a background thread to send OTP
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String apiKey = "api_key=" + "jWWu9013if833V1c503DYJs3k61VMDYT3yXy76J9";
+                    String message = "&msg=" + text + "\n";
+                    String numbers = "&to=" + user.getPhoneNumber();
+                    String data = apiKey + message + numbers;
+                    HttpURLConnection conn = (HttpURLConnection) new URL("https://api.sms.net.bd/sendsms?").openConnection();
+                    conn.setDoOutput(true);
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Length", Integer.toString(data.length()));
+                    conn.getOutputStream().write(data.getBytes(StandardCharsets.UTF_8));
+                    final BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    final StringBuilder stringBuffer = new StringBuilder();
+                    String line;
+                    while ((line = rd.readLine()) != null) {
+                        stringBuffer.append(line);
+                    }
+                    rd.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    private void showConfirmDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Success!")
+                .setMessage("The user is now a deliveryman")
+                .setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            for (DocumentSnapshot document : task.getResult()) {
-                                ModelClassPost modelClassPost = document.toObject(ModelClassPost.class);
-                                postList.add(modelClassPost);
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        startActivity(new Intent(ApplicationDeliverymanDetailsActivity.this,
+                                MainActivity.class));
+                        finish();
+                    }
+                })
+                .show();
+    }
+
+    private void updateStatusInAgentDeliveryman() {
+        FirebaseFirestore.getInstance().collection("Deliveryman")
+                .document(userId)
+                .update(
+                        "applicationStatus", "Approved",
+                        "userType", "Deliveryman",
+                        "approvedByAgent", user.getPhoneNumber());
+    }
+
+    private void updateStatusInUser() {
+        FirebaseFirestore.getInstance().collection("Users")
+                .document(userId)
+                .update("userType", "Deliveryman");
+    }
+
+    private void displayDetailsInfo() {
+        // Show progressBar
+        progressDialog = new ProgressDialog(this);
+        progressDialog.show();
+        progressDialog.setContentView(R.layout.progress_dialog);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
+        FirebaseFirestore.getInstance().collection("Deliveryman")
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        for (DocumentSnapshot snapshot : queryDocumentSnapshots) {
+                            user = snapshot.toObject(ModelClassDeliveryman.class);
+                            binding.textViewUserName.setText(user.getNameEnglish());
+                            binding.textViewUserNameBangla.setText(user.getNameBangla());
+                            binding.textViewFatherName.setText(user.getFatherHusbandName());
+                            binding.textViewMotherName.setText(user.getMotherName());
+                            binding.textViewDateOfBirth.setText(user.getDateOfBirth());
+                            binding.textViewNIDNumber.setText(user.getNidNumber());
+                            binding.textViewPresentAddress.setText(user.getPresentAddress());
+                            binding.textViewPostCode.setText(user.getPostCode());
+                            binding.textViewPostOffice.setText(user.getPostOffice());
+                            binding.textViewUserType.setText(user.getUserType());
+                            binding.textViewPhoneNumber.setText(user.getPhoneNumber());
+                            binding.textViewThana.setText(user.getThana());
+                            binding.textViewDistrict.setText(user.getDistrict());
+                            binding.textViewDivision.setText(user.getDivision());
+                            binding.textViewGender.setText(user.getGender());
+                            binding.textViewUserId.setText(user.getUserId());
+                            binding.textViewOccupation.setText(user.getOccupation());
+                            if (TextUtils.isEmpty(user.getApprovedByAgent())) {
+                                binding.approvedByAgent.setVisibility(View.GONE);
                             }
+                            binding.textViewApprovedAgent.setText(user.getApprovedByAgent());
+                            binding.textViewApplicationStatus.setText(user.getApplicationStatus());
+                            Calendar cal = Calendar.getInstance(Locale.ENGLISH);
+                            cal.setTimeInMillis(user.getTimeApplied().getSeconds() * 1000);
+                            String date = DateFormat.format("hh:mm aa, dd MMM yyyy", cal).toString();
+                            binding.textViewJoiningDate.setText(date);
                             progressDialog.dismiss();
-                            postAdapter.notifyDataSetChanged();
-                            if (task.getResult().size() > 0) {
-                                lastVisible = task.getResult().getDocuments().get(task.getResult().size() - 1);
-                            }
-                            // On recycler item click listener
-                            postAdapter.setOnItemClickListener(new PostAdapter.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(ModelClassPost post) {
-                                    Intent intent = new Intent(MyCartActivity.this, PostInfoActivity.class);
-                                    intent.putExtra("userId", post.getUserId());
-                                    intent.putExtra("postReference", post.getPostReference());
-                                    intent.putExtra("documentReference", post.getDocumentReference());
-                                    intent.putExtra("statusCurrent", post.getStatusCurrent());
-                                    intent.putExtra(getOpenFromActivity, fromMyCartActivity);
-                                    startActivity(intent);
-                                }
-                            });
-
-                            RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
-                                @Override
-                                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                                    super.onScrollStateChanged(recyclerView, newState);
-                                    if (newState == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL) {
-                                        isScrolling = true;
-                                    }
-                                }
-
-                                @Override
-                                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                                    super.onScrolled(recyclerView, dx, dy);
-
-                                    GridLayoutManager gridLayoutManager1 = ((GridLayoutManager) recyclerView.getLayoutManager());
-                                    int firstVisibleItemPosition = gridLayoutManager1.findFirstVisibleItemPosition();
-                                    int visibleItemCount = gridLayoutManager1.getChildCount();
-                                    int totalItemCount = gridLayoutManager1.getItemCount();
-
-                                    if (isScrolling && (firstVisibleItemPosition + visibleItemCount == totalItemCount) && !isLastItemReached) {
-                                        isScrolling = false;
-                                        binding.progressBar.setVisibility(View.VISIBLE);
-                                        Query nextQuery = db.collection("My_Cart").document(currentUser.getUid())
-                                                .collection("Cart_Lists")
-                                                .orderBy("timeAdded", Query.Direction.DESCENDING).startAfter(lastVisible).limit(8);
-                                        nextQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<QuerySnapshot> t) {
-                                                if (t.isSuccessful()) {
-                                                    for (DocumentSnapshot d : t.getResult()) {
-                                                        ModelClassPost modelClassPost = d.toObject(ModelClassPost.class);
-                                                        postList.add(modelClassPost);
-                                                    }
-                                                    binding.progressBar.setVisibility(View.GONE);
-                                                    postAdapter.notifyDataSetChanged();
-                                                    if (t.getResult().size() > 0) {
-                                                        lastVisible = t.getResult().getDocuments().get(t.getResult().size() - 1);
-                                                    }
-
-                                                    if (t.getResult().size() < 8) {
-                                                        isLastItemReached = true;
-                                                    }
-                                                }
-                                            }
-                                        });
-                                    }
-                                }
-                            };
-                            binding.recyclerViewPostLists.addOnScrollListener(onScrollListener);
+                            Glide.with(ApplicationDeliverymanDetailsActivity.this).load(user.getImageUrlUserFace())
+                                    .placeholder(ShimmerEffect.get())
+                                    .centerCrop()
+                                    .into(binding.ImageViewUserPhoto);
+                            Glide.with(ApplicationDeliverymanDetailsActivity.this).load(user.getImageUrlFrontNID())
+                                    .placeholder(ShimmerEffect.get())
+                                    .centerCrop()
+                                    .into(binding.frontNID);
+                            Glide.with(ApplicationDeliverymanDetailsActivity.this).load(user.getImageUrlBackNID())
+                                    .placeholder(ShimmerEffect.get())
+                                    .centerCrop()
+                                    .into(binding.backNID);
                         }
                     }
                 });
@@ -376,7 +416,7 @@ public class MyCartActivity extends AppCompatActivity {
 
     private void registerAsDeliveryman() {
         // inflate custom layout
-        View view = LayoutInflater.from(MyCartActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
+        View view = LayoutInflater.from(ApplicationDeliverymanDetailsActivity.this).inflate(R.layout.dialog_deliveryman_requirements, null);
         // Getting view form custom dialog layout
         ImageView imageViewNode1 = view.findViewById(R.id.imageViewNode1);
         ImageView imageViewNode2 = view.findViewById(R.id.imageViewNode2);
@@ -400,7 +440,7 @@ public class MyCartActivity extends AppCompatActivity {
         buttonProceed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(MyCartActivity.this, DeliverymanRegistrationActivity.class));
+                startActivity(new Intent(ApplicationDeliverymanDetailsActivity.this, DeliverymanRegistrationActivity.class));
             }
         });
     }
@@ -408,7 +448,7 @@ public class MyCartActivity extends AppCompatActivity {
     // validation for update password and create popup dialog
     private void validationUpdatePassword() {
         // inflate custom layout
-        View view = LayoutInflater.from(MyCartActivity.this).inflate(R.layout.dialog_change_password,null);
+        View view = LayoutInflater.from(ApplicationDeliverymanDetailsActivity.this).inflate(R.layout.dialog_change_password, null);
         // Getting view form custom dialog layout
         editTextOldPassword = view.findViewById(R.id.editTextOldPassword);
         EditText editTextNewPassword = view.findViewById(R.id.editTextNewPassword);
@@ -459,7 +499,7 @@ public class MyCartActivity extends AppCompatActivity {
                     return;
                 }
                 // Show progressBar
-                progressDialog = new ProgressDialog(MyCartActivity.this);
+                progressDialog = new ProgressDialog(ApplicationDeliverymanDetailsActivity.this);
                 progressDialog.show();
                 progressDialog.setContentView(R.layout.progress_dialog);
                 progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -472,7 +512,7 @@ public class MyCartActivity extends AppCompatActivity {
     // Update Password
     private void updatePassword(String oldPassword, String newPassword) {
         // before updating password we have to re-authenticate our user
-        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(),oldPassword);
+        AuthCredential authCredential = EmailAuthProvider.getCredential(currentUser.getEmail(), oldPassword);
         currentUser.reauthenticate(authCredential).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
@@ -485,13 +525,13 @@ public class MyCartActivity extends AppCompatActivity {
                                 .child(userModel.getPhoneNumber().substring(1, 14)).setValue(newPassword);
                         dialog.dismiss();
                         progressDialog.dismiss();
-                        Toast.makeText(MyCartActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ApplicationDeliverymanDetailsActivity.this, "Password Updated Successfully", Toast.LENGTH_SHORT).show();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         progressDialog.dismiss();
-                        Toast.makeText(MyCartActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(ApplicationDeliverymanDetailsActivity.this, e.getMessage().toString(), Toast.LENGTH_LONG).show();
                     }
                 });
             }

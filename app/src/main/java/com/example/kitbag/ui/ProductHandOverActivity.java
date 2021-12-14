@@ -140,6 +140,12 @@ public class ProductHandOverActivity extends AppCompatActivity {
                             if (userModel.getUserType().equals("Agent")) {
                                 binding.navigationView.getMenu().findItem(R.id.nav_agent).setVisible(false);
                             }
+                            if (!userModel.getUserType().equals("Agent")) {
+                                binding.navigationView.getMenu().findItem(R.id.nav_agent_control).setVisible(false);
+                            }
+                            if (userModel.getUserType().equals("GENERAL_USER")) {
+                                binding.navigationView.getMenu().findItem(R.id.nav_inprogress).setVisible(false);
+                            }
                             View view = binding.navigationView.getHeaderView(0);
                             TextView userName = (TextView) view.findViewById(R.id.nav_user_name);
                             CircleImageView imageView = (CircleImageView) view.findViewById(R.id.nav_user_photo);
@@ -247,7 +253,7 @@ public class ProductHandOverActivity extends AppCompatActivity {
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_contact:
-                        intentFragment.putExtra("whatToDo","contactUs");
+                        intentFragment.putExtra("whatToDo", "contactUs");
                         startActivity(intentFragment);
                         break;
                     case R.id.nav_about:
@@ -432,7 +438,7 @@ public class ProductHandOverActivity extends AppCompatActivity {
                                 if (snapshot.getString("userType").equals("Agent")) {
                                     progressDialog.dismiss();
                                     // Send an OTP to the agent number and verify
-                                    dialogDisplayPhoto(phoneNumber, "verifyPrimaryAgent", snapshot.getString("userId"), "Agents");
+                                    dialogDisplayPhoto(phoneNumber, "verifyPrimaryAgent", snapshot.getString("userId"), "Agent");
                                 } else {
                                     // Not an Agent
                                     binding.EditTextContact.setError("Agent Not Found");

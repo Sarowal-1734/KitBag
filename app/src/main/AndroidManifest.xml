@@ -20,6 +20,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Day">
         <activity
+            android:name=".ui.ApplicationDeliverymanDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.ApplicationDeliverymanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.InprogressActivity"
+            android:exported="false" />
+        <activity
             android:name=".fragment.container.FragmentContainerActivity"
             android:exported="false"
             android:launchMode="singleTop"
@@ -121,7 +130,6 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-
     </application>
 
 </manifest>
