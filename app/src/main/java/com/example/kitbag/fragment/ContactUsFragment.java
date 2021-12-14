@@ -10,8 +10,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.kitbag.R;
+import com.example.kitbag.fragment.discover_kitbag.DiscoverEditProfileFragment;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class ContactUsFragment extends Fragment {
 
@@ -30,7 +34,11 @@ public class ContactUsFragment extends Fragment {
         view.findViewById(R.id.LiveChat).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Chat Clicked", Toast.LENGTH_SHORT).show();
+                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                    openNestedFragment(new ChatFragment(), "liveChat");
+                } else {
+                    Toast.makeText(getActivity(), "Please login to chat", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -43,6 +51,14 @@ public class ContactUsFragment extends Fragment {
         });
 
         return view;
+    }
+
+    private void openNestedFragment(Fragment fragment, String tag) {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right);
+        transaction.addToBackStack(null);
+        transaction.replace(R.id.fragmentContainer, fragment, tag).commit();
     }
 
 }
