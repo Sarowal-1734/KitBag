@@ -519,10 +519,10 @@ public class PostInfoActivity extends AppCompatActivity {
                                             if (userModel.getUserType().equals("Agent")) {
                                                 binding.navigationView.getMenu().findItem(R.id.nav_agent).setVisible(false);
                                             }
-                                            if (!userModel.getUserType().equals("Agent")) {
+                                            if (currentUser != null && !userModel.getUserType().equals("Agent")) {
                                                 binding.navigationView.getMenu().findItem(R.id.nav_agent_control).setVisible(false);
                                             }
-                                            if (userModel.getUserType().equals("GENERAL_USER")) {
+                                            if (currentUser != null && userModel.getUserType().equals("GENERAL_USER")) {
                                                 binding.navigationView.getMenu().findItem(R.id.nav_inprogress).setVisible(false);
                                             }
                                             Calendar cal = Calendar.getInstance(Locale.ENGLISH);
