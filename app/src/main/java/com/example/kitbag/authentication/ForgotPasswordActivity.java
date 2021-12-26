@@ -71,7 +71,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
-        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.setVisibility(View.GONE);
 
         // Set drawer menu based on Login/Logout
         if (currentUser != null) {

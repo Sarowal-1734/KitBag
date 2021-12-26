@@ -71,7 +71,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
 
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
-        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.setVisibility(View.GONE);
 
         // Set drawer menu based on Login/Logout
         // Set as no user is signed in
@@ -79,7 +79,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
         binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
         binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
         binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
-        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.setVisibility(View.GONE);
         // Hide DarkMode button in drawer in MainActivity
         binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
         //hiding language option from drawer
