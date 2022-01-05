@@ -120,7 +120,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         // remove search icon and notification icon from appBar
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
-        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.setVisibility(View.GONE);
 
         // Change the title of the appBar
         binding.customAppBar.appbarTitle.setText("Edit Profile");

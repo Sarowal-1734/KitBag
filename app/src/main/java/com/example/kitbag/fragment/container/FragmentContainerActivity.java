@@ -114,7 +114,7 @@ public class FragmentContainerActivity extends AppCompatActivity {
         });
 
         // Hide notify and search
-        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.setVisibility(View.GONE);
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
 
         // Set drawer menu based on Login/Logout
@@ -159,7 +159,7 @@ public class FragmentContainerActivity extends AppCompatActivity {
                     });
         } else {
             // No user is signed in
-            binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+            binding.customAppBar.appbarNotificationIcon.setVisibility(View.GONE);
             binding.navigationView.getMenu().clear();
             binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);

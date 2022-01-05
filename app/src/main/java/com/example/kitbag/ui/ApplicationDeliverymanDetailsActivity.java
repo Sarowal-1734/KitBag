@@ -169,7 +169,7 @@ public class ApplicationDeliverymanDetailsActivity extends AppCompatActivity {
                     });
         } else {
             // No user is signed in
-            binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+            binding.customAppBar.appbarNotificationIcon.setVisibility(View.GONE);
             binding.navigationView.getMenu().clear();
             binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
@@ -212,7 +212,7 @@ public class ApplicationDeliverymanDetailsActivity extends AppCompatActivity {
         });
 
         // Open notifications Activity
-        binding.customAppBar.appbarNotificationIcon.notificationIcon.setOnClickListener(new View.OnClickListener() {
+        binding.customAppBar.appbarNotificationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(ApplicationDeliverymanDetailsActivity.this, NotificationsActivity.class));

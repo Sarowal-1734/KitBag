@@ -181,7 +181,7 @@ public class PostInfoActivity extends AppCompatActivity {
         binding.imageViewChat.setColorFilter(Color.parseColor("#1754B6"));
 
         // On notification icon click
-        binding.customAppBar.appbarNotificationIcon.notificationIcon.setOnClickListener(new View.OnClickListener() {
+        binding.customAppBar.appbarNotificationIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(PostInfoActivity.this, NotificationsActivity.class));
@@ -231,7 +231,7 @@ public class PostInfoActivity extends AppCompatActivity {
             binding.navigationView.inflateMenu(R.menu.drawer_menu_logout);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_user_name).setVisibility(View.GONE);
             binding.navigationView.getHeaderView(0).findViewById(R.id.nav_edit_profile).setVisibility(View.GONE);
-            binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+            binding.customAppBar.appbarNotificationIcon.setVisibility(View.GONE);
             // Hide DarkMode button in drawer in MainActivity
             binding.navigationView.getMenu().findItem(R.id.nav_dark_mode).setVisible(false);
             //hiding language option from drawer
@@ -519,10 +519,10 @@ public class PostInfoActivity extends AppCompatActivity {
                                             if (userModel.getUserType().equals("Agent")) {
                                                 binding.navigationView.getMenu().findItem(R.id.nav_agent).setVisible(false);
                                             }
-                                            if (!userModel.getUserType().equals("Agent")) {
+                                            if (currentUser != null && !userModel.getUserType().equals("Agent")) {
                                                 binding.navigationView.getMenu().findItem(R.id.nav_agent_control).setVisible(false);
                                             }
-                                            if (userModel.getUserType().equals("GENERAL_USER")) {
+                                            if (currentUser != null && userModel.getUserType().equals("GENERAL_USER")) {
                                                 binding.navigationView.getMenu().findItem(R.id.nav_inprogress).setVisible(false);
                                             }
                                             Calendar cal = Calendar.getInstance(Locale.ENGLISH);

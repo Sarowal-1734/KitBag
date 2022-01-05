@@ -81,7 +81,7 @@ public class DeliverymanRegistrationActivity extends AppCompatActivity {
 
         // Hide appBar icons
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
-        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.setVisibility(View.GONE);
 
         // Change appBar title
         binding.customAppBar.appbarTitle.setText("Take NID Photo");

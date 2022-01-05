@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
@@ -89,7 +91,7 @@ public class NidInformationActivity extends AppCompatActivity {
 
         // Hide appBar icons
         binding.customAppBar.appbarImageviewSearch.setVisibility(View.GONE);
-        binding.customAppBar.appbarNotificationIcon.notificationIcon.setVisibility(View.GONE);
+        binding.customAppBar.appbarNotificationIcon.setVisibility(View.GONE);
 
         // Change appBar title
         binding.customAppBar.appbarTitle.setText("NID Information");
@@ -184,6 +186,14 @@ public class NidInformationActivity extends AppCompatActivity {
     } // Ending onCreate
 
     private void storeAgentImages(ArrayList<Uri> imageUriLists) {
+        ProgressDialog progressBarDialog = new ProgressDialog(NidInformationActivity.this);
+        progressBarDialog.show();
+        progressBarDialog.setContentView(R.layout.progress_image_uploading);
+        progressBarDialog.setCancelable(false);
+        TextView textView = progressBarDialog.findViewById(R.id.progressTextViewImage);
+        TextView textViewCount = progressBarDialog.findViewById(R.id.progressTextCount);
+        ProgressBar progressBarmage = progressBarDialog.findViewById(R.id.progressImage);
+        progressBarDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         // Store image to firebase
         int imageUriCount;
         for (imageUriCount = 0; imageUriCount < imageUriLists.size(); imageUriCount++) {
@@ -199,16 +209,17 @@ public class NidInformationActivity extends AppCompatActivity {
                                     // Update user info in Database
                                     if (i == 0) {
                                         db.collection("Agent").document(currentUser.getUid()).update("imageUrlUserFace", uri.toString());
-                                        Toast.makeText(NidInformationActivity.this, "Image: User Face Uploaded", Toast.LENGTH_SHORT).show();
+                                        textView.setText("Uploading images: " + "100%");
                                     }
                                     if (i == 1) {
                                         db.collection("Agent").document(currentUser.getUid()).update("imageUrlFrontNID", uri.toString());
-                                        Toast.makeText(NidInformationActivity.this, "Image: Front NID Uploaded", Toast.LENGTH_SHORT).show();
+                                        textView.setText("Uploading images: " + "100%");
                                     }
                                     if (i == 2) {
                                         db.collection("Agent").document(currentUser.getUid()).update("imageUrlBackNID", uri.toString());
+                                        textView.setText("Uploading images: " + "100%");
+                                        progressBarDialog.dismiss();
                                         progressDialog.dismiss();
-                                        Toast.makeText(NidInformationActivity.this, "Image: Back NID Uploaded", Toast.LENGTH_SHORT).show();
                                         showDialog();
                                     }
                                 }
@@ -220,6 +231,16 @@ public class NidInformationActivity extends AppCompatActivity {
                         public void onFailure(@NonNull Exception e) {
                             progressDialog.dismiss();
                             Toast.makeText(NidInformationActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                            int count = i + 2;
+                            double progress = (100 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                            progressBarmage.setProgress((int) progress);
+                            textViewCount.setText(count + "/3");
+                            textView.setText("Uploading images: " + progress + "%");
                         }
                     });
         }
@@ -294,6 +315,14 @@ public class NidInformationActivity extends AppCompatActivity {
     }
 
     private void storeDeliverymanImages(ArrayList<Uri> imageUriLists) {
+        ProgressDialog progressBarDialog = new ProgressDialog(NidInformationActivity.this);
+        progressBarDialog.show();
+        progressBarDialog.setCancelable(false);
+        progressBarDialog.setContentView(R.layout.progress_image_uploading);
+        TextView textView = progressBarDialog.findViewById(R.id.progressTextViewImage);
+        TextView textViewCount = progressBarDialog.findViewById(R.id.progressTextCount);
+        ProgressBar progressBarmage = progressBarDialog.findViewById(R.id.progressImage);
+        progressBarDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         // Store image to firebase
         int imageUriCount;
         for (imageUriCount = 0; imageUriCount < imageUriLists.size(); imageUriCount++) {
@@ -309,16 +338,17 @@ public class NidInformationActivity extends AppCompatActivity {
                                     // Update user info in Database
                                     if (i == 0) {
                                         db.collection("Deliveryman").document(currentUser.getUid()).update("imageUrlUserFace", uri.toString());
-                                        Toast.makeText(NidInformationActivity.this, "Image: User Face Uploaded", Toast.LENGTH_SHORT).show();
+                                        textView.setText("Uploading images: " + "100%");
                                     }
                                     if (i == 1) {
                                         db.collection("Deliveryman").document(currentUser.getUid()).update("imageUrlFrontNID", uri.toString());
-                                        Toast.makeText(NidInformationActivity.this, "Image: Front NID Uploaded", Toast.LENGTH_SHORT).show();
+                                        textView.setText("Uploading images: " + "100%");
                                     }
                                     if (i == 2) {
                                         db.collection("Deliveryman").document(currentUser.getUid()).update("imageUrlBackNID", uri.toString());
+                                        textView.setText("Uploading images: " + "100%");
+                                        progressBarDialog.dismiss();
                                         progressDialog.dismiss();
-                                        Toast.makeText(NidInformationActivity.this, "Image: Back NID Uploaded", Toast.LENGTH_SHORT).show();
                                         showDialog();
                                     }
                                 }
@@ -330,6 +360,16 @@ public class NidInformationActivity extends AppCompatActivity {
                         public void onFailure(@NonNull Exception e) {
                             progressDialog.dismiss();
                             Toast.makeText(NidInformationActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                            int count = i + 2;
+                            double progress = (100 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                            progressBarmage.setProgress((int) progress);
+                            textViewCount.setText(count + "/3");
+                            textView.setText("Uploading images: " + progress + "%");
                         }
                     });
         }
